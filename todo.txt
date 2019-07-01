@@ -1,0 +1,24 @@
+change .tmpl to .gohtml
+
+https://en.wikipedia.org/wiki/The_7_Habits_of_Highly_Effective_People
+
+https://play.golang.org/p/mlTh2OUM_Tk
+
+Put into all field message erros
+class="has-text-danger"
+
+Clean up session on cache and db from time to time.
+
+senha
+1Aasdfasdf
+
+### codersrank.io ###
+Mon 28 Jun 2019
+Total ranking: 89553
+Go score: 63.5
+Go ranking: 22603 (13%)
+
+Mon 01 Jul 2019
+Total ranking: 88649
+Go score: 71.7
+Go ranking: 20712 (12%)

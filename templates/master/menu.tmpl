@@ -1,0 +1,70 @@
+{{define "menu"}}
+<a class="item brand" href="/">Home</a>
+
+<!-- Classes -->
+<div class="sub-menu">
+  <a class="item toggle-items" href="#">Aulas</a>
+  <div class="items">
+      <a class="item back" href="#">< Menu</a>
+      <a class="item" href="/info/childrens-sailing-lessons">crianças</a>
+      <a class="item" href="/info/adults-sailing-lessons">Adulto</a>
+      <a class="item" href="/info/rowing-lessons">Remo</a>
+  </div>
+</div>
+
+<!-- Rents -->
+<div class="sub-menu">
+  <a class="item toggle-items" href="#">Alugueis</a>
+  <div class="items">
+      <a class="item back" href="#">< Menu</a>
+      <a class="item" href="/info/sailboat-rental">Veleiro</a>
+      <a class="item" href="/info/kayaks-and-aquatic-bikes-rental">Caiaque</a>
+      <a class="item" href="/info/kayaks-and-aquatic-bikes-rental">bicicleta aquática</a>
+  </div>
+</div>
+
+<!-- Rides -->
+<a class="item" href="/info/sailboat-ride">Passeio</a>
+
+<!-- Admin -->
+{{if .Session }} {{if .Session.CheckPermission "admin"}}
+<div class="sub-menu">
+  <a class="item toggle-items" href="#">Admin</a>
+  <div class="items">
+      <a class="item back" href="#">< Menu</a>
+      <a class="item" href="/clean-sessions">Limpar seções</a>
+  </div>
+</div>
+{{end}}{{end}}
+
+<!-- Student -->
+{{if .Session }} {{if .Session.CheckPermission "editStudent"}}
+<div class="sub-menu">
+  <a class="item toggle-items" href="#">Aluno</a></li>
+  <div class="items">
+      <a class="item back" href="#">< Menu</a>
+      <a class="item" href="/student/all">Todos</a>
+      <a class="item" href="/student/new">Novo</a>
+  </div>
+</div>
+{{end}}{{end}}
+
+<!-- Signin -->
+{{if not .Session}}
+<a class="item" href="/auth/signin">Entrar</a>
+{{end}}
+
+<!-- Account -->
+{{if .Session}}
+<div class="sub-menu">
+  <a class="item toggle-items" href="#">Conta</a></li>
+  <div class="items">
+      <a class="item back" href="#">< Menu</a>
+      <a class="item" href="/user/account">{{.Session.UserName}}</a>
+      <a class="item" href="/auth/signout">Sair</a>
+  </div>
+</div>
+{{end}}
+
+
+{{end}}

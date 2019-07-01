@@ -1,0 +1,35 @@
+{{define "base"}}
+<!doctype html>
+<html lang='en'>
+    <head>
+        <!-- <meta Content-Type='text/html' charset='utf-8'> -->
+        <meta charset='utf-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Esola de vela.">
+        <title>{{template "title" .}}</title>
+        <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Kalam|Margarine|Pangolin" rel="stylesheet">
+        <link rel='stylesheet' href='/static/css/normalize.css'>
+        <link rel='stylesheet' href='/static/css/reset.css'>
+        <link rel='stylesheet' href='/static/css/layout.css'>
+        <link rel='stylesheet' href='/static/fontawesome/css/all.min.css'>
+        {{template "embedded-css"}}
+        <!-- <link rel='shortcut icon' href='/static/img/favicon.ico' type='image/x-icon'> -->
+    </head>
+    <body>
+        <!-- <div id="menu-toggle"> <span></span> <span></span> <span></span> </div> -->
+        <div class="burger">
+            <span class="burger-box">
+                <span class="burger-inner"></span>
+            </span>
+        </div>
+        <div id="menu"> {{template "menu" .}} </div>
+        <div id="main">
+            {{template "content" .}}
+        </div>
+        <div id="footer"> {{template "footer" .}} </div>
+        <script src="/static/js/layout.js?0001"></script>
+    </body>
+</html>
+{{end}}
