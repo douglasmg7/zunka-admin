@@ -22,14 +22,14 @@ var tmplMaster, tmplIndex, tmplDeniedAccess *template.Template
 // Misc.
 var tmplMessage *template.Template
 
-// Info.
-var tmplInstitutional *template.Template
-var tmplChildrenSailingLessons, tmplAdultsSailingLessons, tmplRowingLessons *template.Template
-var tmplSailboatRental, tmplKayaksAndAquaticBikesRental, tmplSailboatRide *template.Template
-var tmplProjectsAndInitiatives, tmplContact, tmplStudentsArea *template.Template
+// Store.
+var tmplStoreProducts *template.Template
 
-// Blog
-var tmplBlogIndex *template.Template
+// Aldo.
+var tmplAldoProducts, tmplAldoConfig *template.Template
+
+// Allnations.
+var tmplAllnationsProducts, tmplAllnationsConfig *template.Template
 
 // Auth.
 var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *template.Template
@@ -49,9 +49,6 @@ var tmplUserChangePassword *template.Template
 var tmplUserChangeRG *template.Template
 var tmplUserChangeCPF *template.Template
 var tmplUserDeleteAccount *template.Template
-
-// Entrance.
-var tmplEntreanceAdd *template.Template
 
 // Development mode.
 var devMode bool
@@ -91,20 +88,16 @@ func init() {
 	// Misc.
 	tmplMessage = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/message.tpl"))
 
-	// Info.
-	tmplInstitutional = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/info/institutional.tpl"))
-	tmplChildrenSailingLessons = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/info/childrensSailingLessons.tpl"))
-	tmplAdultsSailingLessons = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/info/adultsSailingLessons.tpl"))
-	tmplRowingLessons = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/info/rowingLessons.tpl"))
-	tmplSailboatRental = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/info/sailboatRental.tpl"))
-	tmplKayaksAndAquaticBikesRental = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/info/kayaksAndAquaticBikesRental.tpl"))
-	tmplSailboatRide = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/info/sailboatRide.tpl"))
-	tmplProjectsAndInitiatives = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/info/projectsAndInitiatives.tpl"))
-	tmplStudentsArea = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/info/studentsArea.tpl"))
-	tmplContact = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/info/contact.tpl"))
+	// Store.
+	tmplStoreProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/store/storeProducts.tpl"))
 
-	// Blog
-	tmplBlogIndex = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/blog/blogIndex.tpl"))
+	// Aldo.
+	tmplAldoProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProducts.tpl"))
+	tmplAldoConfig = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoConfig.tpl"))
+
+	// Allnations.
+	tmplAllnationsProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProducts.tpl"))
+	tmplAllnationsConfig = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsConfig.tpl"))
 
 	// Auth.
 	tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))
@@ -123,8 +116,6 @@ func init() {
 	tmplUserChangeName = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeName.tpl"))
 	tmplUserChangeEmail = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeEmail.tpl"))
 	tmplUserChangeMobile = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeMobile.tpl"))
-	// Entrance.
-	tmplEntreanceAdd = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/entranceAdd.tpl"))
 
 	// debug templates
 	// for _, tplItem := range tmplAll["user_add"].Templates() {
@@ -134,7 +125,7 @@ func init() {
 
 func main() {
 	// Start data base.
-	db, err = sql.Open("sqlite3", "./db/bluewhale.db")
+	db, err = sql.Open("sqlite3", "./db/zunka.db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -152,20 +143,16 @@ func main() {
 	// Clean the session cache.
 	router.GET("/clean-sessions", checkPermission(cleanSessionsHandler, "admin"))
 
-	// Info.
-	router.GET("/info/institutional", getSession(institutionalHandler))
-	router.GET("/info/childrens-sailing-lessons", getSession(childrensSailingLessons))
-	router.GET("/info/adults-sailing-lessons", getSession(adultsSailingLessons))
-	router.GET("/info/rowing-lessons", getSession(rowingLessons))
-	router.GET("/info/sailboat-rental", getSession(sailboatRental))
-	router.GET("/info/kayaks-and-aquatic-bikes-rental", getSession(kayaksAndAquaticBikesRental))
-	router.GET("/info/sailboat-ride", getSession(sailboatRide))
-	router.GET("/info/projects-and-initiatives", getSession(projectsAndInitiatives))
-	router.GET("/info/contact", getSession(contact))
-	router.GET("/info/students-area", getSession(studentsArea))
+	// Store.
+	router.GET("/store/products", getSession(storeProductsHandler))
 
-	// Blog.
-	router.GET("/blog/", getSession(blogIndex))
+	// Aldo.
+	router.GET("/aldo/products", getSession(aldoProductsHandler))
+	router.GET("/aldo/config", getSession(aldoConfigHandler))
+
+	// Allnations.
+	router.GET("/allnations/products", getSession(allnationsProductsHandler))
+	router.GET("/allnations/config", getSession(allnationsConfigHandler))
 
 	// Auth - signup.
 	router.GET("/auth/signup", confirmNoLogged(authSignupHandler))
@@ -194,7 +181,6 @@ func main() {
 
 	// Entrance.
 	router.GET("/user_add", userAddHandler)
-	router.GET("/entrance-add", entranceAddHandler)
 
 	// Student.
 	router.GET("/student/all", checkPermission(allStudentHandler, "editStudent"))

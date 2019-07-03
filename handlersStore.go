@@ -10,13 +10,12 @@ import (
 	// "time"
 )
 
-// Blog index.
-func blogIndex(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+func storeProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	data := struct {
 		Session     *SessionData
 		HeadMessage string
 	}{session, ""}
 	// fmt.Println("session: ", data.Session)
-	err = tmplBlogIndex.ExecuteTemplate(w, "blogIndex.tpl", data)
+	err = tmplStoreProducts.ExecuteTemplate(w, "storeProducts.tpl", data)
 	HandleError(w, err)
 }

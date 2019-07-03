@@ -7,7 +7,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	// "github.com/satori/go.uuid"
-	"html/template"
+
 	"log"
 	"net/http"
 	// "time"
@@ -72,13 +72,5 @@ func userHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params)
 
 func userAddHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	err := tmplUserAdd.ExecuteTemplate(w, "user_add.tpl", nil)
-	HandleError(w, err)
-}
-
-func entranceAddHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	if devMode == true {
-		tmplEntreanceAdd = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/entranceAdd.tpl"))
-	}
-	err := tmplEntreanceAdd.ExecuteTemplate(w, "entrance_add.tpl", nil)
 	HandleError(w, err)
 }

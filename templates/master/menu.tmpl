@@ -1,30 +1,28 @@
 {{define "menu"}}
 <a class="item brand" href="/">Home</a>
 
-<!-- Classes -->
+<!-- Products store -->
+<a class="item" href="/store/products">Produtos loja</a>
+
+<!-- Aldo -->
 <div class="sub-menu">
-  <a class="item toggle-items" href="#">Aulas</a>
+  <a class="item toggle-items" href="#">Aldo</a>
   <div class="items">
       <a class="item back" href="#">< Menu</a>
-      <a class="item" href="/info/childrens-sailing-lessons">crianças</a>
-      <a class="item" href="/info/adults-sailing-lessons">Adulto</a>
-      <a class="item" href="/info/rowing-lessons">Remo</a>
+      <a class="item" href="/aldo/products">Produtos</a>
+      <a class="item" href="/aldo/config">Configurações</a>
   </div>
 </div>
 
-<!-- Rents -->
+<!-- All Nations -->
 <div class="sub-menu">
-  <a class="item toggle-items" href="#">Alugueis</a>
+  <a class="item toggle-items" href="#">All Nations</a>
   <div class="items">
       <a class="item back" href="#">< Menu</a>
-      <a class="item" href="/info/sailboat-rental">Veleiro</a>
-      <a class="item" href="/info/kayaks-and-aquatic-bikes-rental">Caiaque</a>
-      <a class="item" href="/info/kayaks-and-aquatic-bikes-rental">bicicleta aquática</a>
+      <a class="item" href="/allnations/products">Produtos</a>
+      <a class="item" href="/allnations/config">Configuração </a>
   </div>
 </div>
-
-<!-- Rides -->
-<a class="item" href="/info/sailboat-ride">Passeio</a>
 
 <!-- Admin -->
 {{if .Session }} {{if .Session.CheckPermission "admin"}}

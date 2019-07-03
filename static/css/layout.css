@@ -64,9 +64,7 @@ p.error {
 #menu .item {
     color: var(--white);
     display: inline-block;
-    text-transform: uppercase;
     font-size: 1.2em;
-    font-weight: bold;
     /* line-height: 1em; */
     /* padding: .4em 1em; */
     padding: 1em 1em;

@@ -2,11 +2,11 @@
 
 {{ define "embedded-css"}} {{end}}
 
-{{define "title"}} Área do aluno {{end}}
+{{define "title"}} Configurações da Allnations {{end}}
 
 {{define "content"}}
 <div class="content">
-    <h2>Área do aluno</h2>
-    <p></p>
+    <h2> Configurações da Allnations</h2>
+    <p>XXX</p>
 </div>
 {{end}}
