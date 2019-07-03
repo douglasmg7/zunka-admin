@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -39,6 +40,7 @@ var tmplStudent, tmplAllStudent, tmplNewStudent *template.Template
 
 // Db.
 var db *sql.DB
+var dbAldo *sqlx.DB
 var err error
 
 // User.
@@ -129,6 +131,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	dbAldo, err := sqlx.Connect("sqlite3", "../aldowsc/db/aldo.db")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer dbAldo.Close()
 
 	// Init router.
 	router := httprouter.New()
