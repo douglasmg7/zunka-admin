@@ -36,6 +36,8 @@ var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *tem
 
 // Student.
 var tmplStudent, tmplAllStudent, tmplNewStudent *template.Template
+
+// Db.
 var db *sql.DB
 var err error
 
@@ -84,32 +86,25 @@ func init() {
 	tmplMaster = template.Must(template.ParseGlob("templates/master/*"))
 	tmplIndex = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/index.tpl"))
 	tmplDeniedAccess = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/deniedAccess.tpl"))
-
 	// Misc.
 	tmplMessage = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/message.tpl"))
-
 	// Store.
 	tmplStoreProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/store/storeProducts.tpl"))
-
 	// Aldo.
 	tmplAldoProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProducts.tpl"))
 	tmplAldoConfig = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoConfig.tpl"))
-
 	// Allnations.
 	tmplAllnationsProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProducts.tpl"))
 	tmplAllnationsConfig = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsConfig.tpl"))
-
 	// Auth.
 	tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))
 	tmplAuthSignin = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signin.tpl"))
 	tmplPasswordRecovery = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/passwordRecovery.tpl"))
 	tmplPasswordReset = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/passwordReset.tpl"))
-
 	// Student.
 	tmplStudent = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/student.tpl"))
 	tmplAllStudent = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allStudent.tpl"))
 	tmplNewStudent = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/newStudent.tpl"))
-
 	// User.
 	tmplUserAdd = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/userAdd.tpl"))
 	tmplUserAccount = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userAccount.tpl"))
