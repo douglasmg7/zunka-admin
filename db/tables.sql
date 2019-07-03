@@ -3,15 +3,6 @@
 -- not working, reset to off when back to db
 pragma foreign_keys = on;
 
--- Entrance.
-create table entrance (
-  id integer primary key autoincrement,
-  user_id integer not null,
-  school varchar(64) not null,
-  createdAt date not null,
-  foreign key(user_id) references user(id)
-);
-
 -- User.
 create table user (
   id integer primary key autoincrement,

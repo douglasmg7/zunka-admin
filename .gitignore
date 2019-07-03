@@ -1,4 +1,4 @@
-zunka-admin
+zunkasrv
 db/zunka.db
 
 # Include directories but not the files.
