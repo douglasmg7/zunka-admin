@@ -1,0 +1,31 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+	tr {
+		cursor: pointer;
+	}
+</style>
+{{end}}
+
+{{define "title"}} Produtos Aldo {{end}}
+
+{{define "content"}}
+<div class="content">
+    <h3>Produtos Aldo</h3>
+	<table>
+		<tbody>
+			{{range .Products}}
+				<tr onclick="location.href='/aldo/product/{{.Code}}'">
+					<td> {{.Code}} </td>
+					<!-- <td> {{.Brand}} </td> -->
+					<td> {{.Category}} </td>
+					<!-- <td> {{.Description}} </td> -->
+					<td> {{.DealerPrice}} </td>
+					<!-- <td> {{.Availability}} </td> -->
+				</tr>
+			{{end}}
+		</tbody>
+	</table>
+</div>
+{{end}}

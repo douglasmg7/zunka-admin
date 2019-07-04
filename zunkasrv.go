@@ -27,7 +27,7 @@ var tmplMessage *template.Template
 var tmplStoreProducts *template.Template
 
 // Aldo.
-var tmplAldoProducts, tmplAldoConfig *template.Template
+var tmplAldoProducts, tmplAldoProduct, tmplAldoConfig *template.Template
 
 // Allnations.
 var tmplAllnationsProducts, tmplAllnationsConfig *template.Template
@@ -93,7 +93,8 @@ func init() {
 	// Store.
 	tmplStoreProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/store/storeProducts.tpl"))
 	// Aldo.
-	tmplAldoProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProducts.tpl"))
+	tmplAldoProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProduct.tmpl"))
+	tmplAldoProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProducts.tmpl"))
 	tmplAldoConfig = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoConfig.tpl"))
 	// Allnations.
 	tmplAllnationsProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProducts.tpl"))
@@ -132,7 +133,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dbAldo, err := sqlx.Connect("sqlite3", "../aldowsc/db/aldo.db")
+	dbAldo, err = sqlx.Connect("sqlite3", "../aldowsc/db/aldo.db")
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -151,6 +152,7 @@ func main() {
 
 	// Aldo.
 	router.GET("/aldo/products", getSession(aldoProductsHandler))
+	router.GET("/aldo/product/:code", getSession(aldoProductHandler))
 	router.GET("/aldo/config", getSession(aldoConfigHandler))
 
 	// Allnations.

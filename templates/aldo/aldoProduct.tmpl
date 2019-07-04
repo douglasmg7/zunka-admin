@@ -1,0 +1,85 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+	tr {
+		cursor: pointer;
+	}
+</style>
+{{end}}
+
+{{define "title"}} Produtos Aldo {{end}}
+
+{{define "content"}}
+<div class="content">
+    <h3>Produto Aldo</h3>
+
+	<h4>Id<h4>
+	<p>{{.Product.Id}}</p>
+
+	<h4>Data de criação<h4>
+	<p>{{.Product.CreatedAt}}</p>
+
+	<h4>Data de modificação<h4>
+	<p>{{.Product.ChangedAt}}</p>
+
+	{{if .Product.Changed}}
+	<h4>Produto alterado<h4>
+	{{end}}
+
+	{{if .Product.New}}
+	<h4>Produto é novo<h4>
+	{{end}}
+
+	{{if .Product.Removed}}
+	<h4>Produto foi removido<h4>
+	{{end}}
+
+	<h4>Código<h4>
+	<p>{{.Product.Code}}</p>
+
+	<h4>Marca<h4>
+	<p>{{.Product.Brand}}</p>
+
+	<h4>Description<h4>
+	<p>{{.Product.Description}}</p>
+
+	<h4>Unidade<h4>
+	<p>{{.Product.Unit}}</p>
+
+	<h4>Múltiplo<h4>
+	<p>{{.Product.Multiple}}</p>
+
+	<h4>Preço do fornecedor<h4>
+	<p>{{.Product.DealerPrice}}</p>
+
+	<h4>Preço sugerido<h4>
+	<p>{{.Product.SuggestionPrice}}</p>
+
+	<h4>Descrição técnica<h4>
+	<p>{{.Product.TechnicalDescription}}</p>
+
+	<h4>Disponibilidade do produto<h4>
+	<p>{{.Product.Availability}}</p>
+
+	<h4>Comprimento<h4>
+	<p>{{.Product.Length}}</p>
+
+	<h4>Largura<h4>
+	<p>{{.Product.Width}}</p>
+
+	<h4>Altura<h4>
+	<p>{{.Product.Height}}</p>
+
+	<h4>Peso<h4>
+	<p>{{.Product.Weight}}</p>
+
+	<!-- PictureLink          string      `db:"picture_link"` -->
+	
+	<h4>Tempo de garantia<h4>
+	<p>{{.Product.WarrantyPeriod}} meses</p>
+
+	<h4>Procedimento RMA<h4>
+	<p>{{.Product.RMAProcedure}}</p>
+</div>
+{{end}}

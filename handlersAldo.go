@@ -12,11 +12,26 @@ func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 		Session     *SessionData
 		HeadMessage string
 		Products    []aldoutil.Product
-	}{session, "", nil}
-	data.Products, err = aldoutil.FindAllProducts(db)
+	}{session, "", []aldoutil.Product{}}
+
+	err = dbAldo.Select(&data.Products, "SELECT * FROM product LIMIT 10")
 	HandleError(w, err)
-	// fmt.Println("session: ", data.Session)
-	err = tmplAldoProducts.ExecuteTemplate(w, "aldoProducts.tpl", data)
+
+	err = tmplAldoProducts.ExecuteTemplate(w, "aldoProducts.tmpl", data)
+	HandleError(w, err)
+}
+
+func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
+	data := struct {
+		Session     *SessionData
+		HeadMessage string
+		Product     aldoutil.Product
+	}{session, "", aldoutil.Product{}}
+
+	err = dbAldo.Get(&data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
+	HandleError(w, err)
+
+	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
 	HandleError(w, err)
 }
 
