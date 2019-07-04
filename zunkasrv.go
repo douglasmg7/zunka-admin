@@ -27,7 +27,7 @@ var tmplMessage *template.Template
 var tmplStoreProducts *template.Template
 
 // Aldo.
-var tmplAldoProducts, tmplAldoProduct, tmplAldoConfig *template.Template
+var tmplAldoProducts, tmplAldoProduct, tmplAldoCategorySel, tmplAldoCategoryUse, tmplAldoCategoryAll *template.Template
 
 // Allnations.
 var tmplAllnationsProducts, tmplAllnationsConfig *template.Template
@@ -95,7 +95,9 @@ func init() {
 	// Aldo.
 	tmplAldoProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProduct.tmpl"))
 	tmplAldoProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProducts.tmpl"))
-	tmplAldoConfig = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoConfig.tpl"))
+	tmplAldoCategorySel = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoCategorySel.tmpl"))
+	tmplAldoCategoryUse = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoCategoryUse.tmpl"))
+	tmplAldoCategoryAll = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoCategoryAll.tmpl"))
 	// Allnations.
 	tmplAllnationsProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProducts.tpl"))
 	tmplAllnationsConfig = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsConfig.tpl"))
@@ -153,7 +155,9 @@ func main() {
 	// Aldo.
 	router.GET("/aldo/products", getSession(aldoProductsHandler))
 	router.GET("/aldo/product/:code", getSession(aldoProductHandler))
-	router.GET("/aldo/config", getSession(aldoConfigHandler))
+	router.GET("/aldo/category/sel", getSession(aldoCategSelHandler))
+	router.GET("/aldo/category/use", getSession(aldoCategUseHandler))
+	router.GET("/aldo/category/all", getSession(aldoCategAllHandler))
 
 	// Allnations.
 	router.GET("/allnations/products", getSession(allnationsProductsHandler))

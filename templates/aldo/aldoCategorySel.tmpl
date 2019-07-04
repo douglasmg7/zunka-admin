@@ -1,0 +1,20 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+	textarea {
+		height: 20em;
+	}
+</style>
+{{end}}
+
+{{define "title"}}Aldo categorias selecionadas{{end}}
+
+{{define "content"}}
+<div class="content">
+    <h3>Categorias selecionadas</h3>
+	<form>
+		<textarea rows="20" cols="40">{{.Categories}}</textarea>
+	</form>
+</div>
+{{end}}
