@@ -12,9 +12,11 @@
 
 {{define "content"}}
 <div class="content">
-    <h3>Categorias selecionadas</h3>
-	<form>
-		<textarea rows="20" cols="40">{{.Categories}}</textarea>
+	<form method="post">
+		<h3>Categorias selecionadas</h3>
+		<textarea name="categories" rows="20" cols="40">{{.Categories}}</textarea>
+		<input type="submit" value="Salvar">
+		<input type="button" value="Sair" onclick="location.href='/'">
 	</form>
 </div>
 {{end}}

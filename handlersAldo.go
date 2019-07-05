@@ -62,6 +62,18 @@ func aldoCategSelHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 	HandleError(w, err)
 }
 
+// Save selected categories.
+func aldoCategSelHandlerPost(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+	err := aldoutil.WriteCategoryListFromString(req.FormValue("categories"), "../aldowsc/list/categSel.list")
+	HandleError(w, err)
+
+	// categories := strings.Split(strings.ReplaceAll(req.FormValue("categories"), " ", ""), "\n")
+	// fmt.Println("Categories:", categories)
+
+	http.Redirect(w, req, "/aldo/category/sel", http.StatusSeeOther)
+	return
+}
+
 // Categories in use.
 func aldoCategUseHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	data := struct {

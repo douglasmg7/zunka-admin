@@ -156,6 +156,7 @@ func main() {
 	router.GET("/aldo/products", getSession(aldoProductsHandler))
 	router.GET("/aldo/product/:code", getSession(aldoProductHandler))
 	router.GET("/aldo/category/sel", getSession(aldoCategSelHandler))
+	router.POST("/aldo/category/sel", checkPermission(aldoCategSelHandlerPost, ""))
 	router.GET("/aldo/category/use", getSession(aldoCategUseHandler))
 	router.GET("/aldo/category/all", getSession(aldoCategAllHandler))
 
