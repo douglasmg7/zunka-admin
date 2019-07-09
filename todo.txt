@@ -16,9 +16,14 @@ senha
 Mon 28 Jun 2019
 Total ranking: 89553
 Go score: 63.5
-Go ranking: 22603 (13%)
+Go ranking: 22,603 (13%)
 
 Mon 01 Jul 2019
 Total ranking: 88649
 Go score: 71.7
-Go ranking: 20712 (12%)
+Go ranking: 20,712 (12%)
+
+Mon 09 Jul 2019
+Total ranking: 86815
+Go score: 83.8
+Go ranking: 18,466 (11%)
