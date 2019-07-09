@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"path"
 	"strings"
 
 	"github.com/douglasmg7/aldoutil"
@@ -45,7 +46,7 @@ func aldoCategAllHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 		HeadMessage string
 		Categories  []string
 	}{session, "", []string{}}
-	data.Categories = aldoutil.ReadCategoryList("../aldowsc/list/categAll.list")
+	data.Categories = aldoutil.ReadCategoryList(path.Join(listPath, "categAll.list"))
 	err = tmplAldoCategoryAll.ExecuteTemplate(w, "aldoCategoryAll.tmpl", data)
 	HandleError(w, err)
 }
@@ -57,14 +58,14 @@ func aldoCategSelHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 		HeadMessage string
 		Categories  string
 	}{session, "", ""}
-	data.Categories = strings.Join(aldoutil.ReadCategoryList("../aldowsc/list/categSel.list"), "\n")
+	data.Categories = strings.Join(aldoutil.ReadCategoryList(path.Join(listPath, "categSel.list")), "\n")
 	err = tmplAldoCategorySel.ExecuteTemplate(w, "aldoCategorySel.tmpl", data)
 	HandleError(w, err)
 }
 
 // Save selected categories.
 func aldoCategSelHandlerPost(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	err := aldoutil.WriteCategoryListFromString(req.FormValue("categories"), "../aldowsc/list/categSel.list")
+	err := aldoutil.WriteCategoryListFromString(req.FormValue("categories"), path.Join(listPath, "categSel.list"))
 	HandleError(w, err)
 
 	// categories := strings.Split(strings.ReplaceAll(req.FormValue("categories"), " ", ""), "\n")
@@ -81,7 +82,7 @@ func aldoCategUseHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 		HeadMessage string
 		Categories  []string
 	}{session, "", []string{}}
-	data.Categories = aldoutil.ReadCategoryList("../aldowsc/list/categUse.list")
+	data.Categories = aldoutil.ReadCategoryList(path.Join(listPath, "categUse.list"))
 	err = tmplAldoCategoryUse.ExecuteTemplate(w, "aldoCategoryUse.tmpl", data)
 	HandleError(w, err)
 }

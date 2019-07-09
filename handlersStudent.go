@@ -23,7 +23,7 @@ func studentByIdHandler(w http.ResponseWriter, req *http.Request, p httprouter.P
 		Session: session,
 	}
 	// Get the student.
-	err := db.QueryRow("select name, email, mobile from student where id = ?", p.ByName("id")).Scan(&data.Name, &data.Email, &data.Mobile)
+	err := dbApp.QueryRow("select name, email, mobile from student where id = ?", p.ByName("id")).Scan(&data.Name, &data.Email, &data.Mobile)
 	if err != nil && err != sql.ErrNoRows {
 		log.Fatal(err)
 	}
@@ -44,7 +44,7 @@ func allStudentHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Pa
 	}{session, "", []student{}}
 	// names := make([]string, 0)
 	// Get all students.
-	rows, err := db.Query("select id, name from student")
+	rows, err := dbApp.Query("select id, name from student")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func newStudentHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 		// save student
 	} else {
 		// verify if student name alredy exist
-		rows, err := db.Query("select email from student where email = ?", data.Email.Value)
+		rows, err := dbApp.Query("select email from student where email = ?", data.Email.Value)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -120,7 +120,7 @@ func newStudentHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 			HandleError(w, err)
 			// insert student into db
 		} else {
-			stmt, err := db.Prepare(`INSERT INTO student(name, email, mobile, createdAt) VALUES(?, ?, ?, ?)`)
+			stmt, err := dbApp.Prepare(`INSERT INTO student(name, email, mobile, createdAt) VALUES(?, ?, ?, ?)`)
 			if err != nil {
 				log.Fatal(err)
 			}

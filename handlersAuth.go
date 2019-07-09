@@ -8,7 +8,6 @@ import (
 
 	// _ "github.com/mattn/go-sqlite3"
 	"database/sql"
-	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -60,10 +59,6 @@ type passwordResetTplData struct {
 // Signup page.
 func authSignupHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	data := signupTplData{}
-	if devMode == true {
-		tmplMaster = template.Must(template.ParseGlob("templates/master/*"))
-		tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))
-	}
 	err := tmplAuthSignup.ExecuteTemplate(w, "signup.tpl", data)
 	HandleError(w, err)
 }
@@ -88,7 +83,7 @@ func authSignupHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 		return
 	}
 	// Verify if email alredy registered.
-	rows, err := db.Query("select email from user where email = ?", data.Email.Value)
+	rows, err := dbApp.Query("select email from user where email = ?", data.Email.Value)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -108,7 +103,7 @@ func authSignupHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 	}
 	// Lookup for a recent email confirmation.
 	var createdAt time.Time
-	err = db.QueryRow("SELECT createdAt FROM email_confirmation WHERE email = ?", data.Email.Value).Scan(&createdAt)
+	err = dbApp.QueryRow("SELECT createdAt FROM email_confirmation WHERE email = ?", data.Email.Value).Scan(&createdAt)
 	if err != nil && err != sql.ErrNoRows {
 		log.Fatal(err)
 	}
@@ -123,7 +118,7 @@ func authSignupHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 			return
 		}
 		// Delete old email confirmation.
-		stmt, err := db.Prepare(`DELETE from email_confirmation WHERE email == ?`)
+		stmt, err := dbApp.Prepare(`DELETE from email_confirmation WHERE email == ?`)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -145,7 +140,7 @@ func authSignupHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 		return
 	}
 	// Save email confirmation.
-	stmt, err := db.Prepare(`INSERT INTO email_confirmation(uuid, name, email, password, createdAt) VALUES(?, ?, ?, ?, ?)`)
+	stmt, err := dbApp.Prepare(`INSERT INTO email_confirmation(uuid, name, email, password, createdAt) VALUES(?, ?, ?, ?, ?)`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -155,7 +150,7 @@ func authSignupHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 		log.Fatal(err)
 	}
 	// Log email confirmation on dev mode.
-	if devMode {
+	if !production {
 		log.Println(`http://localhost:8080/auth/signup/confirmation/` + uuid.String())
 	}
 	// Render page with next step to complete signup.
@@ -172,7 +167,7 @@ func authSignupConfirmationHandler(w http.ResponseWriter, req *http.Request, ps 
 	var name, email string
 	var password []byte
 	var data signinTplData
-	err = db.QueryRow("SELECT name, email, password FROM email_confirmation WHERE uuid = ?", uuid).Scan(&name, &email, &password)
+	err = dbApp.QueryRow("SELECT name, email, password FROM email_confirmation WHERE uuid = ?", uuid).Scan(&name, &email, &password)
 	if err == sql.ErrNoRows {
 		var msgData messageTplData
 		msgData.TitleMsg = "Link inválido"
@@ -187,7 +182,7 @@ func authSignupConfirmationHandler(w http.ResponseWriter, req *http.Request, ps 
 	// Someone trying to change email to this same email.
 	if name == "" {
 		// Delete email confirmation from change email, so user can try to signup with this email again.
-		stmt, err := db.Prepare(`DELETE from email_confirmation WHERE uuid == ?`)
+		stmt, err := dbApp.Prepare(`DELETE from email_confirmation WHERE uuid == ?`)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -204,7 +199,7 @@ func authSignupConfirmationHandler(w http.ResponseWriter, req *http.Request, ps 
 		return
 	}
 	// Create a user from email confirmation.
-	stmt, err := db.Prepare(`INSERT INTO user(name, email, password, createdAt, updatedAt) VALUES(?, ?, ?, ?, ?)`)
+	stmt, err := dbApp.Prepare(`INSERT INTO user(name, email, password, createdAt, updatedAt) VALUES(?, ?, ?, ?, ?)`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -215,7 +210,7 @@ func authSignupConfirmationHandler(w http.ResponseWriter, req *http.Request, ps 
 		log.Fatal(err)
 	}
 	// Delete email confirmation.
-	stmt, err = db.Prepare(`DELETE from email_confirmation WHERE uuid == ?`)
+	stmt, err = dbApp.Prepare(`DELETE from email_confirmation WHERE uuid == ?`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -254,7 +249,7 @@ func authSigninHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 	// Get user by email.
 	var userID int
 	var cryptedPassword []byte
-	err = db.QueryRow("SELECT id, password FROM user WHERE email = ?", data.Email.Value).Scan(&userID, &cryptedPassword)
+	err = dbApp.QueryRow("SELECT id, password FROM user WHERE email = ?", data.Email.Value).Scan(&userID, &cryptedPassword)
 	// no registred user
 	if err == sql.ErrNoRows {
 		data.Email.Msg = "Email não cadastrado"
@@ -319,7 +314,7 @@ func passwordRecoveryHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 	}
 	// Get user by email.
 	var userID int
-	err = db.QueryRow("SELECT id FROM user WHERE email = ?", data.Email.Value).Scan(&userID)
+	err = dbApp.QueryRow("SELECT id FROM user WHERE email = ?", data.Email.Value).Scan(&userID)
 	// No user.
 	if err == sql.ErrNoRows {
 		data.WarnMsgFooter = "Email não cadastrado."
@@ -337,7 +332,7 @@ func passwordRecoveryHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 		log.Fatal(err)
 	}
 	// Save token.
-	stmt, err := db.Prepare(`INSERT INTO password_reset(uuid, user_email, createdAt) VALUES(?, ?, ?)`)
+	stmt, err := dbApp.Prepare(`INSERT INTO password_reset(uuid, user_email, createdAt) VALUES(?, ?, ?)`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -347,7 +342,7 @@ func passwordRecoveryHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 		log.Fatal(err)
 	}
 	// Log email confirmation on dev mode.
-	if devMode {
+	if !production {
 		log.Println(`http://localhost:8080/auth/password/reset/` + uuid.String())
 	}
 	// Render page with next step to reset password.

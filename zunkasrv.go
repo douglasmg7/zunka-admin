@@ -2,16 +2,19 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/spf13/viper"
 )
 
 /************************************************************************************************
@@ -38,9 +41,17 @@ var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *tem
 // Student.
 var tmplStudent, tmplAllStudent, tmplNewStudent *template.Template
 
+var production bool
+var port string
+
 // Db.
-var db *sql.DB
+var dbApp *sql.DB
 var dbAldo *sqlx.DB
+var dbAppFile, dbAldoFile string
+
+// list.
+var listPath string
+
 var err error
 
 // User.
@@ -54,11 +65,6 @@ var tmplUserChangeRG *template.Template
 var tmplUserChangeCPF *template.Template
 var tmplUserDeleteAccount *template.Template
 
-// Development mode.
-var devMode bool
-
-const port = "8080"
-
 // Sessions from each user.
 var sessions = Sessions{
 	mapUserID:      map[string]int{},
@@ -66,20 +72,62 @@ var sessions = Sessions{
 }
 
 func init() {
+	// Config path.
+	cfgPath := os.Getenv("ZUNKAPATH")
+	if cfgPath == "" {
+		panic("Path to config.toml must be dfined on enviroment variable ZUNKAPATH")
+	}
+
+	// Config.
+	viper.AddConfigPath(cfgPath)
+	viper.SetConfigName("config")
+	viper.SetDefault("all.logDir", "log")
+	viper.SetDefault("all.dbDir", "db")
+	viper.SetDefault("all.listDir", "list")
+	viper.SetDefault("all.env", "development")
+	viper.BindEnv("all.env", "ZUNKAENV")
+	err = viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("Error reading config file: %s \n", err))
+	}
+
+	// Env mode.
+	if viper.GetString("all.env") == "production" {
+		production = true
+		log.Println("Running in production mode")
+	} else {
+		log.Println("Running in development mode")
+	}
+
+	// Port.
+	port = viper.GetString("zunkasrv.port")
+
+	// Path.
+	logPath := path.Join(cfgPath, viper.GetString("all.logDir"))
+	dbPath := path.Join(cfgPath, viper.GetString("all.dbDir"))
+	listPath = path.Join(cfgPath, viper.GetString("all.listDir"))
+
+	// Create log path.
+	os.MkdirAll(logPath, os.ModePerm)
+
+	dbAppFile = path.Join(dbPath, viper.GetString("zunkasrv.dbFileName"))
+	dbAldoFile = path.Join(dbPath, viper.GetString("aldowsc.dbFileName"))
+
 	// Log file.
-	logFile, err := os.OpenFile("./log/main.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+	logFile, err := os.OpenFile(path.Join(logPath, viper.GetString("zunkasrv.logFileName")), os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 	if err != nil {
 		panic(err)
 	}
-	// Log cnfiguration.
+
+	// Log configuration.
 	mw := io.MultiWriter(os.Stdout, logFile)
 	log.SetOutput(mw)
-	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
+	log.SetFlags(log.Ldate | log.Lmicroseconds)
+	// log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Ldate | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	// production or development mode
-	setMode()
 
 	/************************************************************************************************
 	* Load templates
@@ -125,20 +173,17 @@ func init() {
 
 func main() {
 	// Start data base.
-	db, err = sql.Open("sqlite3", "./db/zunka.db")
+	dbApp, err = sql.Open("sqlite3", dbAppFile)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Errorf("Error open db %v: %v", dbAppFile, err))
 	}
-	defer db.Close()
-	err = db.Ping()
+	defer dbApp.Close()
+	err = dbApp.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	dbAldo, err = sqlx.Connect("sqlite3", "../aldowsc/db/aldo.db")
-	if err != nil {
-		log.Fatalln(err)
-	}
+	dbAldo = sqlx.MustConnect("sqlite3", dbAldoFile)
 	defer dbAldo.Close()
 
 	// Init router.
@@ -297,20 +342,4 @@ func (l *logger) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 // New logger.
 func newLogger(h http.Handler) *logger {
 	return &logger{handler: h}
-}
-
-/**************************************************************************************************
-* Run mode.
-**************************************************************************************************/
-
-// Define production or development mode.
-func setMode() {
-	for _, arg := range os.Args[1:] {
-		if arg == "dev" {
-			devMode = true
-			log.Println("development mode")
-			return
-		}
-	}
-	log.Println("production mode")
 }
