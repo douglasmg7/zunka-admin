@@ -91,14 +91,6 @@ func init() {
 		panic(fmt.Errorf("Error reading config file: %s \n", err))
 	}
 
-	// Env mode.
-	if viper.GetString("all.env") == "production" {
-		production = true
-		log.Println("Running in production mode")
-	} else {
-		log.Println("Running in development mode")
-	}
-
 	// Port.
 	port = viper.GetString("zunkasrv.port")
 
@@ -110,6 +102,7 @@ func init() {
 	// Create log path.
 	os.MkdirAll(logPath, os.ModePerm)
 
+	// Db files.
 	dbAppFile = path.Join(dbPath, viper.GetString("zunkasrv.dbFileName"))
 	dbAldoFile = path.Join(dbPath, viper.GetString("aldowsc.dbFileName"))
 
@@ -118,7 +111,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-
 	// Log configuration.
 	mw := io.MultiWriter(os.Stdout, logFile)
 	log.SetOutput(mw)
@@ -128,6 +120,14 @@ func init() {
 	// log.SetFlags(log.LstdFlags | log.Ldate | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	// production or development mode
+
+	// Env mode.
+	if viper.GetString("all.env") == "production" {
+		production = true
+		log.Println("Running in production mode")
+	} else {
+		log.Println("Running in development mode")
+	}
 
 	/************************************************************************************************
 	* Load templates
