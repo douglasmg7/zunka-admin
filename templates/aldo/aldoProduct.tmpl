@@ -12,6 +12,11 @@
 
 {{define "content"}}
 <div class="content">
+	{{if not .Product.StoreProductId}}
+	<form action="">
+		<input type="submit" value='Criar produto'>
+	</form>
+	{{end}}
     <h3>Produto Aldo</h3>
 
 	<h4>Id<h4>

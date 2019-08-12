@@ -35,6 +35,26 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 	err = dbAldo.Get(&data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
 	HandleError(w, err)
 
+	// resp, err := http.Post("http://localhost:3080/product-config/product", "asdf", &bug)
+	// defer resp.Body.Close()
+	// body, err := ioutil.ReadAll(resp.Body)
+	// log.Println(resp.Body)
+
+	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
+	HandleError(w, err)
+}
+
+// Product.
+func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
+	data := struct {
+		Session     *SessionData
+		HeadMessage string
+		Product     aldoutil.Product
+	}{session, "", aldoutil.Product{}}
+
+	err = dbAldo.Get(&data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
+	HandleError(w, err)
+
 	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
 	HandleError(w, err)
 }

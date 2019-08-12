@@ -200,6 +200,8 @@ func main() {
 	// Aldo.
 	router.GET("/aldo/products", getSession(aldoProductsHandler))
 	router.GET("/aldo/product/:code", getSession(aldoProductHandler))
+	// Create product on zunka server.
+	router.POST("/aldo/product/:code", getSession(aldoProductHandlerPost))
 	router.GET("/aldo/category/sel", getSession(aldoCategSelHandler))
 	router.POST("/aldo/category/sel", checkPermission(aldoCategSelHandlerPost, ""))
 	router.GET("/aldo/category/use", getSession(aldoCategUseHandler))
