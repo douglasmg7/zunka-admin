@@ -1,8 +1,15 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
+	"log"
+	"math"
 	"net/http"
 	"path"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/douglasmg7/aldoutil"
@@ -35,11 +42,6 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 	err = dbAldo.Get(&data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
 	HandleError(w, err)
 
-	// resp, err := http.Post("http://localhost:3080/product-config/product", "asdf", &bug)
-	// defer resp.Body.Close()
-	// body, err := ioutil.ReadAll(resp.Body)
-	// log.Println(resp.Body)
-
 	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
 	HandleError(w, err)
 }
@@ -52,8 +54,52 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 		Product     aldoutil.Product
 	}{session, "", aldoutil.Product{}}
 
+	// Get product.
 	err = dbAldo.Get(&data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
 	HandleError(w, err)
+
+	// Set store product.
+	storeProduct := aldoutil.StoreProduct{}
+	storeProduct.DealerName = "Aldo"
+	storeProduct.DealerProductId = strconv.Itoa(data.Product.Id)
+	storeProduct.DealerProductBrand = data.Product.Brand
+	storeProduct.DealerProductTitle = data.Product.Description
+	// Trim Space.
+	data.Product.TechnicalDescription = strings.TrimSpace(data.Product.TechnicalDescription)
+	// Split by <br/>
+	techDescs := regexp.MustCompile(`\<\s*br\s*\/*\>`).Split(data.Product.TechnicalDescription, -1)
+	// Remove html tags.
+	// Remove blank intens.
+	reg := regexp.MustCompile(`\<[^>]*\>`)
+	buffer := bytes.Buffer{}
+	for _, val := range techDescs {
+		val = strings.TrimSpace(reg.ReplaceAllString(val, ""))
+		if val != "" {
+			buffer.WriteString(val)
+			buffer.WriteString("\n")
+		}
+	}
+	storeProduct.DealerProductDesc = strings.TrimSpace(buffer.String())
+	storeProduct.DealerProductWarrantyDays = data.Product.WarrantyPeriod * 30            // Months to days.
+	storeProduct.DealerProductDeep = int(math.Ceil(float64(data.Product.Length) / 10))   // Mm to cm.
+	storeProduct.DealerProductHeight = int(math.Ceil(float64(data.Product.Height) / 10)) // Mm to cm.
+	storeProduct.DealerProductWidth = int(math.Ceil(float64(data.Product.Width) / 10))   // Mm to cm.
+	storeProduct.DealerProductWeight = data.Product.Weight
+	storeProduct.DealerProductPrice = data.Product.DealerPrice
+	storeProduct.DealerProductLastUpdate = data.Product.ChangedAt
+	storeProduct.DealerProductActive = data.Product.Availability
+
+	// Convert to json.
+	reqBody, err := json.Marshal(storeProduct)
+	HandleError(w, err)
+
+	// Log request.
+	// log.Println("reqBody: " + string(reqBody))
+
+	res, err := http.Post("http://localhost:3080/product-config/product", "application/json", bytes.NewBuffer(reqBody))
+	defer res.Body.Close()
+	resBody, err := ioutil.ReadAll(res.Body)
+	log.Println("resBody: " + string(resBody))
 
 	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
 	HandleError(w, err)
