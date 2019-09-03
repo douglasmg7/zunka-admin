@@ -94,12 +94,12 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	HandleError(w, err)
 
 	// Log request.
-	// log.Println("reqBody: " + string(reqBody))
+	// log.Println("request body: " + string(reqBody))
 
-	res, err := http.Post("http://localhost:3080/product-config/product", "application/json", bytes.NewBuffer(reqBody))
+	res, err := http.Post("http://localhost:3080/setup/product/add", "application/json", bytes.NewBuffer(reqBody))
 	defer res.Body.Close()
 	resBody, err := ioutil.ReadAll(res.Body)
-	log.Println("resBody: " + string(resBody))
+	log.Println("response body: " + string(resBody))
 
 	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
 	HandleError(w, err)
