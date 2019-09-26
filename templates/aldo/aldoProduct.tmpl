@@ -12,7 +12,7 @@
 
 {{define "content"}}
 <div class="content">
-	{{if not .Product.StoreProductId}}
+	{{if not .Product.MongodbId}}
 	<form action="" method="post">
 		<input type="submit" value='Criar produto'>
 	</form>
@@ -21,6 +21,9 @@
 
 	<h4>Id<h4>
 	<p>{{.Product.Id}}</p>
+
+	<h4>Site id (MongodbId)<h4>
+	<p>{{.Product.MongodbId}}</p>
 
 	<h4>Data de criação<h4>
 	<p>{{.Product.CreatedAt}}</p>
@@ -40,7 +43,7 @@
 	<h4>Produto foi removido<h4>
 	{{end}}
 
-	<h4>Código<h4>
+	<h4>Código Aldo<h4>
 	<p>{{.Product.Code}}</p>
 
 	<h4>Marca<h4>

@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"math"
@@ -80,10 +82,14 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 		}
 	}
 	storeProduct.DealerProductDesc = strings.TrimSpace(buffer.String())
-	storeProduct.DealerProductWarrantyDays = data.Product.WarrantyPeriod * 30            // Months to days.
-	storeProduct.DealerProductDeep = int(math.Ceil(float64(data.Product.Length) / 10))   // Mm to cm.
-	storeProduct.DealerProductHeight = int(math.Ceil(float64(data.Product.Height) / 10)) // Mm to cm.
-	storeProduct.DealerProductWidth = int(math.Ceil(float64(data.Product.Width) / 10))   // Mm to cm.
+	// Months to days.
+	storeProduct.DealerProductWarrantyDays = data.Product.WarrantyPeriod * 30
+	// Mm to cm.
+	storeProduct.DealerProductDeep = int(math.Ceil(float64(data.Product.Length) / 10))
+	// Mm to cm.
+	storeProduct.DealerProductHeight = int(math.Ceil(float64(data.Product.Height) / 10))
+	// Mm to cm.
+	storeProduct.DealerProductWidth = int(math.Ceil(float64(data.Product.Width) / 10))
 	storeProduct.DealerProductWeight = data.Product.Weight
 	storeProduct.DealerProductPrice = data.Product.DealerPrice
 	storeProduct.DealerProductLastUpdate = data.Product.ChangedAt
@@ -96,11 +102,32 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	// Log request.
 	// log.Println("request body: " + string(reqBody))
 
+	// Request product add.
 	res, err := http.Post("http://localhost:3080/setup/product/add", "application/json", bytes.NewBuffer(reqBody))
 	defer res.Body.Close()
-	resBody, err := ioutil.ReadAll(res.Body)
-	log.Println("response body: " + string(resBody))
+	HandleError(w, err)
 
+	// Result.
+	resBody, err := ioutil.ReadAll(res.Body)
+	HandleError(w, err)
+	// No 200 status.
+	if res.StatusCode != 200 {
+		HandleError(w, errors.New(fmt.Sprintf("Error ao solicitar a criação do produto no servidor zunka.\n\nstatus: %v\n\nbody: %v", res.StatusCode, string(resBody))))
+		// HandleError(w, errors.New(fmt.Fprintf("Error ao solicitar a criação do produto no servidor zunka.\n\nStatus: %v\nError: %v", res.StatusCode, resBody)))
+		return
+	}
+	// Mongodb id from created product.
+	data.Product.MongodbId = string(resBody)
+	log.Println("response body: " + data.Product.MongodbId)
+
+	// Update product with _id from mongodb store.
+	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodbId = $1 WHERE id = $2;`)
+	HandleError(w, err)
+	defer stmt.Close()
+	_, err = stmt.Exec(data.Product.MongodbId, data.Product.Id)
+	HandleError(w, err)
+
+	// Render template.
 	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
 	HandleError(w, err)
 }
