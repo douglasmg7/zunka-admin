@@ -202,6 +202,8 @@ func main() {
 	router.GET("/aldo/product/:code", getSession(aldoProductHandler))
 	// Create product on zunka server.
 	router.POST("/aldo/product/:code", getSession(aldoProductHandlerPost))
+	// Product removed from site, so remove his reference from the site system.
+	router.DELETE("/aldo/product/mongodb_id/:code", checkApiAuthorization(aldoProductMongodbIdHandlerDelete))
 	router.GET("/aldo/category/sel", getSession(aldoCategSelHandler))
 	router.POST("/aldo/category/sel", checkPermission(aldoCategSelHandlerPost, ""))
 	router.GET("/aldo/category/use", getSession(aldoCategUseHandler))
@@ -322,6 +324,23 @@ func confirmNoLogged(h httprouter.Handle) httprouter.Handle {
 		err = tmplDeniedAccess.ExecuteTemplate(w, "deniedAccess.tpl", data)
 		HandleError(w, err)
 
+	}
+}
+
+// Api Authorization.
+func checkApiAuthorization(h httprouter.Handle) httprouter.Handle {
+	return func(w http.ResponseWriter, req *http.Request, p httprouter.Params) {
+		user, pass, ok := req.BasicAuth()
+		// Authorised.
+		if !ok && user == "zunkasrv" && pass == "asdf1234QWER" {
+			h(w, req, p)
+			return
+		}
+		// Unauthorised.
+		w.Header().Set("WWW-Authenticate", `Basic realm="Please enter your username and password for this service"`)
+		w.WriteHeader(401)
+		w.Write([]byte("Unauthorised.\n"))
+		return
 	}
 }
 
