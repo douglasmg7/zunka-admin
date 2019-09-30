@@ -247,9 +247,6 @@ func main() {
 	router.POST("/student/new", checkPermission(newStudentHandlerPost, "editStudent"))
 	router.GET("/student/id/:id", checkPermission(studentByIdHandler, "editStudent"))
 
-	// // Example.
-	// router.GET("/user/:name", userHandler)
-
 	// start server
 	router.ServeFiles("/static/*filepath", http.Dir("./static/"))
 	log.Println("listen port", port)
@@ -331,11 +328,22 @@ func confirmNoLogged(h httprouter.Handle) httprouter.Handle {
 func checkApiAuthorization(h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, req *http.Request, p httprouter.Params) {
 		user, pass, ok := req.BasicAuth()
-		// Authorised.
-		if !ok && user == "zunkasrv" && pass == "asdf1234QWER" {
-			h(w, req, p)
-			return
+		// Production mode.
+		if production {
+			// Authorised.
+			if ok && user == "zunkasrv" && pass == "asdf1234QWER" {
+				h(w, req, p)
+				return
+			}
+		} else {
+			// Development mode.
+			// Authorised.
+			if ok && user == "zunkasrv" && pass == "qwerqwer" {
+				h(w, req, p)
+				return
+			}
 		}
+		log.Printf("Unauthorized access, %v %v, user: %v, pass: %v, ok: %v", req.Method, req.URL.Path, user, pass, ok)
 		// Unauthorised.
 		w.Header().Set("WWW-Authenticate", `Basic realm="Please enter your username and password for this service"`)
 		w.WriteHeader(401)
@@ -354,10 +362,12 @@ type logger struct {
 }
 
 // Handle interface.
+// todo - why DELETE is logging twice?
 func (l *logger) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	start := time.Now()
 	l.handler.ServeHTTP(w, req)
 	log.Printf("%s %s %v", req.Method, req.URL.Path, time.Since(start))
+	// log.Printf("header: %v", req.Header)
 }
 
 // New logger.

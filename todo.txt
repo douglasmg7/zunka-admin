@@ -2,6 +2,8 @@ change .tmpl to .gohtml
 
 verify if aldowsc keep mongodbId.
 
+start-dev.sh start in production mode, because it use toml file.
+
 https://en.wikipedia.org/wiki/The_7_Habits_of_Highly_Effective_People
 
 https://play.golang.org/p/mlTh2OUM_Tk

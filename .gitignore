@@ -4,3 +4,7 @@ db/zunka.db
 # Include directories but not the files.
 log/*
 !log/.gitkeep 
+
+# Secret
+s.go
+.gitsecret/keys/random_seed

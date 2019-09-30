@@ -118,7 +118,6 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	}
 	// Mongodb id from created product.
 	data.Product.MongodbId = string(resBody)
-	log.Println("response body: " + data.Product.MongodbId)
 
 	// Update product with _id from mongodb store.
 	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodbId = $1 WHERE id = $2;`)
@@ -134,13 +133,7 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 
 // Remove mongodb id from Product.
 func aldoProductMongodbIdHandlerDelete(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	// log.Printf("header: %v", req.Header)
-	// log.Printf("header: %v", req.Header["Authorization"])]
-	// user, pass, ok := req.BasicAuth()
-	user, pass, _ := req.BasicAuth()
-	log.Printf("user: %v, passwotd: %v", user, pass)
-	// log.Printf("header: %v", req.Header["Authorization"][0])
-	// log.Printf("header: %T", req.Header["Authorization"][0])
+	log.Println("1 delete")
 	// Update mongodb store id.
 	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodbId = $1 WHERE id = $2;`)
 	HandleError(w, err)
@@ -148,6 +141,7 @@ func aldoProductMongodbIdHandlerDelete(w http.ResponseWriter, req *http.Request,
 	_, err = stmt.Exec("", ps.ByName("code"))
 	HandleError(w, err)
 	w.Write([]byte("OK"))
+	log.Println("2 delete")
 }
 
 // All categories.
