@@ -328,22 +328,12 @@ func confirmNoLogged(h httprouter.Handle) httprouter.Handle {
 func checkApiAuthorization(h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, req *http.Request, p httprouter.Params) {
 		user, pass, ok := req.BasicAuth()
-		// Production mode.
-		if production {
-			// Authorised.
-			if ok && user == "zunkasrv" && pass == "asdf1234QWER" {
-				h(w, req, p)
-				return
-			}
-		} else {
-			// Development mode.
-			// Authorised.
-			if ok && user == "zunkasrv" && pass == "qwerqwer" {
-				h(w, req, p)
-				return
-			}
+		if ok && user == zunkaServerUser() && pass == zunkaServerPass() {
+			h(w, req, p)
+			return
 		}
 		log.Printf("Unauthorized access, %v %v, user: %v, pass: %v, ok: %v", req.Method, req.URL.Path, user, pass, ok)
+		log.Printf("authorization      , %v %v, user: %v, pass: %v", req.Method, req.URL.Path, zunkaServerUser(), zunkaServerPass())
 		// Unauthorised.
 		w.Header().Set("WWW-Authenticate", `Basic realm="Please enter your username and password for this service"`)
 		w.WriteHeader(401)

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"math"
 	"net/http"
 	"path"
@@ -48,7 +47,7 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 	HandleError(w, err)
 }
 
-// Product.
+// Add product to zunka site.
 func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
 	data := struct {
 		Session     *SessionData
@@ -103,7 +102,15 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	// log.Println("request body: " + string(reqBody))
 
 	// Request product add.
-	res, err := http.Post("http://localhost:3080/setup/product/add", "application/json", bytes.NewBuffer(reqBody))
+	client := &http.Client{}
+	req, err = http.NewRequest("POST", zunkaSiteHost()+"/setup/product/add", bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json")
+	HandleError(w, err)
+	req.SetBasicAuth(zunkaSiteUser(), zunkaSitePass())
+	res, err := client.Do(req)
+	HandleError(w, err)
+
+	// res, err := http.Post("http://localhost:3080/setup/product/add", "application/json", bytes.NewBuffer(reqBody))
 	defer res.Body.Close()
 	HandleError(w, err)
 
@@ -133,15 +140,14 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 
 // Remove mongodb id from Product.
 func aldoProductMongodbIdHandlerDelete(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	log.Println("1 delete")
 	// Update mongodb store id.
 	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodbId = $1 WHERE id = $2;`)
 	HandleError(w, err)
 	defer stmt.Close()
 	_, err = stmt.Exec("", ps.ByName("code"))
 	HandleError(w, err)
-	w.Write([]byte("OK"))
-	log.Println("2 delete")
+	// w.Write([]byte("OK"))
+	w.WriteHeader(200)
 }
 
 // All categories.
