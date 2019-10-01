@@ -63,10 +63,20 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	storeProduct := aldoutil.StoreProduct{}
 	storeProduct.DealerName = "Aldo"
 	storeProduct.DealerProductId = strconv.Itoa(data.Product.Id)
-	storeProduct.DealerProductBrand = data.Product.Brand
-	storeProduct.DealerProductTitle = data.Product.Description
-	// Trim Space.
+
+	// Title.
+	storeProduct.DealerProductTitle = strings.Title(strings.ToLower(data.Product.Description))
+
+	// Category.
+	storeProduct.DealerProductCategory = strings.Title(strings.ToLower(data.Product.Category))
+
+	// Maker.
+	storeProduct.DealerProductMaker = strings.Title(strings.ToLower(data.Product.Brand))
+
+	// Technical description.
 	data.Product.TechnicalDescription = strings.TrimSpace(data.Product.TechnicalDescription)
+
+	// Description.
 	// Split by <br/>
 	techDescs := regexp.MustCompile(`\<\s*br\s*\/*\>`).Split(data.Product.TechnicalDescription, -1)
 	// Remove html tags.
@@ -81,6 +91,7 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 		}
 	}
 	storeProduct.DealerProductDesc = strings.TrimSpace(buffer.String())
+
 	// Months to days.
 	storeProduct.DealerProductWarrantyDays = data.Product.WarrantyPeriod * 30
 	// Mm to cm.
