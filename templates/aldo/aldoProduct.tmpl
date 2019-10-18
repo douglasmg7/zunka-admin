@@ -5,6 +5,18 @@
 	tr {
 		cursor: pointer;
 	}
+    input.btn {
+        margin-top: 0;
+    }
+    .success {
+        color: var(--green);
+    }
+    .warn {
+        color: var(--yellow);
+    }
+    .danger {
+        color: var(--red);
+    }
 </style>
 {{end}}
 
@@ -12,82 +24,73 @@
 
 {{define "content"}}
 <div class="content">
-	{{if not .Product.MongodbId}}
-	<form action="" method="post">
-		<input type="submit" value='Criar produto'>
-	</form>
-	{{end}}
-    <h3>Produto Aldo</h3>
+    <h2> Produto Aldo </h2>
 
-	<h4>Id<h4>
+    {{if not .Product.Availability}}<h3 class='danger'> Indisponível </h3>{{end}}
+    {{if .Product.New}}<h3 class='success'> Novo </h3>{{end}} 
+    {{if .Product.Changed}}<h3 class='warn'> Modificado </h3>{{end}}
+    {{if .Product.Removed}}<h3 class='danger'> Removido </h3>{{end}}
+
+	<h3>Produto id</h3>
 	<p>{{.Product.Id}}</p>
 
-	<h4>Site id (MongodbId)<h4>
-	<p>{{.Product.MongodbId}}</p>
+	<h3>Produto id (loja)</h3>
+	{{if not .Product.MongodbId}}
+        <form action="" method="post">
+            <input class="btn" type="submit" value='Criar produto'>
+        </form>
+    {{else}}
+	    <p>{{.Product.MongodbId}}</p>
+	{{end}}
 
-	<h4>Data de criação<h4>
+	<h3>Data de criação</h3>
 	<p>{{.Product.CreatedAt}}</p>
 
-	<h4>Data de modificação<h4>
+	<h3>Data de modificação</h3>
 	<p>{{.Product.ChangedAt}}</p>
 
-	{{if .Product.Changed}}
-	<h4>Produto alterado<h4>
-	{{end}}
-
-	{{if .Product.New}}
-	<h4>Produto é novo<h4>
-	{{end}}
-
-	{{if .Product.Removed}}
-	<h4>Produto foi removido<h4>
-	{{end}}
-
-	<h4>Código Aldo<h4>
+	<h3>Código Aldo</h3>
 	<p>{{.Product.Code}}</p>
 
-	<h4>Marca<h4>
+	<h3>Marca</h3>
 	<p>{{.Product.Brand}}</p>
 
-	<h4>Description<h4>
+	<h3>Description</h3>
 	<p>{{.Product.Description}}</p>
 
-	<h4>Unidade<h4>
+	<h3>Unidade</h3>
 	<p>{{.Product.Unit}}</p>
 
-	<h4>Múltiplo<h4>
+	<h3>Múltiplo</h3>
 	<p>{{.Product.Multiple}}</p>
 
-	<h4>Preço do fornecedor<h4>
-	<p>{{.Product.DealerPrice}}</p>
+	<h3>Preço do fornecedor</h3>
+	<p>{{.Product.DealerPrice.Format}}</p>
 
-	<h4>Preço sugerido<h4>
-	<p>{{.Product.SuggestionPrice}}</p>
+	<h3>Preço sugerido</h3>
+	<p>{{.Product.SuggestionPrice.Format}}</p>
 
-	<h4>Descrição técnica<h4>
+	<h3>Descrição técnica</h3>
 	<p>{{.Product.TechnicalDescription}}</p>
 
-	<h4>Disponibilidade do produto<h4>
-	<p>{{.Product.Availability}}</p>
+	<h3>Comprimento</h3>
+	<p>{{.Product.Length}} cm</p>
 
-	<h4>Comprimento<h4>
-	<p>{{.Product.Length}}</p>
+	<h3>Largura</h3>
+	<p>{{.Product.Width}} cm</p>
 
-	<h4>Largura<h4>
-	<p>{{.Product.Width}}</p>
+	<h3>Altura</h3>
+	<p>{{.Product.Height}} cm</p>
 
-	<h4>Altura<h4>
-	<p>{{.Product.Height}}</p>
-
-	<h4>Peso<h4>
-	<p>{{.Product.Weight}}</p>
+	<h3>Peso</h3>
+	<p>{{.Product.Weight}} gramas</p>
 
 	<!-- PictureLink          string      `db:"picture_link"` -->
 	
-	<h4>Tempo de garantia<h4>
+	<h3>Tempo de garantia</h3>
 	<p>{{.Product.WarrantyPeriod}} meses</p>
 
-	<h4>Procedimento RMA<h4>
+	<h3>Procedimento RMA</h3>
 	<p>{{.Product.RMAProcedure}}</p>
 </div>
 {{end}}

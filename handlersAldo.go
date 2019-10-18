@@ -17,7 +17,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-// Products.
+// Product list.
 func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	data := struct {
 		Session     *SessionData
@@ -32,7 +32,7 @@ func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 	HandleError(w, err)
 }
 
-// Product.
+// Product item.
 func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
 	data := struct {
 		Session     *SessionData
@@ -101,7 +101,7 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	// Mm to cm.
 	storeProduct.DealerProductWidth = int(math.Ceil(float64(data.Product.Width) / 10))
 	storeProduct.DealerProductWeight = data.Product.Weight
-	storeProduct.DealerProductPrice = data.Product.DealerPrice
+	storeProduct.DealerProductPrice = int(data.Product.DealerPrice)
 	storeProduct.DealerProductLastUpdate = data.Product.ChangedAt
 	storeProduct.DealerProductActive = data.Product.Availability
 
@@ -136,6 +136,8 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	}
 	// Mongodb id from created product.
 	data.Product.MongodbId = string(resBody)
+	// Remove suround double quotes.
+	data.Product.MongodbId = data.Product.MongodbId[1 : len(data.Product.MongodbId)-1]
 
 	// Update product with _id from mongodb store.
 	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodbId = $1 WHERE id = $2;`)
