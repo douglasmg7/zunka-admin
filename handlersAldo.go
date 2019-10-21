@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"math"
 	"net/http"
 	"path"
 	"regexp"
@@ -91,18 +90,21 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 		}
 	}
 	storeProduct.DealerProductDesc = strings.TrimSpace(buffer.String())
-
-	// Months to days.
+	// Months in days.
 	storeProduct.DealerProductWarrantyDays = data.Product.WarrantyPeriod * 30
-	// Mm to cm.
-	storeProduct.DealerProductDeep = int(math.Ceil(float64(data.Product.Length) / 10))
-	// Mm to cm.
-	storeProduct.DealerProductHeight = int(math.Ceil(float64(data.Product.Height) / 10))
-	// Mm to cm.
-	storeProduct.DealerProductWidth = int(math.Ceil(float64(data.Product.Width) / 10))
+	// Length in cm.
+	storeProduct.DealerProductDeep = data.Product.Length
+	// Width in cm.
+	storeProduct.DealerProductWidth = data.Product.Width
+	// Height in cm.
+	storeProduct.DealerProductHeight = data.Product.Height
+	// Weight in grams.
 	storeProduct.DealerProductWeight = data.Product.Weight
+	// Price.
 	storeProduct.DealerProductPrice = int(data.Product.DealerPrice)
+	// Last update.
 	storeProduct.DealerProductLastUpdate = data.Product.ChangedAt
+	// Active.
 	storeProduct.DealerProductActive = data.Product.Availability
 
 	// Convert to json.
