@@ -1,3 +1,5 @@
+aldo product list pagination, showing only 10.
+
 change .tmpl to .gohtml
 
 verify if aldowsc keep mongodbId.

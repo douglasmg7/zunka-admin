@@ -1,12 +1,10 @@
 {{define "menu"}}
 <a class="item brand" href="/">Home</a>
 
-<!-- Products store -->
-<a class="item" href="/store/products">Produtos loja</a>
-
 <!-- Aldo -->
 <div class="sub-menu">
-  <a class="item toggle-items" href="#">Aldo</a>
+  <!-- <a class="item toggle-items" href="#">Aldo</a> -->
+  <div class="item toggle-items">Aldo</div>
   <div class="items">
       <a class="item back" href="#">< Menu</a>
       <a class="item" href="/aldo/products">Produtos</a>
@@ -17,37 +15,37 @@
 </div>
 
 <!-- All Nations -->
-<div class="sub-menu">
-  <a class="item toggle-items" href="#">All Nations</a>
-  <div class="items">
-      <a class="item back" href="#">< Menu</a>
-      <a class="item" href="/allnations/products">Produtos</a>
-      <a class="item" href="/allnations/config">Configuração </a>
-  </div>
-</div>
+<!-- <div class="sub-menu"> -->
+  <!-- <a class="item toggle-items" href="#">All Nations</a> -->
+  <!-- <div class="items"> -->
+      <!-- <a class="item back" href="#">< Menu</a> -->
+      <!-- <a class="item" href="/allnations/products">Produtos</a> -->
+      <!-- <a class="item" href="/allnations/config">Configuração </a> -->
+  <!-- </div> -->
+<!-- </div> -->
 
 <!-- Admin -->
-{{if .Session }} {{if .Session.CheckPermission "admin"}}
-<div class="sub-menu">
-  <a class="item toggle-items" href="#">Admin</a>
-  <div class="items">
-      <a class="item back" href="#">< Menu</a>
-      <a class="item" href="/clean-sessions">Limpar seções</a>
-  </div>
-</div>
-{{end}}{{end}}
+<!-- {{if .Session }} {{if .Session.CheckPermission "admin"}} -->
+<!-- <div class="sub-menu"> -->
+  <!-- <a class="item toggle-items" href="#">Admin</a> -->
+  <!-- <div class="items"> -->
+      <!-- <a class="item back" href="#">< Menu</a> -->
+      <!-- <a class="item" href="/clean-sessions">Limpar seções</a> -->
+  <!-- </div> -->
+<!-- </div> -->
+<!-- {{end}}{{end}} -->
 
 <!-- Student -->
-{{if .Session }} {{if .Session.CheckPermission "editStudent"}}
-<div class="sub-menu">
-  <a class="item toggle-items" href="#">Aluno</a></li>
-  <div class="items">
-      <a class="item back" href="#">< Menu</a>
-      <a class="item" href="/student/all">Todos</a>
-      <a class="item" href="/student/new">Novo</a>
-  </div>
-</div>
-{{end}}{{end}}
+<!-- {{if .Session }} {{if .Session.CheckPermission "editStudent"}} -->
+<!-- <div class="sub-menu"> -->
+  <!-- <a class="item toggle-items" href="#">Aluno</a></li> -->
+  <!-- <div class="items"> -->
+      <!-- <a class="item back" href="#">< Menu</a> -->
+      <!-- <a class="item" href="/student/all">Todos</a> -->
+      <!-- <a class="item" href="/student/new">Novo</a> -->
+  <!-- </div> -->
+<!-- </div> -->
+<!-- {{end}}{{end}} -->
 
 <!-- Signin -->
 {{if not .Session}}

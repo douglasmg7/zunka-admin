@@ -26,9 +26,6 @@ var tmplMaster, tmplIndex, tmplDeniedAccess *template.Template
 // Misc.
 var tmplMessage *template.Template
 
-// Store.
-var tmplStoreProducts *template.Template
-
 // Aldo.
 var tmplAldoProducts, tmplAldoProduct, tmplAldoCategorySel, tmplAldoCategoryUse, tmplAldoCategoryAll *template.Template
 
@@ -138,8 +135,6 @@ func init() {
 	tmplDeniedAccess = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/deniedAccess.tpl"))
 	// Misc.
 	tmplMessage = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/message.tpl"))
-	// Store.
-	tmplStoreProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/store/storeProducts.tpl"))
 	// Aldo.
 	tmplAldoProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProduct.tmpl"))
 	tmplAldoProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProducts.tmpl"))
@@ -194,24 +189,21 @@ func main() {
 	// Clean the session cache.
 	router.GET("/clean-sessions", checkPermission(cleanSessionsHandler, "admin"))
 
-	// Store.
-	router.GET("/store/products", getSession(storeProductsHandler))
-
 	// Aldo.
-	router.GET("/aldo/products", getSession(aldoProductsHandler))
-	router.GET("/aldo/product/:code", getSession(aldoProductHandler))
+	router.GET("/aldo/products", checkPermission(aldoProductsHandler, "admin"))
+	router.GET("/aldo/product/:code", checkPermission(aldoProductHandler, "admin"))
 	// Create product on zunka server.
-	router.POST("/aldo/product/:code", getSession(aldoProductHandlerPost))
+	router.POST("/aldo/product/:code", checkPermission(aldoProductHandlerPost, "admin"))
 	// Product removed from site, so remove his reference from the site system.
 	router.DELETE("/aldo/product/mongodb_id/:code", checkApiAuthorization(aldoProductMongodbIdHandlerDelete))
-	router.GET("/aldo/category/sel", getSession(aldoCategSelHandler))
-	router.POST("/aldo/category/sel", checkPermission(aldoCategSelHandlerPost, ""))
-	router.GET("/aldo/category/use", getSession(aldoCategUseHandler))
-	router.GET("/aldo/category/all", getSession(aldoCategAllHandler))
+	router.GET("/aldo/category/sel", checkPermission(aldoCategSelHandler, "admin"))
+	router.POST("/aldo/category/sel", checkPermission(aldoCategSelHandlerPost, "admin"))
+	router.GET("/aldo/category/use", checkPermission(aldoCategUseHandler, "admin"))
+	router.GET("/aldo/category/all", checkPermission(aldoCategAllHandler, "admin"))
 
 	// Allnations.
-	router.GET("/allnations/products", getSession(allnationsProductsHandler))
-	router.GET("/allnations/config", getSession(allnationsConfigHandler))
+	router.GET("/allnations/products", checkPermission(allnationsProductsHandler, "admin"))
+	router.GET("/allnations/config", checkPermission(allnationsConfigHandler, "admin"))
 
 	// Auth - signup.
 	router.GET("/auth/signup", confirmNoLogged(authSignupHandler))

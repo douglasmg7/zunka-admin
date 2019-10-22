@@ -26,9 +26,9 @@
 				<tr onclick="location.href='/aldo/product/{{.Code}}'">
 					<td> {{.Code}} </td>
 					<!-- <td> {{.Brand}} </td> -->
-					<td> {{.Category}} </td>
-					<!-- <td> {{.Description}} </td> -->
-					<td> {{.DealerPrice}} </td>
+					<!-- <td> {{.Category}} </td> -->
+                    <td> {{.Description}} </td>
+					<td> {{.DealerPrice.Format}} </td>
 					<!-- <td> {{.Availability}} </td> -->
 				</tr>
 			{{end}}

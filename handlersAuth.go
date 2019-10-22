@@ -199,13 +199,19 @@ func authSignupConfirmationHandler(w http.ResponseWriter, req *http.Request, ps 
 		return
 	}
 	// Create a user from email confirmation.
-	stmt, err := dbApp.Prepare(`INSERT INTO user(name, email, password, createdAt, updatedAt) VALUES(?, ?, ?, ?, ?)`)
+	stmt, err := dbApp.Prepare(`INSERT INTO user(name, email, password, permission, createdAt, updatedAt) VALUES(?, ?, ?, ?, ?, ?)`)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
 	now := time.Now()
-	_, err = stmt.Exec(name, email, password, now, now)
+	// Set admin permission for some users by default.
+	permission := 0
+	switch email {
+	case "douglasmg7@gmail.com", "zunka@outlook.com.br":
+		permission = 1
+	}
+	_, err = stmt.Exec(name, email, password, permission, now, now)
 	if err != nil {
 		log.Fatal(err)
 	}

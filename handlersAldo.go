@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"path"
 	"regexp"
@@ -24,7 +25,7 @@ func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 		Products    []aldoutil.Product
 	}{session, "", []aldoutil.Product{}}
 
-	err = dbAldo.Select(&data.Products, "SELECT * FROM product LIMIT 10")
+	err = dbAldo.Select(&data.Products, "SELECT * FROM product order by dealer_price LIMIT 100 ")
 	HandleError(w, err)
 
 	err = tmplAldoProducts.ExecuteTemplate(w, "aldoProducts.tmpl", data)
@@ -72,7 +73,7 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	// Maker.
 	storeProduct.DealerProductMaker = strings.Title(strings.ToLower(data.Product.Brand))
 
-	// Technical description.
+	// Description.
 	data.Product.TechnicalDescription = strings.TrimSpace(data.Product.TechnicalDescription)
 
 	// Description.
@@ -85,19 +86,20 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	for _, val := range techDescs {
 		val = strings.TrimSpace(reg.ReplaceAllString(val, ""))
 		if val != "" {
-			buffer.WriteString(val)
+			buffer.WriteString(strings.ReplaceAll(val, ":", ";"))
 			buffer.WriteString("\n")
 		}
 	}
 	storeProduct.DealerProductDesc = strings.TrimSpace(buffer.String())
+
 	// Months in days.
 	storeProduct.DealerProductWarrantyDays = data.Product.WarrantyPeriod * 30
 	// Length in cm.
-	storeProduct.DealerProductDeep = data.Product.Length
+	storeProduct.DealerProductDeep = int(math.Ceil(float64(data.Product.Length) / 10))
 	// Width in cm.
-	storeProduct.DealerProductWidth = data.Product.Width
+	storeProduct.DealerProductWidth = int(math.Ceil(float64(data.Product.Width) / 10))
 	// Height in cm.
-	storeProduct.DealerProductHeight = data.Product.Height
+	storeProduct.DealerProductHeight = int(math.Ceil(float64(data.Product.Height) / 10))
 	// Weight in grams.
 	storeProduct.DealerProductWeight = data.Product.Weight
 	// Price.

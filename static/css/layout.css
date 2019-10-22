@@ -67,6 +67,9 @@ p.error {
     padding: 1em 1em;
     z-index: 1000;
 }
+#menu div.item {
+    cursor: default;
+}
 #menu a:hover {
     opacity: .7;
 }

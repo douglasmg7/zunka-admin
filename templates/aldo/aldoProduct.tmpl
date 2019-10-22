@@ -31,6 +31,10 @@
     {{if .Product.Changed}}<h3 class='warn'> Modificado </h3>{{end}}
     {{if .Product.Removed}}<h3 class='danger'> Removido </h3>{{end}}
 
+	<h3>Descrição</h3>
+	<p>{{.Product.Description}}</p>
+    <img src='{{.Product.PictureLink}}'>
+
 	<h3>Produto id</h3>
 	<p>{{.Product.Id}}</p>
 
@@ -55,9 +59,6 @@
 	<h3>Marca</h3>
 	<p>{{.Product.Brand}}</p>
 
-	<h3>Description</h3>
-	<p>{{.Product.Description}}</p>
-
 	<h3>Unidade</h3>
 	<p>{{.Product.Unit}}</p>
 
@@ -74,13 +75,13 @@
 	<p>{{.Product.TechnicalDescription}}</p>
 
 	<h3>Comprimento</h3>
-	<p>{{.Product.Length}} cm</p>
+	<p>{{.Product.Length}} mm</p>
 
 	<h3>Largura</h3>
-	<p>{{.Product.Width}} cm</p>
+	<p>{{.Product.Width}} mm</p>
 
 	<h3>Altura</h3>
-	<p>{{.Product.Height}} cm</p>
+	<p>{{.Product.Height}} mm</p>
 
 	<h3>Peso</h3>
 	<p>{{.Product.Weight}} gramas</p>
