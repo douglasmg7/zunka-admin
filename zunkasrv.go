@@ -183,61 +183,61 @@ func main() {
 
 	// Init router.
 	router := httprouter.New()
-	router.GET("/favicon.ico", faviconHandler)
-	router.GET("/", getSession(indexHandler))
+	router.GET("/ns/favicon.ico", faviconHandler)
+	router.GET("/ns/", getSession(indexHandler))
 
 	// Clean the session cache.
-	router.GET("/clean-sessions", checkPermission(cleanSessionsHandler, "admin"))
+	router.GET("/ns/clean-sessions", checkPermission(cleanSessionsHandler, "admin"))
 
 	// Aldo.
-	router.GET("/aldo/products", checkPermission(aldoProductsHandler, "admin"))
-	router.GET("/aldo/product/:code", checkPermission(aldoProductHandler, "admin"))
+	router.GET("/ns/aldo/products", checkPermission(aldoProductsHandler, "admin"))
+	router.GET("/ns/aldo/product/:code", checkPermission(aldoProductHandler, "admin"))
 	// Create product on zunka server.
-	router.POST("/aldo/product/:code", checkPermission(aldoProductHandlerPost, "admin"))
+	router.POST("/ns/aldo/product/:code", checkPermission(aldoProductHandlerPost, "admin"))
 	// Product removed from site, so remove his reference from the site system.
-	router.DELETE("/aldo/product/mongodb_id/:code", checkApiAuthorization(aldoProductMongodbIdHandlerDelete))
-	router.GET("/aldo/category/sel", checkPermission(aldoCategSelHandler, "admin"))
-	router.POST("/aldo/category/sel", checkPermission(aldoCategSelHandlerPost, "admin"))
-	router.GET("/aldo/category/use", checkPermission(aldoCategUseHandler, "admin"))
-	router.GET("/aldo/category/all", checkPermission(aldoCategAllHandler, "admin"))
+	router.DELETE("/ns/aldo/product/mongodb_id/:code", checkApiAuthorization(aldoProductMongodbIdHandlerDelete))
+	router.GET("/ns/aldo/category/sel", checkPermission(aldoCategSelHandler, "admin"))
+	router.POST("/ns/aldo/category/sel", checkPermission(aldoCategSelHandlerPost, "admin"))
+	router.GET("/ns/aldo/category/use", checkPermission(aldoCategUseHandler, "admin"))
+	router.GET("/ns/aldo/category/all", checkPermission(aldoCategAllHandler, "admin"))
 
 	// Allnations.
 	router.GET("/allnations/products", checkPermission(allnationsProductsHandler, "admin"))
 	router.GET("/allnations/config", checkPermission(allnationsConfigHandler, "admin"))
 
 	// Auth - signup.
-	router.GET("/auth/signup", confirmNoLogged(authSignupHandler))
-	router.POST("/auth/signup", confirmNoLogged(authSignupHandlerPost))
-	router.GET("/auth/signup/confirmation/:uuid", confirmNoLogged(authSignupConfirmationHandler))
+	router.GET("/ns/auth/signup", confirmNoLogged(authSignupHandler))
+	router.POST("/ns/auth/signup", confirmNoLogged(authSignupHandlerPost))
+	router.GET("/ns/auth/signup/confirmation/:uuid", confirmNoLogged(authSignupConfirmationHandler))
 
 	// Auth - signin/signout.
-	router.GET("/auth/signin", confirmNoLogged(authSigninHandler))
-	router.POST("/auth/signin", confirmNoLogged(authSigninHandlerPost))
-	router.GET("/auth/signout", authSignoutHandler)
+	router.GET("/ns/auth/signin", confirmNoLogged(authSigninHandler))
+	router.POST("/ns/auth/signin", confirmNoLogged(authSigninHandlerPost))
+	router.GET("/ns/auth/signout", authSignoutHandler)
 
 	// Auth - password.
-	router.GET("/auth/password/recovery", confirmNoLogged(passwordRecoveryHandler))
-	router.POST("/auth/password/recovery", confirmNoLogged(passwordRecoveryHandlerPost))
-	router.GET("/auth/password/reset", confirmNoLogged(passwordResetHandler))
+	router.GET("/ns/auth/password/recovery", confirmNoLogged(passwordRecoveryHandler))
+	router.POST("/ns/auth/password/recovery", confirmNoLogged(passwordRecoveryHandlerPost))
+	router.GET("/ns/auth/password/reset", confirmNoLogged(passwordResetHandler))
 
 	// User.
-	router.GET("/user/account", checkPermission(userAccountHandler, ""))
-	router.GET("/user/change/name", checkPermission(userChangeNameHandler, ""))
-	router.POST("/user/change/name", checkPermission(userChangeNameHandlerPost, ""))
-	router.GET("/user/change/email", checkPermission(userChangeEmailHandler, ""))
-	router.POST("/user/change/email", checkPermission(userChangeEmailHandlerPost, ""))
-	router.GET("/user/change/email-confirmation/:uuid", checkPermission(userChangeEmailConfirmationHandler, ""))
-	router.GET("/user/change/mobile", checkPermission(userChangeMobileHandler, ""))
-	router.POST("/user/change/mobile", checkPermission(userChangeMobileHandlerPost, ""))
+	router.GET("/ns/user/account", checkPermission(userAccountHandler, ""))
+	router.GET("/ns/user/change/name", checkPermission(userChangeNameHandler, ""))
+	router.POST("/ns/user/change/name", checkPermission(userChangeNameHandlerPost, ""))
+	router.GET("/ns/user/change/email", checkPermission(userChangeEmailHandler, ""))
+	router.POST("/ns/user/change/email", checkPermission(userChangeEmailHandlerPost, ""))
+	router.GET("/ns/user/change/email-confirmation/:uuid", checkPermission(userChangeEmailConfirmationHandler, ""))
+	router.GET("/ns/user/change/mobile", checkPermission(userChangeMobileHandler, ""))
+	router.POST("/ns/user/change/mobile", checkPermission(userChangeMobileHandlerPost, ""))
 
 	// Entrance.
-	router.GET("/user_add", userAddHandler)
+	router.GET("/ns/user_add", userAddHandler)
 
 	// Student.
-	router.GET("/student/all", checkPermission(allStudentHandler, "editStudent"))
-	router.GET("/student/new", checkPermission(newStudentHandler, "editStudent"))
-	router.POST("/student/new", checkPermission(newStudentHandlerPost, "editStudent"))
-	router.GET("/student/id/:id", checkPermission(studentByIdHandler, "editStudent"))
+	router.GET("/ns/student/all", checkPermission(allStudentHandler, "editStudent"))
+	router.GET("/ns/student/new", checkPermission(newStudentHandler, "editStudent"))
+	router.POST("/ns/student/new", checkPermission(newStudentHandlerPost, "editStudent"))
+	router.GET("/ns/student/id/:id", checkPermission(studentByIdHandler, "editStudent"))
 
 	// start server
 	router.ServeFiles("/static/*filepath", http.Dir("./static/"))
@@ -276,7 +276,7 @@ func checkPermission(h handleS, permission string) httprouter.Handle {
 		}
 		// Not signed.
 		if session == nil {
-			http.Redirect(w, req, "/auth/signin", http.StatusSeeOther)
+			http.Redirect(w, req, "/ns/auth/signin", http.StatusSeeOther)
 			return
 		}
 		// Have the permission.

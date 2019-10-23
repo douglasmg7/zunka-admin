@@ -133,7 +133,7 @@ func (s *Sessions) RemoveSession(w http.ResponseWriter, req *http.Request) {
 	// No cookie.
 	if err == http.ErrNoCookie {
 		// log.Println("No cookie")
-		http.Redirect(w, req, "/", http.StatusSeeOther)
+		http.Redirect(w, req, "/ns/", http.StatusSeeOther)
 		// Some error.
 	} else if err != nil {
 		log.Fatal(err)
@@ -143,7 +143,7 @@ func (s *Sessions) RemoveSession(w http.ResponseWriter, req *http.Request) {
 		c.Path = "/"
 		// log.Println("changed cookie:", c)
 		http.SetCookie(w, c)
-		http.Redirect(w, req, "/auth/signin", http.StatusSeeOther)
+		http.Redirect(w, req, "/ns/auth/signin", http.StatusSeeOther)
 		// Delete userId session.
 		delete(s.mapUserID, c.Value)
 	}

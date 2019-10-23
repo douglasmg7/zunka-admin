@@ -111,7 +111,7 @@ func userChangeNameHandlerPost(w http.ResponseWriter, req *http.Request, _ httpr
 	// Sinalize to session be refreshed from db.
 	session.Outdated = true
 	// Redirect to account page.
-	http.Redirect(w, req, "/user/account", http.StatusSeeOther)
+	http.Redirect(w, req, "/ns/user/account", http.StatusSeeOther)
 	return
 }
 
@@ -313,6 +313,6 @@ func userChangeMobileHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 	// Sinalize to session be refreshed from db.
 	session.Outdated = true
 	// Redirect to account page.
-	http.Redirect(w, req, "/user/account", http.StatusSeeOther)
+	http.Redirect(w, req, "/ns/user/account", http.StatusSeeOther)
 	return
 }

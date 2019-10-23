@@ -199,7 +199,7 @@ func aldoCategSelHandlerPost(w http.ResponseWriter, req *http.Request, _ httprou
 	// categories := strings.Split(strings.ReplaceAll(req.FormValue("categories"), " ", ""), "\n")
 	// fmt.Println("Categories:", categories)
 
-	http.Redirect(w, req, "/aldo/category/sel", http.StatusSeeOther)
+	http.Redirect(w, req, "/ns/aldo/category/sel", http.StatusSeeOther)
 	return
 }
 

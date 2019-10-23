@@ -1,5 +1,5 @@
 {{define "menu"}}
-<a class="item brand" href="/">Home</a>
+<a class="item brand" href="/ns/">Home</a>
 
 <!-- Aldo -->
 <div class="sub-menu">
@@ -7,10 +7,10 @@
   <div class="item toggle-items">Aldo</div>
   <div class="items">
       <a class="item back" href="#">< Menu</a>
-      <a class="item" href="/aldo/products">Produtos</a>
-      <a class="item" href="/aldo/category/sel">Categorias selecionadas</a>
-      <a class="item" href="/aldo/category/use">Categorias em uso</a>
-      <a class="item" href="/aldo/category/all">Categorias disponíveis</a>
+      <a class="item" href="/ns/aldo/products">Produtos</a>
+      <a class="item" href="/ns/aldo/category/sel">Categorias selecionadas</a>
+      <a class="item" href="/ns/aldo/category/use">Categorias em uso</a>
+      <a class="item" href="/ns/aldo/category/all">Categorias disponíveis</a>
   </div>
 </div>
 
@@ -49,7 +49,7 @@
 
 <!-- Signin -->
 {{if not .Session}}
-<a class="item" href="/auth/signin">Entrar</a>
+<a class="item" href="/ns/auth/signin">Entrar</a>
 {{end}}
 
 <!-- Account -->
@@ -58,8 +58,8 @@
   <a class="item toggle-items" href="#">Conta</a></li>
   <div class="items">
       <a class="item back" href="#">< Menu</a>
-      <a class="item" href="/user/account">{{.Session.UserName}}</a>
-      <a class="item" href="/auth/signout">Sair</a>
+      <a class="item" href="/ns/user/account">{{.Session.UserName}}</a>
+      <a class="item" href="/ns/auth/signout">Sair</a>
   </div>
 </div>
 {{end}}

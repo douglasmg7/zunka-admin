@@ -289,7 +289,7 @@ func authSigninHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 		log.Fatal(err)
 	}
 	// Logged, redirect to main page.
-	http.Redirect(w, req, "/", http.StatusSeeOther)
+	http.Redirect(w, req, "/ns/", http.StatusSeeOther)
 	return
 }
 

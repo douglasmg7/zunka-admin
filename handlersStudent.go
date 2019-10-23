@@ -129,7 +129,7 @@ func newStudentHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 			if err != nil {
 				log.Fatal(err)
 			}
-			http.Redirect(w, req, "/", http.StatusSeeOther)
+			http.Redirect(w, req, "/ns/", http.StatusSeeOther)
 		}
 	}
 }
