@@ -11,7 +11,7 @@
 {{define "title"}}Recuperar senha{{end}}
 
 {{define "content"}}
-<form class="content" action="/auth/password/recovery" method="post">
+<form class="content" action="/ns/auth/password/recovery" method="post">
     <h2 class="title">Recuperar senha</h2>
 
     <!-- email -->

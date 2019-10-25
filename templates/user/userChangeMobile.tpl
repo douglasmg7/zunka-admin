@@ -19,7 +19,7 @@
 {{define "title"}}Alteração do número do celular{{end}}
 
 {{define "content"}}
-<form class="content" action="/user/change/mobile" method="post">
+<form class="content" action="/ns/user/change/mobile" method="post">
     <h2 class="title">Alteração do número de celular</h2>
 
     <!-- New mobile number -->
@@ -34,7 +34,7 @@
 
     <!-- submit -->
     <div class="btns-row">
-        <a class="button btn-danger" href="/user/account">Cancelar</a>
+        <a class="button btn-danger" href="/ns/user/account">Cancelar</a>
         <input type="submit" value="Test">
         <input class="btn-danger" type="submit" value="Salvar">
     </div>

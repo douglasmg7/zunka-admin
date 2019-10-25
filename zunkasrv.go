@@ -92,14 +92,14 @@ func init() {
 	os.MkdirAll(logPath, os.ModePerm)
 
 	// Zunka db.
-	dbZunkaFile := os.Getenv("ZUNKA_SRV_DB")
+	dbZunkaFile = os.Getenv("ZUNKA_SRV_DB")
 	if dbZunkaFile == "" {
 		panic("ZUNKASRV_DB not defined.")
 	}
 	dbZunkaFile = path.Join(zunkaPath, "db", dbZunkaFile)
 
 	// Aldo db.
-	dbAldoFile := os.Getenv("ZUNKA_ALDOWSC_DB")
+	dbAldoFile = os.Getenv("ZUNKA_ALDOWSC_DB")
 	if dbAldoFile == "" {
 		panic("ZUNKA_ALDOWSC_DB not defined.")
 	}
@@ -179,6 +179,7 @@ func main() {
 	// Init router.
 	router := httprouter.New()
 	router.GET("/ns/favicon.ico", faviconHandler)
+	router.GET("/", getSession(indexHandler))
 	router.GET("/ns/", getSession(indexHandler))
 
 	// Clean the session cache.

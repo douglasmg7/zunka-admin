@@ -18,7 +18,7 @@
 {{define "title"}}Autenticação{{end}}
 
 {{define "content"}}
-<form class="content" action="/auth/signin" method="post">
+<form class="content" action="/ns/auth/signin" method="post">
     <h2 class="title">Entrar</h2>
 
     <!-- Head messages. -->
@@ -39,11 +39,11 @@
     <input type="submit" value="Entrar">
 
     <!-- reset password -->
-    <a class="reset-pass" href="/auth/password/recovery">Esqueceu a senha?</a>
+    <a class="reset-pass" href="/ns/auth/password/recovery">Esqueceu a senha?</a>
 
     <!-- signup -->
     <p>Não tem cadastro? </p>
-    <a class="signup" href="/auth/signup">Criar cadastro</a>
+    <a class="signup" href="/ns/auth/signup">Criar cadastro</a>
 
     <!-- Foot messages. -->
     {{if .SuccessMsgFooter}} <div class="success-msg"> {{.SuccessMsgFooter}} </div> {{end}}

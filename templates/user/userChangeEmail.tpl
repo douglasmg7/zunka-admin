@@ -11,7 +11,7 @@
 {{define "title"}}Alteração do email{{end}}
 
 {{define "content"}}
-<form class="content" action="/user/change/email" method="post">
+<form class="content" action="/ns/user/change/email" method="post">
     <h2 class="title">Alteração do email</h2>
 
     <!-- New email -->

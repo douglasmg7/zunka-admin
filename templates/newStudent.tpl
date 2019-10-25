@@ -10,7 +10,7 @@
 {{end}}
 
 {{define "content"}}
-<form class="content" action="/student/new" method="post">
+<form class="content" action="/ns/student/new" method="post">
     <label for="name">Nome completo</label>
     <input class="input" type="text" placeholder="" id="name" name="name" value={{.Name.Value}}>
     <p>{{.Name.Msg}}</p>

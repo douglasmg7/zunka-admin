@@ -11,7 +11,7 @@
 {{define "title"}}Alteração do nome{{end}}
 
 {{define "content"}}
-<form class="content" action="/user/change/name" method="post">
+<form class="content" action="/ns/user/change/name" method="post">
     <h2 class="title">Alteração do nome</h2>
 
     <!-- New name -->

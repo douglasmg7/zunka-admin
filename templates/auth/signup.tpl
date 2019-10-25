@@ -20,7 +20,7 @@
 {{define "header"}}{{end}}
 
 {{define "content"}}
-    <form class="content" action="/auth/signup" method="post">
+    <form class="content" action="/ns/auth/signup" method="post">
         <h2 class="title">Criar cadastro</h2>
         <!-- name -->
         <label for="name">Nome</label>

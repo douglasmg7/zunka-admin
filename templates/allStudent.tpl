@@ -13,7 +13,7 @@
 <div class="content">
   {{range .Students}}
     <h3 class="subtitle">
-      <a href="/student/id/{{.Id}}">{{.Name}}</a>
+      <a href="/ns/student/id/{{.Id}}">{{.Name}}</a>
     </h3>
   {{end}}
 </div>

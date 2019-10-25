@@ -151,7 +151,7 @@ func authSignupHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 	}
 	// Log email confirmation on dev mode.
 	if dev {
-		log.Println(`http://localhost:8080/auth/signup/confirmation/` + uuid.String())
+		log.Println(`http://localhost:8080/ns/auth/signup/confirmation/` + uuid.String())
 	}
 	// Render page with next step to complete signup.
 	dataMsg.TitleMsg = "Pŕoximo passo"
