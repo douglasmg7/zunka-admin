@@ -72,14 +72,6 @@ func init() {
 	// Port.
 	port = "8080"
 
-	// Production mode.
-	if strings.HasPrefix(os.Args[1], "dev") {
-		dev = true
-		log.Println("Development mode")
-	} else {
-		log.Println("Production mode")
-	}
-
 	// Path.
 	zunkaPath := os.Getenv("ZUNKAPATH")
 	if zunkaPath == "" {
@@ -119,7 +111,14 @@ func init() {
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Ldate | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
 	// production or development mode
+	if len(os.Args) > 1 && strings.HasPrefix(os.Args[1], "dev") {
+		dev = true
+		log.Println("Development mode")
+	} else {
+		log.Println("Production mode")
+	}
 
 	/************************************************************************************************
 	* Load templates
