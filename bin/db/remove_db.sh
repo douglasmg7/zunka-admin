@@ -1,13 +1,16 @@
 #!/usr/bin/env bash 
 
-DB_NAME="zunkasrv.db" 
-
-if [ -z "$ZUNKAPATH" ]
-then
-	printf "error: ZUNKAPATH enviorment not defined.\n" >&2
+# ZUNKAPATH not defined.
+if [ -z "$ZUNKAPATH" ]; then
+	printf "error: ZUNKAPATH not defined.\n" >&2
 	exit 1 
-else
-	printf "Removing db %s/%s\n" $ZUNKAPATH/db/$DB_NAME
 fi
 
-rm $ZUNKAPATH/db/$DB_NAME
+# ZUNKA_SRV_DB not defined.
+if [ -z "$ZUNKA_SRV_DB" ]; then
+	printf "error: ZUNKA_SRV_DB not defined.\n" >&2
+	exit 1 
+fi
+
+printf "Removing db %s/%s\n" $ZUNKAPATH/db/$ZUNKA_SRV_DB
+rm $ZUNKAPATH/db/$ZUNKA_SRV_DB

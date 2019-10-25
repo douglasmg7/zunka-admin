@@ -9,12 +9,12 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/spf13/viper"
 )
 
 /************************************************************************************************
@@ -38,13 +38,13 @@ var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *tem
 // Student.
 var tmplStudent, tmplAllStudent, tmplNewStudent *template.Template
 
-var production bool
+var dev bool
 var port string
 
 // Db.
-var dbApp *sql.DB
+var dbZunka *sql.DB
 var dbAldo *sqlx.DB
-var dbAppFile, dbAldoFile string
+var dbZunkaFile, dbAldoFile string
 
 // list.
 var listPath string
@@ -69,42 +69,45 @@ var sessions = Sessions{
 }
 
 func init() {
-	// Config path.
-	cfgPath := os.Getenv("ZUNKAPATH")
-	if cfgPath == "" {
-		panic("Path to config.toml must be dfined on enviroment variable ZUNKAPATH")
-	}
-
-	// Config.
-	viper.AddConfigPath(cfgPath)
-	viper.SetConfigName("config")
-	viper.SetDefault("all.logDir", "log")
-	viper.SetDefault("all.dbDir", "db")
-	viper.SetDefault("all.listDir", "list")
-	viper.SetDefault("all.env", "development")
-	viper.BindEnv("all.env", "ZUNKAENV")
-	err = viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("Error reading config file: %s \n", err))
-	}
-
 	// Port.
-	port = viper.GetString("zunkasrv.port")
+	port = "8080"
+
+	// Production mode.
+	if strings.HasPrefix(os.Args[1], "dev") {
+		dev = true
+		log.Println("Development mode")
+	} else {
+		log.Println("Production mode")
+	}
 
 	// Path.
-	logPath := path.Join(cfgPath, viper.GetString("all.logDir"))
-	dbPath := path.Join(cfgPath, viper.GetString("all.dbDir"))
-	listPath = path.Join(cfgPath, viper.GetString("all.listDir"))
-
+	zunkaPath := os.Getenv("ZUNKAPATH")
+	if zunkaPath == "" {
+		panic("ZUNKAPATH not defined.")
+	}
+	logPath := path.Join(zunkaPath, "log")
+	// dbPath := path.Join(zunkaPath, "db")
+	listPath = path.Join(zunkaPath, "list")
 	// Create log path.
 	os.MkdirAll(logPath, os.ModePerm)
 
-	// Db files.
-	dbAppFile = path.Join(dbPath, viper.GetString("zunkasrv.dbFileName"))
-	dbAldoFile = path.Join(dbPath, viper.GetString("aldowsc.dbFileName"))
+	// Zunka db.
+	dbZunkaFile := os.Getenv("ZUNKA_SRV_DB")
+	if dbZunkaFile == "" {
+		panic("ZUNKASRV_DB not defined.")
+	}
+	dbZunkaFile = path.Join(zunkaPath, "db", dbZunkaFile)
+
+	// Aldo db.
+	dbAldoFile := os.Getenv("ZUNKA_ALDOWSC_DB")
+	if dbAldoFile == "" {
+		panic("ZUNKA_ALDOWSC_DB not defined.")
+	}
+	dbAldoFile = path.Join(zunkaPath, "db", dbAldoFile)
+	// log.Println("aldoDb:", dbAldoFile)
 
 	// Log file.
-	logFile, err := os.OpenFile(path.Join(logPath, viper.GetString("zunkasrv.logFileName")), os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+	logFile, err := os.OpenFile(path.Join(logPath, "zunkasrv.log"), os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 	if err != nil {
 		panic(err)
 	}
@@ -117,14 +120,6 @@ func init() {
 	// log.SetFlags(log.LstdFlags | log.Ldate | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	// production or development mode
-
-	// Env mode.
-	if viper.GetString("all.env") == "production" {
-		production = true
-		log.Println("Running in production mode")
-	} else {
-		log.Println("Running in development mode")
-	}
 
 	/************************************************************************************************
 	* Load templates
@@ -168,12 +163,12 @@ func init() {
 
 func main() {
 	// Start data base.
-	dbApp, err = sql.Open("sqlite3", dbAppFile)
+	dbZunka, err = sql.Open("sqlite3", dbZunkaFile)
 	if err != nil {
-		log.Fatal(fmt.Errorf("Error open db %v: %v", dbAppFile, err))
+		log.Fatal(fmt.Errorf("Error open db %v: %v", dbZunka, err))
 	}
-	defer dbApp.Close()
-	err = dbApp.Ping()
+	defer dbZunka.Close()
+	err = dbZunka.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -56,7 +56,7 @@ func userAccountHandler(w http.ResponseWriter, req *http.Request, _ httprouter.P
 	}{Session: session}
 
 	// Get user data.
-	err := dbApp.QueryRow("select name, email, mobile, rg, cpf from user where id = ?", session.UserID).Scan(&data.Name, &data.Email, &data.Mobile, &data.RG, &data.CPF)
+	err := dbZunka.QueryRow("select name, email, mobile, rg, cpf from user where id = ?", session.UserID).Scan(&data.Name, &data.Email, &data.Mobile, &data.RG, &data.CPF)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func userChangeNameHandler(w http.ResponseWriter, req *http.Request, _ httproute
 	data.Session = session
 	// Get current name.
 	var name string
-	err = dbApp.QueryRow("SELECT name FROM user WHERE id = ?", session.UserID).Scan(&name)
+	err = dbZunka.QueryRow("SELECT name FROM user WHERE id = ?", session.UserID).Scan(&name)
 	data.NewName.Value = name
 	// Render page.
 	err = tmplUserChangeName.ExecuteTemplate(w, "userChangeName.tpl", data)
@@ -99,7 +99,7 @@ func userChangeNameHandlerPost(w http.ResponseWriter, req *http.Request, _ httpr
 		return
 	}
 	// Update name.
-	stmt, err := dbApp.Prepare(`UPDATE user SET name = ? WHERE id = ?`)
+	stmt, err := dbZunka.Prepare(`UPDATE user SET name = ? WHERE id = ?`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -121,7 +121,7 @@ func userChangeEmailHandler(w http.ResponseWriter, req *http.Request, _ httprout
 	data.Session = session
 	// Get current email.
 	var email string
-	err = dbApp.QueryRow("SELECT email FROM user WHERE id = ?", session.UserID).Scan(&email)
+	err = dbZunka.QueryRow("SELECT email FROM user WHERE id = ?", session.UserID).Scan(&email)
 	data.NewEmail.Value = email
 	// Render page.
 	err = tmplUserChangeEmail.ExecuteTemplate(w, "userChangeEmail.tpl", data)
@@ -150,7 +150,7 @@ func userChangeEmailHandlerPost(w http.ResponseWriter, req *http.Request, _ http
 	}
 	// Verify if email alredy in use.
 	var userName string
-	err := dbApp.QueryRow("select name from user where email = ?", data.NewEmail.Value).Scan(&userName)
+	err := dbZunka.QueryRow("select name from user where email = ?", data.NewEmail.Value).Scan(&userName)
 	// Email alredy in use.
 	if err == nil {
 		data.NewEmail.Msg = "Email já cadastrado"
@@ -162,7 +162,7 @@ func userChangeEmailHandlerPost(w http.ResponseWriter, req *http.Request, _ http
 		log.Fatal(err)
 	}
 	// Delete email confirmation. Can messed up signup from same e-mail.
-	stmt, err := dbApp.Prepare(`DELETE from email_confirmation WHERE email == ?`)
+	stmt, err := dbZunka.Prepare(`DELETE from email_confirmation WHERE email == ?`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -177,7 +177,7 @@ func userChangeEmailHandlerPost(w http.ResponseWriter, req *http.Request, _ http
 		log.Fatal(err)
 	}
 	// Save email confirmation.
-	stmt, err = dbApp.Prepare(`INSERT INTO email_confirmation(uuid, name, email, password, createdAt) VALUES(?, ?, ?, ?, ?)`)
+	stmt, err = dbZunka.Prepare(`INSERT INTO email_confirmation(uuid, name, email, password, createdAt) VALUES(?, ?, ?, ?, ?)`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -187,7 +187,7 @@ func userChangeEmailHandlerPost(w http.ResponseWriter, req *http.Request, _ http
 		log.Fatal(err)
 	}
 	// Log change email confirmation on dev mode.
-	if !production {
+	if dev {
 		log.Println(`http://localhost:8080/user/change/email-confirmation/` + uuid.String())
 	}
 	// Render page with next step to complete the email change.
@@ -206,7 +206,7 @@ func userChangeEmailConfirmationHandler(w http.ResponseWriter, req *http.Request
 	// Find email certify.
 	uuid := ps.ByName("uuid")
 	var name, newEmail string
-	err = dbApp.QueryRow("SELECT name, email FROM email_confirmation WHERE uuid = ?", uuid).Scan(&name, &newEmail)
+	err = dbZunka.QueryRow("SELECT name, email FROM email_confirmation WHERE uuid = ?", uuid).Scan(&name, &newEmail)
 	// No email confirmation.
 	if err != nil {
 		msgData.TitleMsg = "Link inválido"
@@ -218,7 +218,7 @@ func userChangeEmailConfirmationHandler(w http.ResponseWriter, req *http.Request
 	// Someone trying to signup using the same email.
 	if name != "" {
 		// Delete email confirmation from signup, so user can try to change to this email again.
-		stmt, err := dbApp.Prepare(`DELETE from email_confirmation WHERE uuid == ?`)
+		stmt, err := dbZunka.Prepare(`DELETE from email_confirmation WHERE uuid == ?`)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -235,7 +235,7 @@ func userChangeEmailConfirmationHandler(w http.ResponseWriter, req *http.Request
 		return
 	}
 	// Update user email.
-	stmt, err := dbApp.Prepare(`UPDATE user SET email = ? WHERE id = ?`)
+	stmt, err := dbZunka.Prepare(`UPDATE user SET email = ? WHERE id = ?`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -245,7 +245,7 @@ func userChangeEmailConfirmationHandler(w http.ResponseWriter, req *http.Request
 		log.Fatal(err)
 	}
 	// Delete email confirmation.
-	stmt, err = dbApp.Prepare(`DELETE from email_confirmation WHERE uuid == ?`)
+	stmt, err = dbZunka.Prepare(`DELETE from email_confirmation WHERE uuid == ?`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -268,7 +268,7 @@ func userChangeMobileHandler(w http.ResponseWriter, req *http.Request, _ httprou
 	data.Session = session
 	// Get current mobile number.
 	var mobile string
-	err = dbApp.QueryRow("SELECT mobile FROM user WHERE id = ?", session.UserID).Scan(&mobile)
+	err = dbZunka.QueryRow("SELECT mobile FROM user WHERE id = ?", session.UserID).Scan(&mobile)
 	data.NewMobile.Value = mobile
 	// Render page.
 	err = tmplUserChangeMobile.ExecuteTemplate(w, "userChangeMobile.tpl", data)
@@ -301,7 +301,7 @@ func userChangeMobileHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 		return
 	}
 	// Update mobile number.
-	stmt, err := dbApp.Prepare(`UPDATE user SET mobile = ? WHERE id = ?`)
+	stmt, err := dbZunka.Prepare(`UPDATE user SET mobile = ? WHERE id = ?`)
 	if err != nil {
 		log.Fatal(err)
 	}

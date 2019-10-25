@@ -69,7 +69,7 @@ func (s *SessionData) UnsetPermission(p string) {
 func (s *SessionData) PasswordIsCorrect(password string) bool {
 	// Get user by email.
 	var cryptedPassword []byte
-	err = dbApp.QueryRow("SELECT password FROM user WHERE id = ?", s.UserID).Scan(&cryptedPassword)
+	err = dbZunka.QueryRow("SELECT password FROM user WHERE id = ?", s.UserID).Scan(&cryptedPassword)
 	// No registred user.
 	if err == sql.ErrNoRows {
 		return false
@@ -113,7 +113,7 @@ func (s *Sessions) CreateSession(w http.ResponseWriter, userID int) error {
 		// HttpOnly: true, // Can't be used into js client
 	})
 	// Save session UUID on db.
-	stmt, err := dbApp.Prepare(`INSERT INTO sessionUUID(uuid, user_id, createdAt) VALUES( ?, ?, ?)`)
+	stmt, err := dbZunka.Prepare(`INSERT INTO sessionUUID(uuid, user_id, createdAt) VALUES( ?, ?, ?)`)
 	if err != nil {
 		return err
 	}
@@ -194,7 +194,7 @@ func (s *Sessions) getUserIdfromSessionUUID(req *http.Request) (int, error) {
 			return userID, nil
 		}
 		// Get from db.
-		err = dbApp.QueryRow("select user_id from sessionUUID where uuid = ?", sessionUUID).Scan(&userID)
+		err = dbZunka.QueryRow("select user_id from sessionUUID where uuid = ?", sessionUUID).Scan(&userID)
 		if err == sql.ErrNoRows {
 			return 0, nil
 		}
@@ -230,7 +230,7 @@ func (s *Sessions) getSessionFromUserID(userID int) (session *SessionData, err e
 // Cache session data and return it.
 func (s *Sessions) cacheSession(userID int) (session *SessionData, err error) {
 	session = &SessionData{}
-	err = dbApp.QueryRow("select id, name, permission from user where id = ?", userID).Scan(&session.UserID, &session.UserName, &session.Permission)
+	err = dbZunka.QueryRow("select id, name, permission from user where id = ?", userID).Scan(&session.UserID, &session.UserName, &session.Permission)
 	if err != nil {
 		return nil, err
 	}
