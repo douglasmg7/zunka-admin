@@ -26,6 +26,17 @@ var tmplMaster, tmplIndex, tmplDeniedAccess *template.Template
 // Misc.
 var tmplMessage *template.Template
 
+// User.
+var tmplUserAdd *template.Template
+var tmplUserAccount *template.Template
+var tmplUserChangeName *template.Template
+var tmplUserChangeEmail *template.Template
+var tmplUserChangeMobile *template.Template
+var tmplUserChangePassword *template.Template
+var tmplUserChangeRG *template.Template
+var tmplUserChangeCPF *template.Template
+var tmplUserDeleteAccount *template.Template
+
 // Aldo.
 var tmplAldoProducts, tmplAldoProduct, tmplAldoCategorySel, tmplAldoCategoryUse, tmplAldoCategoryAll *template.Template
 
@@ -37,6 +48,9 @@ var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *tem
 
 // Student.
 var tmplStudent, tmplAllStudent, tmplNewStudent *template.Template
+
+// Test.
+var tmplTest *template.Template
 
 var dev bool
 var port string
@@ -50,17 +64,6 @@ var dbZunkaFile, dbAldoFile string
 var listPath string
 
 var err error
-
-// User.
-var tmplUserAdd *template.Template
-var tmplUserAccount *template.Template
-var tmplUserChangeName *template.Template
-var tmplUserChangeEmail *template.Template
-var tmplUserChangeMobile *template.Template
-var tmplUserChangePassword *template.Template
-var tmplUserChangeRG *template.Template
-var tmplUserChangeCPF *template.Template
-var tmplUserDeleteAccount *template.Template
 
 // Sessions from each user.
 var sessions = Sessions{
@@ -129,6 +132,13 @@ func init() {
 	tmplDeniedAccess = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/deniedAccess.tpl"))
 	// Misc.
 	tmplMessage = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/message.tpl"))
+	tmplTest = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/test.gohtml"))
+	// User.
+	tmplUserAdd = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/userAdd.tpl"))
+	tmplUserAccount = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userAccount.tpl"))
+	tmplUserChangeName = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeName.tpl"))
+	tmplUserChangeEmail = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeEmail.tpl"))
+	tmplUserChangeMobile = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeMobile.tpl"))
 	// Aldo.
 	tmplAldoProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProduct.tmpl"))
 	tmplAldoProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProducts.tmpl"))
@@ -147,12 +157,6 @@ func init() {
 	tmplStudent = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/student.tpl"))
 	tmplAllStudent = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allStudent.tpl"))
 	tmplNewStudent = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/newStudent.tpl"))
-	// User.
-	tmplUserAdd = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/userAdd.tpl"))
-	tmplUserAccount = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userAccount.tpl"))
-	tmplUserChangeName = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeName.tpl"))
-	tmplUserChangeEmail = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeEmail.tpl"))
-	tmplUserChangeMobile = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeMobile.tpl"))
 
 	// debug templates
 	// for _, tplItem := range tmplAll["user_add"].Templates() {
@@ -233,6 +237,10 @@ func main() {
 	router.GET("/ns/student/new", checkPermission(newStudentHandler, "editStudent"))
 	router.POST("/ns/student/new", checkPermission(newStudentHandlerPost, "editStudent"))
 	router.GET("/ns/student/id/:id", checkPermission(studentByIdHandler, "editStudent"))
+
+	// Test.
+	router.GET("/ns/test", checkPermission(testPageHandler, "admin"))
+	router.POST("/ns/test/send-email", checkPermission(testSendEmailPost, "admin"))
 
 	// start server
 	router.ServeFiles("/static/*filepath", http.Dir("./static/"))

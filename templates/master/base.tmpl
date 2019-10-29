@@ -18,18 +18,25 @@
         <!-- <link rel='shortcut icon' href='/static/img/favicon.ico' type='image/x-icon'> -->
     </head>
     <body>
-        <!-- <div id="menu-toggle"> <span></span> <span></span> <span></span> </div> -->
         <div class="burger">
             <span class="burger-box">
                 <span class="burger-inner"></span>
             </span>
         </div>
-        <div id="menu"> {{template "menu" .}} </div>
-        <div id="main">
-            {{template "content" .}}
+        <div id="menu"> 
+            {{template "menu" .}} 
         </div>
-        <div id="footer"> {{template "footer" .}} </div>
+        <div id="main"> 
+            {{template "content" .}} 
+        </div>
+        <div id="footer"> 
+            {{template "footer" .}} 
+        </div>
         <script src="/static/js/layout.js?0001"></script>
+        {{template "embedded-js"}} 
     </body>
 </html>
 {{end}}
+
+{{define "embedded-css"}} {{end}}
+{{define "embedded-js"}} {{end}}

@@ -1,0 +1,35 @@
+{{template "base" .}}
+
+{{define "title"}} Página de testes {{end}}
+
+{{define "content"}}
+            <div class="content">
+                <h2> Testes </h2>
+
+                <h3> Email </h3>
+                <input class="btn" type="button" onclick="sendEmail()" value="Enviar email de teste">
+            </div>
+{{end}}
+
+{{define "embedded-js"}} 
+        {{ template "axios" }}
+        <script>
+            function sendEmail(){
+                axios({
+                    method: 'post',
+                    url:`/ns/test/send-email`,
+                })
+                .then(response => {
+                    if (response.data.err) {
+                        console.error(response.data.err);
+                    } 
+                    else {
+                        alert('Email enviado');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                })
+            }
+        </script>
+{{end}}
