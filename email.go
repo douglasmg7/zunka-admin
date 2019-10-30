@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/base64"
 	"errors"
-	// "mime"
 	"net/smtp"
 )
 
@@ -32,15 +32,16 @@ func (a *loginAuth) Next(fromServer []byte, more bool) (toServer []byte, err err
 	return nil, nil
 }
 
-func sendEmail(to []string, subject string, msg string) error {
+func sendMail(to []string, subject string, body string) error {
 	auth := LoginAuth(emailAuthUser, emailAuthPass)
 
-	// dec := new(mime.WordDecoder)
-	// emailMsg := dec.Decode(hhjj
-	emailMsg := []byte("To: " + to[0] + "\r\n" +
-		"Subject: " + subject + "\r\n\r\n" +
-		msg)
+	message := "MIME-Version: 1.0" + "\r\n" +
+		"Content-Type: text/plain; charset=\"utf-8\"" + "\r\n" +
+		"Content-Transfer-Encoding: base64" + "\r\n" +
+		"To: " + to[0] + "\r\n" +
+		"Subject: " + subject + "\r\n"
 
-	err := smtp.SendMail(emailHostPort, auth, emailFrom, to, emailMsg)
-	return err
+	message += "\r\n" + base64.StdEncoding.EncodeToString([]byte(body))
+
+	return smtp.SendMail(emailHostPort, auth, emailFrom, to, []byte(message))
 }

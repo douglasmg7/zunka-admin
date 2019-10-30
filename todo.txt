@@ -1,35 +1,17 @@
 aldo product list pagination, showing only 10.
 
+implement password change.
+
+implement password forgotten.
+
 change .tmpl to .gohtml
-
-verify if aldowsc keep mongodbId.
-
-start-dev.sh start in production mode, because it use toml file.
 
 https://en.wikipedia.org/wiki/The_7_Habits_of_Highly_Effective_People
 
 https://play.golang.org/p/mlTh2OUM_Tk
 
-Put into all field message erros
-class="has-text-danger"
-
 Clean up session on cache and db from time to time.
 
 senha
 1Aasdfasdf
-
-### codersrank.io ###
-Mon 28 Jun 2019
-Total ranking: 89553
-Go score: 63.5
-Go ranking: 22,603 (13%)
-
-Mon 01 Jul 2019
-Total ranking: 88649
-Go score: 71.7
-Go ranking: 20,712 (12%)
-
-Mon 09 Jul 2019
-Total ranking: 86815
-Go score: 83.8
-Go ranking: 18,466 (11%)
+asdfasdfA1

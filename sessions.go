@@ -32,9 +32,9 @@ func (s *SessionData) CheckPermission(p string) bool {
 	}
 	// Permissions.
 	switch p {
-	case "editStudent":
+	case "write":
 		return s.Permission&2 == 2
-	case "editPrice":
+	case "read":
 		return s.Permission&4 == 4
 	default:
 		return false
@@ -46,9 +46,9 @@ func (s *SessionData) SetPermission(p string) {
 	switch p {
 	case "admin":
 		s.Permission = s.Permission | 1
-	case "editStudent":
+	case "write":
 		s.Permission = s.Permission | 2
-	case "editPrice":
+	case "read":
 		s.Permission = s.Permission | 4
 	}
 }
@@ -56,11 +56,11 @@ func (s *SessionData) SetPermission(p string) {
 // UnsetPermission revoke permission.
 func (s *SessionData) UnsetPermission(p string) {
 	switch p {
-	case "king":
+	case "admin":
 		s.Permission = s.Permission ^ 1
-	case "editStudent":
+	case "write":
 		s.Permission = s.Permission ^ 2
-	case "editPrice":
+	case "read":
 		s.Permission = s.Permission ^ 4
 	}
 }

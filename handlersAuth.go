@@ -152,10 +152,17 @@ func authSignupHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 	// Log email confirmation on dev mode.
 	if dev {
 		log.Println(`http://localhost:8080/ns/auth/signup/confirmation/` + uuid.String())
+	} else {
+		sendMail([]string{data.Email.Value},
+			"Solicitação de criação de conta no sistema zunkasrv.",
+			"Você recebeu este email porquê você (ou alguem) requisitou a criação de uma conta no sistema zunkasrv (https://www.zunka.com.br/ns/) usando este email.\r\n\r\n"+
+				"Por favor clique no link, ou cole-o no seu navegador de internet para concluir a criação da conta.\r\n\r\n"+
+				"http://localhost:8080/ns/auth/signup/confirmation/"+uuid.String()+"\r\n\r\n"+
+				"Se não foi você que requisitou esta criação de conta, por favor ignore este email e nenhuma conta será criada.\r\n")
 	}
 	// Render page with next step to complete signup.
 	dataMsg.TitleMsg = "Pŕoximo passo"
-	dataMsg.SuccessMsg = "Dentro de instantes será enviado um e-mail para " + data.Email.Value + " com instruções para completar o cadastro."
+	dataMsg.SuccessMsg = "Dentro de instantes será enviado um email para " + data.Email.Value + " com instruções para completar o cadastro."
 	err = tmplMessage.ExecuteTemplate(w, "message.tpl", dataMsg)
 	HandleError(w, err)
 }
@@ -208,8 +215,10 @@ func authSignupConfirmationHandler(w http.ResponseWriter, req *http.Request, ps 
 	// Set admin permission for some users by default.
 	permission := 0
 	switch email {
-	case "douglasmg7@gmail.com", "zunka@outlook.com.br":
+	case "douglasmg7@gmail.com":
 		permission = 1
+	case "zunka@outlook.com.br", "gilson@hardplus.com.br", "gilsonmiranda@hotmail.com.br":
+		permission = 6
 	}
 	_, err = stmt.Exec(name, email, password, permission, now, now)
 	if err != nil {

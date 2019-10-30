@@ -12,6 +12,9 @@
     p {
         margin-bottom: 0;
     }
+    label > span {
+        font-weight: 500;
+    }
 </style>
 {{end}}
 
@@ -26,17 +29,21 @@
     {{if .WarnMsgHead}} <div class="warn-msg"> {{.WarnMsgHead}} </div> {{end}}
 
     <!-- email -->
-    <label for="email">E-mail</label>
+    <label {{if .Email.Msg}} class="error" {{end}} for="email">
+        {{if not .Email.Msg}} Email {{end}}
+        {{if .Email.Msg}} {{.Email.Msg}} {{end}}
+    </label> 
     <input type="text" id="email" name="email"  value={{.Email.Value}}>
-    <p class="error"> {{.Email.Msg}} </p>
 
     <!-- password -->
-    <label for="password">Senha</label>
+    <label {{if .Password.Msg}} class="error" {{end}} for="password">
+        {{if not .Password.Msg}} Senha {{end}}
+        {{if .Password.Msg}} {{.Password.Msg}} {{end}}
+    </label> 
     <input type="password" id="password" name="password" value={{.Password.Value}}>
-    <p class="error">{{.Password.Msg}}</p>
 
     <!-- submit -->
-    <input type="submit" value="Entrar">
+    <input class="btn btn-info" type="submit" value="Entrar">
 
     <!-- reset password -->
     <a class="reset-pass" href="/ns/auth/password/recovery">Esqueceu a senha?</a>

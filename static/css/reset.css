@@ -93,6 +93,7 @@ textarea {
     text-transform: uppercase;
     white-space: nowrap;
     margin-top: 2rem;
+    width: 100%;
 }
 
 .btn:focus, 
@@ -344,6 +345,7 @@ img {
 label {
   display: block;
   font-size: 1.6rem;
-  font-weight: 700;
+  /* font-weight: 700; */
+  font-weight: 400;
   margin-top: 1rem;
 }

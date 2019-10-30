@@ -181,6 +181,7 @@ func main() {
 
 	// Init router.
 	router := httprouter.New()
+	router.GET("/favicon.ico", faviconHandler)
 	router.GET("/ns/favicon.ico", faviconHandler)
 	router.GET("/", getSession(indexHandler))
 	router.GET("/ns/", getSession(indexHandler))
@@ -189,20 +190,20 @@ func main() {
 	router.GET("/ns/clean-sessions", checkPermission(cleanSessionsHandler, "admin"))
 
 	// Aldo.
-	router.GET("/ns/aldo/products", checkPermission(aldoProductsHandler, "admin"))
-	router.GET("/ns/aldo/product/:code", checkPermission(aldoProductHandler, "admin"))
+	router.GET("/ns/aldo/products", checkPermission(aldoProductsHandler, "read"))
+	router.GET("/ns/aldo/product/:code", checkPermission(aldoProductHandler, "read"))
 	// Create product on zunka server.
-	router.POST("/ns/aldo/product/:code", checkPermission(aldoProductHandlerPost, "admin"))
+	router.POST("/ns/aldo/product/:code", checkPermission(aldoProductHandlerPost, "write"))
 	// Product removed from site, so remove his reference from the site system.
 	router.DELETE("/ns/aldo/product/mongodb_id/:code", checkApiAuthorization(aldoProductMongodbIdHandlerDelete))
-	router.GET("/ns/aldo/category/sel", checkPermission(aldoCategSelHandler, "admin"))
-	router.POST("/ns/aldo/category/sel", checkPermission(aldoCategSelHandlerPost, "admin"))
-	router.GET("/ns/aldo/category/use", checkPermission(aldoCategUseHandler, "admin"))
-	router.GET("/ns/aldo/category/all", checkPermission(aldoCategAllHandler, "admin"))
+	router.GET("/ns/aldo/category/sel", checkPermission(aldoCategSelHandler, "read"))
+	router.POST("/ns/aldo/category/sel", checkPermission(aldoCategSelHandlerPost, "write"))
+	router.GET("/ns/aldo/category/use", checkPermission(aldoCategUseHandler, "read"))
+	router.GET("/ns/aldo/category/all", checkPermission(aldoCategAllHandler, "read"))
 
 	// Allnations.
-	router.GET("/allnations/products", checkPermission(allnationsProductsHandler, "admin"))
-	router.GET("/allnations/config", checkPermission(allnationsConfigHandler, "admin"))
+	router.GET("/allnations/products", checkPermission(allnationsProductsHandler, "read"))
+	router.GET("/allnations/config", checkPermission(allnationsConfigHandler, "read"))
 
 	// Auth - signup.
 	router.GET("/ns/auth/signup", confirmNoLogged(authSignupHandler))
@@ -240,7 +241,7 @@ func main() {
 
 	// Test.
 	router.GET("/ns/test", checkPermission(testPageHandler, "admin"))
-	router.POST("/ns/test/send-email", checkPermission(testSendEmailPost, "admin"))
+	router.POST("/ns/test/send-email", checkPermission(testSendMailPost, "admin"))
 
 	// start server
 	router.ServeFiles("/static/*filepath", http.Dir("./static/"))

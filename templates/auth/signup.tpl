@@ -23,27 +23,35 @@
     <form class="content" action="/ns/auth/signup" method="post">
         <h2 class="title">Criar cadastro</h2>
         <!-- name -->
-        <label for="name">Nome</label>
+        <label {{if .Name.Msg}} class="error" {{end}} for="name">
+            {{if not .Name.Msg}} Nome {{end}}
+            {{if .Name.Msg}} {{.Name.Msg}} {{end}}
+         </label> 
         <input type="text" id="name" name="name" value={{.Name.Value}}>
-        <p class="error">{{.Name.Msg}}</p>
 
         <!-- email -->
-        <label for="email">E-mail</label>
+        <label {{if .Email.Msg}} class="error" {{end}} for="email">
+            {{if not .Email.Msg}} Email {{end}}
+            {{if .Email.Msg}} {{.Email.Msg}} {{end}}
+        </label> 
         <input type="text" id="email" name="email" value={{.Email.Value}}>
-        <p class="error">{{.Email.Msg}}</p>
 
         <!-- password -->
-        <label for="password">Senha</label>
+        <label {{if .Password.Msg}} class="error" {{end}} for="password">
+            {{if not .Password.Msg}} Senha {{end}}
+            {{if .Password.Msg}} {{.Password.Msg}} {{end}}
+        </label> 
         <input type="password" id="password" name="password" value={{.Password.Value}}>
-        <p class="error">{{.Password.Msg}}</p>
 
         <!-- confirm password -->
-        <label for="passwordConfirm">Confirme a senha</label>
+        <label {{if .PasswordConfirm.Msg}} class="error" {{end}} for="passwordConfirm">
+            {{if not .PasswordConfirm.Msg}} Confirme a senha {{end}}
+            {{if .PasswordConfirm.Msg}} {{.PasswordConfirm.Msg}} {{end}}
+        </label> 
         <input type="password" id="passwordConfirm" name="passwordConfirm" value={{.PasswordConfirm.Value}}>
-        <p class="error">{{.PasswordConfirm.Msg}}</p>
 
         <!-- submit -->
-        <button type="submit">Cadastrar</button>
+        <input class="btn btn-info" type="submit" value="Cadastrar">
 
         <!-- Foot message. -->
         {{if .SuccessMsg}} <div class="success-msg"> {{.SuccessMsg}} </div> {{end}}

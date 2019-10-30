@@ -16,11 +16,11 @@ func testPageHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Para
 	HandleError(w, err)
 }
 
-// Test send email.
-func testSendEmailPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, _ *SessionData) {
+// Test send mail.
+func testSendMailPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, _ *SessionData) {
 	msg := "Email padrão\r\n" +
 		"Favor não responder\r\n"
-	err := sendEmail([]string{"douglasmg7@gmail.com"}, "Criação de conta", msg)
+	err := sendMail([]string{"douglasmg7@gmail.com"}, "Criação de conta", msg)
 	HandleError(w, err)
 	w.WriteHeader(200)
 }

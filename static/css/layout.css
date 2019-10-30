@@ -32,7 +32,7 @@ ul {
     text-align: left;
 }
 
-p.error {
+.error {
     color: var(--red-lighter);
 }
 .warn-msg,
