@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"errors"
+	"log"
 	"net/smtp"
 )
 
@@ -42,6 +43,10 @@ func sendMail(to []string, subject string, body string) error {
 		"Subject: " + subject + "\r\n"
 
 	message += "\r\n" + base64.StdEncoding.EncodeToString([]byte(body))
+
+	log.Printf("auth: %s\n", auth)
+	log.Printf("SendMail to: %s, from: %s, host: %s, message: %s\n", to, emailFrom, emailHostPort, message)
+	log.Printf("SendMail boty: : %s\n", body)
 
 	return smtp.SendMail(emailHostPort, auth, emailFrom, to, []byte(message))
 }
