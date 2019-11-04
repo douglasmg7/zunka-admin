@@ -21,6 +21,9 @@ func testSendMailPost(w http.ResponseWriter, req *http.Request, ps httprouter.Pa
 	msg := "Email padrão\r\n" +
 		"Favor não responder\r\n"
 	err := sendMail([]string{"douglasmg7@gmail.com"}, "Criação de conta", msg)
+	if err == nil {
+		w.WriteHeader(200)
+		return
+	}
 	HandleError(w, err)
-	w.WriteHeader(200)
 }
