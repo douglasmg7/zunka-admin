@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Go source variable must be defined.
 [[ -z "$GS" ]] && printf "error: GS - Go Source enviorment variable not defined.\n" >&2 && exit 1 
+[[ -z "$ZUNKAPATH" ]] && printf "error: ZUNKAPATH enviorment variable not defined.\n" >&2 && exit 1 
 
 echo :: Checking bluetang repository...
 cd $GS/bluetang
@@ -57,4 +57,5 @@ if [[ $INSTALL_ZUNKASRV == true ]]; then
     echo :: Installing zunkasrv...
     cd $GS/zunkasrv
     go install
+    echo true > $ZUNKAPATH/restart-zunka-srv 
 fi
