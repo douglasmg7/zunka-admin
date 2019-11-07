@@ -57,5 +57,6 @@ if [[ $INSTALL_ZUNKASRV == true ]]; then
     echo :: Installing zunkasrv...
     cd $GS/zunkasrv
     go install
+    echo :: Setting zunka srv to be restarted...
     echo true > $ZUNKAPATH/restart-zunka-srv 
 fi
