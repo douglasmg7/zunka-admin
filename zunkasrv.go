@@ -115,13 +115,14 @@ func init() {
 	// log.SetFlags(log.LstdFlags | log.Ldate | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
-	// production or development mode
+	// Run mode.
+	mode := "production"
 	if len(os.Args) > 1 && strings.HasPrefix(os.Args[1], "dev") {
 		dev = true
-		log.Println("Development mode")
-	} else {
-		log.Println("Production mode")
+		mode = "development"
 	}
+	// Log start.
+	log.Printf("*** Starting zunka srv in %v mode (version %s) ***\n", mode, version)
 
 	/************************************************************************************************
 	* Load templates
