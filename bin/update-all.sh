@@ -6,7 +6,7 @@
 ########################################################
 # bluetang 
 ########################################################
-echo :: Checking bluetang repository...
+echo :: Fetching bluetang repository...
 cd $GS/bluetang
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
@@ -24,7 +24,7 @@ fi
 ########################################################
 # currency
 ########################################################
-echo :: Checking currency repository...
+echo :: Fetching currency repository...
 cd $GS/currency
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
@@ -43,7 +43,7 @@ fi
 ########################################################
 # aldoutil
 ########################################################
-echo :: Checking aldoutil repository...
+echo :: Fetching aldoutil repository...
 cd $GS/aldoutil
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
@@ -62,7 +62,7 @@ fi
 ########################################################
 # aldowsc
 ########################################################
-echo :: Checking aldowsc repository...
+echo :: Fetching aldowsc repository...
 cd $GS/aldowsc
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
@@ -80,7 +80,7 @@ fi
 ########################################################
 # zoomwsc
 ########################################################
-echo :: Checking zoomwsc repository...
+echo :: Fetching zoomwsc repository...
 cd $GS/zoomwsc
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
@@ -98,7 +98,7 @@ fi
 ########################################################
 # zunkasrv
 ########################################################
-echo :: Checking zunkasrv repository...
+echo :: Fetching zunkasrv repository...
 cd $GS/zunkasrv
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
