@@ -37,6 +37,14 @@ if [[ ! $RES == Already* ]]; then
     echo aldowsc repository updated.
 fi
 
+echo :: Checking zoomwsc repository...
+cd $GS/zoomwsc
+RES=`git pull`
+if [[ ! $RES == Already* ]]; then
+    INSTALL_ZOOMWSC=true
+    echo zoomwsc repository updated.
+fi
+
 echo :: Checking zunkasrv repository...
 cd $GS/zunkasrv
 RES=`git pull`
@@ -49,6 +57,13 @@ fi
 if [[ $INSTALL_ALDOWSC == true ]]; then
     echo :: Installing aldowsc...
     cd $GS/aldowsc
+    go install
+fi
+
+# Install zoomwsc.
+if [[ $INSTALL_ZOOMWSC == true ]]; then
+    echo :: Installing zoomwsc...
+    cd $GS/zoomwsc
     go install
 fi
 
