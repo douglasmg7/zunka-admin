@@ -3,56 +3,119 @@
 [[ -z "$GS" ]] && printf "error: GS - Go Source enviorment variable not defined.\n" >&2 && exit 1 
 [[ -z "$ZUNKAPATH" ]] && printf "error: ZUNKAPATH enviorment variable not defined.\n" >&2 && exit 1 
 
+########################################################
+# bluetang 
+########################################################
 echo :: Checking bluetang repository...
 cd $GS/bluetang
-RES=`git pull`
-if [[ ! $RES == Already* ]]; then 
+git fetch
+SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+if [[ ! -z $SOME_FILES_CHANGED ]]; then 
     INSTALL_ZUNKASRV=true
-    echo bluetang repository updated.
+    git merge
+    echo Merging bluetang repository...
+fi
+if [[ ! -z $SECRET_FILES_CHANGED ]]; then
+    echo :: Revealing secret files...
+    git secret reveal
 fi
 
+########################################################
+# currency
+########################################################
 echo :: Checking currency repository...
 cd $GS/currency
-RES=`git pull`
-if [[ ! $RES == Already* ]]; then
+git fetch
+SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ZUNKASRV=true
     INSTALL_ALDOWSC=true
-    echo currency repository updated.
+    git merge
+    echo Merging currency repository...
+fi
+if [[ ! -z $SECRET_FILES_CHANGED ]]; then
+    echo :: Revealing secret files...
+    git secret reveal
 fi
 
+########################################################
+# aldoutil
+########################################################
 echo :: Checking aldoutil repository...
 cd $GS/aldoutil
-RES=`git pull`
-if [[ ! $RES == Already* ]]; then
+git fetch
+SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ZUNKASRV=true
     INSTALL_ALDOWSC=true
-    echo aldoutil repository updated.
+    git merge
+    echo Merging aldoutil repository...
+fi
+if [[ ! -z $SECRET_FILES_CHANGED ]]; then
+    echo :: Revealing secret files...
+    git secret reveal
 fi
 
+########################################################
+# aldowsc
+########################################################
 echo :: Checking aldowsc repository...
 cd $GS/aldowsc
-RES=`git pull`
-if [[ ! $RES == Already* ]]; then
+git fetch
+SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ALDOWSC=true
-    echo aldowsc repository updated.
+    git merge
+    echo Merging aldowsc repository...
+fi
+if [[ ! -z $SECRET_FILES_CHANGED ]]; then
+    echo :: Revealing secret files...
+    git secret reveal
 fi
 
+########################################################
+# zoomwsc
+########################################################
 echo :: Checking zoomwsc repository...
 cd $GS/zoomwsc
-RES=`git pull`
-if [[ ! $RES == Already* ]]; then
+git fetch
+SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ZOOMWSC=true
-    echo zoomwsc repository updated.
+    git merge
+    echo Merging zoomwsc repository...
+fi
+if [[ ! -z $SECRET_FILES_CHANGED ]]; then
+    echo :: Revealing secret files...
+    git secret reveal
 fi
 
+########################################################
+# zunkasrv
+########################################################
 echo :: Checking zunkasrv repository...
 cd $GS/zunkasrv
-RES=`git pull`
-if [[ ! $RES == Already* ]]; then
+git fetch
+SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ZUNKASRV=true
-    echo zunkasrv repository updated.
+    git merge
+    echo Merging zunkasrv repository...
+fi
+if [[ ! -z $SECRET_FILES_CHANGED ]]; then
+    echo :: Revealing secret files...
+    git secret reveal
 fi
 
+########################################################
+# Install
+########################################################
 # Install aldowsc.
 if [[ $INSTALL_ALDOWSC == true ]]; then
     echo :: Installing aldowsc...
