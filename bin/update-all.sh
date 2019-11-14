@@ -10,7 +10,7 @@ echo :: Fetching bluetang repository...
 cd $GS/bluetang
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
 if [[ ! -z $SOME_FILES_CHANGED ]]; then 
     INSTALL_ZUNKASRV=true
     git merge
@@ -28,7 +28,7 @@ echo :: Fetching currency repository...
 cd $GS/currency
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
 if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ZUNKASRV=true
     INSTALL_ALDOWSC=true
@@ -47,7 +47,7 @@ echo :: Fetching aldoutil repository...
 cd $GS/aldoutil
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
 if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ZUNKASRV=true
     INSTALL_ALDOWSC=true
@@ -66,7 +66,7 @@ echo :: Fetching aldowsc repository...
 cd $GS/aldowsc
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
 if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ALDOWSC=true
     git merge
@@ -84,7 +84,7 @@ echo :: Fetching zoomwsc repository...
 cd $GS/zoomwsc
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
 if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ZOOMWSC=true
     git merge
@@ -102,7 +102,7 @@ echo :: Fetching zunkasrv repository...
 cd $GS/zunkasrv
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "*.secret"`
+SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
 if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ZUNKASRV=true
     git merge
