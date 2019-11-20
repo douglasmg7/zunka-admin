@@ -85,12 +85,21 @@ cd $GS/zoomwsc
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
 SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
+# GOPKG_FILE_CHANGED=`git diff --name-only master...origin/master | grep "Gopkg\.toml$"`
 if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ZOOMWSC=true
-    git merge
     echo Merging zoomwsc repository...
+    git merge
 fi
+
+# if [[ ! -z $GOPKG_FILE_CHANGED ]]; then
+    # INSTALL_ZOOMWSC=true
+    # echo Updating packages...
+    # dep ensure
+# fi
+
 if [[ ! -z $SECRET_FILES_CHANGED ]]; then
+    INSTALL_ZOOMWSC=true
     echo :: Revealing secret files...
     git secret reveal
 fi
