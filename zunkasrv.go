@@ -80,7 +80,7 @@ func init() {
 	if zunkaPath == "" {
 		panic("ZUNKAPATH not defined.")
 	}
-	logPath := path.Join(zunkaPath, "log")
+	logPath := path.Join(zunkaPath, "log", "zunka-srv")
 	// dbPath := path.Join(zunkaPath, "db")
 	listPath = path.Join(zunkaPath, "list")
 	// Create log path.
