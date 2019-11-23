@@ -67,6 +67,7 @@ cd $GS/aldowsc
 git fetch
 SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
 SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
+INSTALL_ALDOWSC_SERVICE_SCRIPT_CHANGED=`git diff --name-only master...origin/master | grep "install-aldowsc-service\.sh$"`
 if [[ ! -z $SOME_FILES_CHANGED ]]; then
     INSTALL_ALDOWSC=true
     git merge
@@ -75,6 +76,10 @@ fi
 if [[ ! -z $SECRET_FILES_CHANGED ]]; then
     echo :: Revealing secret files...
     git secret reveal
+fi
+if [[ ! -z $INSTALL_ALDOWSC_SERVICE_SCRIPT_CHANGED ]]; then
+    echo :: Installing service...
+    ./bin/install-aldowsc-service.sh
 fi
 
 ########################################################
