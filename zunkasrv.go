@@ -60,8 +60,8 @@ var dbZunka *sql.DB
 var dbAldo *sqlx.DB
 var dbZunkaFile, dbAldoFile string
 
-// list.
-var listPath string
+var zunkaPath string
+var GS string
 
 var err error
 
@@ -76,13 +76,18 @@ func init() {
 	port = "8080"
 
 	// Path.
-	zunkaPath := os.Getenv("ZUNKAPATH")
+	zunkaPath = os.Getenv("ZUNKAPATH")
 	if zunkaPath == "" {
-		panic("ZUNKAPATH not defined.")
+		panic("ZUNKAPATH env not defined.")
 	}
+
+	// Go lang source.
+	GS = os.Getenv("GS")
+	if GS == "" {
+		panic("GS env not defined.")
+	}
+
 	logPath := path.Join(zunkaPath, "log", "zunka-srv")
-	// dbPath := path.Join(zunkaPath, "db")
-	listPath = path.Join(zunkaPath, "list")
 	// Create log path.
 	os.MkdirAll(logPath, os.ModePerm)
 

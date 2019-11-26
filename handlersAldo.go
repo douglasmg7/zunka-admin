@@ -6,9 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math"
 	"net/http"
-	// "path"
+	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -199,12 +200,24 @@ func aldoCategoriesHandlerPost(w http.ResponseWriter, req *http.Request, _ httpr
 	for _, category := range categories {
 		// Update changed categories.
 		if (category.Selected && (req.PostFormValue(category.Name) == "")) || (!category.Selected && (req.PostFormValue(category.Name) != "")) {
-			fmt.Println("Updated category:", category.Name)
+			// fmt.Println("Updated category:", category.Name)
 			_, err = stmt.Exec(!category.Selected, category.Name)
 			HandleError(w, err)
 		}
 	}
 	// Render categories page.
 	http.Redirect(w, req, "/ns/aldo/categories", http.StatusSeeOther)
+
+	// Run script to process xml products.
+	// log.Println(GS + "/aldowsc/bin/process-xml-products.sh")
+	cmd := exec.Command(GS + "/aldowsc/bin/process-xml-products.sh")
+	err = cmd.Start()
+	if err != nil {
+		log.Printf("Error running script to process XML Aldo products. %s", err)
+	}
+	// log.Printf("Waiting for command to finish...")
+	// err = cmd.Wait()
+	// log.Printf("Command finished with error: %v", err)
+
 	return
 }
