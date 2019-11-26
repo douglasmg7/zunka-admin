@@ -38,7 +38,7 @@ var tmplUserChangeCPF *template.Template
 var tmplUserDeleteAccount *template.Template
 
 // Aldo.
-var tmplAldoProducts, tmplAldoProduct, tmplAldoCategorySel, tmplAldoCategoryUse, tmplAldoCategoryAll *template.Template
+var tmplAldoProducts, tmplAldoProduct, tmplAldoCategories *template.Template
 
 // Allnations.
 var tmplAllnationsProducts, tmplAllnationsConfig *template.Template
@@ -143,9 +143,7 @@ func init() {
 	// Aldo.
 	tmplAldoProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProduct.tmpl"))
 	tmplAldoProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProducts.tmpl"))
-	tmplAldoCategorySel = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoCategorySel.tmpl"))
-	tmplAldoCategoryUse = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoCategoryUse.tmpl"))
-	tmplAldoCategoryAll = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoCategoryAll.tmpl"))
+	tmplAldoCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoCategories.tmpl"))
 	// Allnations.
 	tmplAllnationsProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProducts.tpl"))
 	tmplAllnationsConfig = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsConfig.tpl"))
@@ -191,16 +189,18 @@ func main() {
 	router.GET("/ns/clean-sessions", checkPermission(cleanSessionsHandler, "admin"))
 
 	// Aldo.
+	// Products list page.
 	router.GET("/ns/aldo/products", checkPermission(aldoProductsHandler, "read"))
+	// Product page.
 	router.GET("/ns/aldo/product/:code", checkPermission(aldoProductHandler, "read"))
 	// Create product on zunka server.
 	router.POST("/ns/aldo/product/:code", checkPermission(aldoProductHandlerPost, "write"))
 	// Product removed from site, so remove his reference from the site system.
 	router.DELETE("/ns/aldo/product/mongodb_id/:code", checkApiAuthorization(aldoProductMongodbIdHandlerDelete))
-	router.GET("/ns/aldo/category/sel", checkPermission(aldoCategSelHandler, "read"))
-	router.POST("/ns/aldo/category/sel", checkPermission(aldoCategSelHandlerPost, "write"))
-	router.GET("/ns/aldo/category/use", checkPermission(aldoCategUseHandler, "read"))
-	router.GET("/ns/aldo/category/all", checkPermission(aldoCategAllHandler, "read"))
+	// Categories page.
+	router.GET("/ns/aldo/categories", checkPermission(aldoCategoriesHandler, "read"))
+	// Save categories.
+	router.POST("/ns/aldo/categories", checkPermission(aldoCategoriesHandlerPost, "write"))
 
 	// Allnations.
 	router.GET("/allnations/products", checkPermission(allnationsProductsHandler, "read"))

@@ -1,0 +1,38 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+    h3 {
+        margin-bottom: .5em;
+    }   
+    label {
+        display: inline-block;
+        font-size: 1.4em;
+        margin-top: .5em;
+        margin-bottom: 0em;
+    }
+    input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        position: relative;
+        top: 3px;
+    }
+</style>
+{{end}}
+
+{{define "title"}}Categorias Aldo{{end}}
+
+{{define "content"}}
+<div class="content">
+    <form method='post'>
+        <h3>Categorias Aldo</h3>
+        {{range .Categories}}
+            <input type='checkbox' name='{{.Name}}' id='{{.Name}}' {{if .Selected}}checked{{end}} />
+            <label for='{{.Name}}'> {{.Text}} </label>
+            <br>
+        {{end}}
+        <input class="btn btn-success" type="submit" value="Salvar">
+        <input class="btn" onclick='window.location.href="/ns/aldo/products"' value="Sair">
+    </form>
+</div>
+{{end}}

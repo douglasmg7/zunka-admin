@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"math"
 	"net/http"
-	"path"
+	// "path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -167,50 +167,44 @@ func aldoProductMongodbIdHandlerDelete(w http.ResponseWriter, req *http.Request,
 	w.WriteHeader(200)
 }
 
-// All categories.
-func aldoCategAllHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+// Categories.
+func aldoCategoriesHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	data := struct {
 		Session     *SessionData
 		HeadMessage string
-		Categories  []string
-	}{session, "", []string{}}
-	data.Categories = aldoutil.ReadCategoryList(path.Join(listPath, "categAll.list"))
-	err = tmplAldoCategoryAll.ExecuteTemplate(w, "aldoCategoryAll.tmpl", data)
+		Categories  []aldoutil.Category
+	}{session, "", []aldoutil.Category{}}
+
+	// Get categories from db.
+	err = dbAldo.Select(&data.Categories, "SELECT * FROM category order by name")
+	HandleError(w, err)
+
+	// Render page.
+	err = tmplAldoCategories.ExecuteTemplate(w, "aldoCategories.tmpl", data)
 	HandleError(w, err)
 }
 
-// Selected categories.
-func aldoCategSelHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	data := struct {
-		Session     *SessionData
-		HeadMessage string
-		Categories  string
-	}{session, "", ""}
-	data.Categories = strings.Join(aldoutil.ReadCategoryList(path.Join(listPath, "categSel.list")), "\n")
-	err = tmplAldoCategorySel.ExecuteTemplate(w, "aldoCategorySel.tmpl", data)
+// Save categories.
+func aldoCategoriesHandlerPost(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+	// Get categories from db.
+	categories := []aldoutil.Category{}
+	err = dbAldo.Select(&categories, "SELECT * FROM category order by name")
 	HandleError(w, err)
-}
-
-// Save selected categories.
-func aldoCategSelHandlerPost(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	err := aldoutil.WriteCategoryListFromString(req.FormValue("categories"), path.Join(listPath, "categSel.list"))
+	// Prepare update.
+	stmt, err := dbAldo.Prepare(`UPDATE category SET selected = $1 WHERE name = $2;`)
 	HandleError(w, err)
+	defer stmt.Close()
 
-	// categories := strings.Split(strings.ReplaceAll(req.FormValue("categories"), " ", ""), "\n")
-	// fmt.Println("Categories:", categories)
-
-	http.Redirect(w, req, "/ns/aldo/category/sel", http.StatusSeeOther)
+	// For each category on db.
+	for _, category := range categories {
+		// Update changed categories.
+		if (category.Selected && (req.PostFormValue(category.Name) == "")) || (!category.Selected && (req.PostFormValue(category.Name) != "")) {
+			fmt.Println("Updated category:", category.Name)
+			_, err = stmt.Exec(!category.Selected, category.Name)
+			HandleError(w, err)
+		}
+	}
+	// Render categories page.
+	http.Redirect(w, req, "/ns/aldo/categories", http.StatusSeeOther)
 	return
-}
-
-// Categories in use.
-func aldoCategUseHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	data := struct {
-		Session     *SessionData
-		HeadMessage string
-		Categories  []string
-	}{session, "", []string{}}
-	data.Categories = aldoutil.ReadCategoryList(path.Join(listPath, "categUse.list"))
-	err = tmplAldoCategoryUse.ExecuteTemplate(w, "aldoCategoryUse.tmpl", data)
-	HandleError(w, err)
 }
