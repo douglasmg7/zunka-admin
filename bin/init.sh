@@ -8,15 +8,6 @@
 mkdir -p $ZUNKAPATH/log
 mkdir -p $ZUNKAPATH/xml
 
-# Create list with selected products if list not exist.
-if [[ ! -f $ZUNKAPATH/list/categSel.list ]]; then
-    echo "Creating list of selected products."
-    mkdir -p $ZUNKAPATH/list
-    cat > $ZUNKAPATH/list/categSel.list << EOF
-monitor
-EOF
-fi
-
 # Create dbs.
 $GS/zunkasrv/bin/db/create_db.sh
 $GS/aldowsc/bin/db/create_db.sh
