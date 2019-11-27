@@ -1,5 +1,6 @@
 zunkasrv
 db/zunka.db
+vendor/
 
 # Include directories but not the files.
 log/*
