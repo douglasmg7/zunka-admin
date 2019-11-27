@@ -2,12 +2,12 @@
 
 
 [[projects]]
-  digest = "1:020b04b109ef05f68ea6637a71b1217891f2cdc60a87b6bfad190d1494a6ff56"
+  digest = "1:61266650cc0dca1d7da34c71d4705f52fb21e7f255643bb8d40403357ce65a8c"
   name = "github.com/douglasmg7/aldoutil"
   packages = ["."]
   pruneopts = "UT"
-  revision = "b76a129041a27e09e481bc3df1818dab73c76696"
-  version = "v0.3.0"
+  revision = "ae292f8d2eb93ddfc2d9f7778ce169735141489e"
+  version = "v0.3.1"
 
 [[projects]]
   digest = "1:3ce746b36cfc2c3734be0bf3c575f7ea2cc4424f94af956d6f41c6a8c697a611"
@@ -15,6 +15,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "996d03b70f1fe484ab46009f16357edf0a797440"
+  version = "v0.1.0"
+
+[[projects]]
+  digest = "1:f316c463622cf004e0dc736cc373a571dae2474b5df79e41260f7e00985d7d61"
+  name = "github.com/douglasmg7/currency"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "cc0dd53259a78351c5ddfa60fc4d09de1c62e0bb"
   version = "v0.1.0"
 
 [[projects]]

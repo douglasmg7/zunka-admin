@@ -99,10 +99,7 @@ type Sessions struct {
 // CreateSession create a session and writing a cookie on client and keep a reletion of cookie -> user id.
 func (s *Sessions) CreateSession(w http.ResponseWriter, userID int) error {
 	// create cookie
-	sUUID, err := uuid.NewV4()
-	if err != nil {
-		return err
-	}
+	sUUID := uuid.NewV4()
 	sUUIDString := sUUID.String()
 	// Save cookie.
 	http.SetCookie(w, &http.Cookie{

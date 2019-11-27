@@ -1,9 +1,9 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/julienschmidt/httprouter"
+	"net/http"
+	"time"
 )
 
 // Test page.
@@ -18,9 +18,8 @@ func testPageHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Para
 
 // Test send mail.
 func testSendMailPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, _ *SessionData) {
-	msg := "Email padrão\r\n" +
-		"Favor não responder\r\n"
-	err := sendMail([]string{"douglasmg7@gmail.com"}, "Criação de conta", msg)
+	msg := time.Now().String()
+	err := sendMail([]string{"douglasmg7@gmail.com"}, "Teste (zunkasrv).", msg)
 	if err == nil {
 		w.WriteHeader(200)
 		return

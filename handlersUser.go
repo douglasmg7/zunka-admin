@@ -172,10 +172,7 @@ func userChangeEmailHandlerPost(w http.ResponseWriter, req *http.Request, _ http
 		log.Fatal(err)
 	}
 	// Create uuid.
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		log.Fatal(err)
-	}
+	uuid := uuid.NewV4()
 	// Save email confirmation.
 	stmt, err = dbZunka.Prepare(`INSERT INTO email_confirmation(uuid, name, email, password, createdAt) VALUES(?, ?, ?, ?, ?)`)
 	if err != nil {

@@ -129,10 +129,7 @@ func authSignupHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 		}
 	}
 	// Create uuid.
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		log.Fatal(err)
-	}
+	uuid := uuid.NewV4()
 	// Encrypt password.
 	cryptedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password.Value), bcrypt.DefaultCost)
 	if err != nil {
@@ -342,10 +339,7 @@ func passwordRecoveryHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 		log.Fatal(err)
 	}
 	// Create a token to change password.
-	uuid, err := uuid.NewV4()
-	if err != nil {
-		log.Fatal(err)
-	}
+	uuid := uuid.NewV4()
 	// Save token.
 	stmt, err := dbZunka.Prepare(`INSERT INTO password_reset(uuid, user_email, createdAt) VALUES(?, ?, ?)`)
 	if err != nil {

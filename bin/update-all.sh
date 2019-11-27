@@ -3,128 +3,79 @@
 [[ -z "$GS" ]] && printf "error: GS - Go Source enviorment variable not defined.\n" >&2 && exit 1 
 [[ -z "$ZUNKAPATH" ]] && printf "error: ZUNKAPATH enviorment variable not defined.\n" >&2 && exit 1 
 
-########################################################
+pull_roll () {
+    [[ -z $1 ]] && echo "error: pull_roll function called without path argument." && exit 1 
+
+    cd $1
+
+    printf "\n:: Synchronizing %s ...\n" $1
+    REV_OLD=`git rev-parse HEAD`
+    git pull
+    REV_NEW=`git rev-parse HEAD`
+    SOME_FILES_CHANGED=`git diff $REV_OLD --name-only`
+    GOPKG_LOCK_CHANGED=`git diff $REV_OLD --name-only | grep "Gopkg\.lock$"`
+    SECRET_FILES_CHANGED=`git diff $REV_OLD --name-only | grep "\.secret$"`
+    # Confirm if local repository not have modifications.
+    if [[ $REV_NEW == $REV_OLD && ! -z $SOME_FILES_CHANGED ]];then
+        printf "Local repository have modifications.\n"
+        return
+    fi
+    if [[ ! -z $GOPKG_LOCK_CHANGED ]]; then
+        echo :: Running dep ensure...
+        dep ensure
+    fi
+    if [[ ! -z $SECRET_FILES_CHANGED ]]; then
+        echo :: Revealing secret files...
+        git secret reveal
+    fi
+    if [[ ! -z $SOME_FILES_CHANGED ]]; then 
+        echo " rev-new:" `git rev-parse HEAD`
+        echo " rev-old:" $REV_OLD
+        return 1
+    fi
+}
+
 # bluetang 
-########################################################
-echo :: Fetching bluetang repository...
-cd $GS/bluetang
-git fetch
-SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
-if [[ ! -z $SOME_FILES_CHANGED ]]; then 
+pull_roll $GS/bluetang
+if [[ $? == 1 ]]; then
     INSTALL_ZUNKASRV=true
-    git merge
-    echo Merging bluetang repository...
-fi
-if [[ ! -z $SECRET_FILES_CHANGED ]]; then
-    echo :: Revealing secret files...
-    git secret reveal
 fi
 
-########################################################
 # currency
-########################################################
-echo :: Fetching currency repository...
-cd $GS/currency
-git fetch
-SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
-if [[ ! -z $SOME_FILES_CHANGED ]]; then
+pull_roll $GS/currency
+if [[ $? == 1 ]]; then
     INSTALL_ZUNKASRV=true
     INSTALL_ALDOWSC=true
-    git merge
-    echo Merging currency repository...
-fi
-if [[ ! -z $SECRET_FILES_CHANGED ]]; then
-    echo :: Revealing secret files...
-    git secret reveal
 fi
 
-########################################################
 # aldoutil
-########################################################
-echo :: Fetching aldoutil repository...
-cd $GS/aldoutil
-git fetch
-SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
-if [[ ! -z $SOME_FILES_CHANGED ]]; then
+pull_roll $GS/aldoutil
+if [[ $? == 1 ]]; then
     INSTALL_ZUNKASRV=true
     INSTALL_ALDOWSC=true
-    git merge
-    echo Merging aldoutil repository...
-fi
-if [[ ! -z $SECRET_FILES_CHANGED ]]; then
-    echo :: Revealing secret files...
-    git secret reveal
 fi
 
-########################################################
 # aldowsc
-########################################################
-echo :: Fetching aldowsc repository...
-cd $GS/aldowsc
-git fetch
-SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
-INSTALL_ALDOWSC_SERVICE_SCRIPT_CHANGED=`git diff --name-only master...origin/master | grep "install-aldowsc-service\.sh$"`
-if [[ ! -z $SOME_FILES_CHANGED ]]; then
+pull_roll $GS/aldowsc
+if [[ $? == 1 ]]; then
     INSTALL_ALDOWSC=true
-    git merge
-    echo Merging aldowsc repository...
 fi
-if [[ ! -z $SECRET_FILES_CHANGED ]]; then
-    echo :: Revealing secret files...
-    git secret reveal
-fi
-if [[ ! -z $INSTALL_ALDOWSC_SERVICE_SCRIPT_CHANGED ]]; then
-    echo :: Installing service...
+# aldowsc.service
+if [[ ! -z `git diff --name-only $REV_OLD | grep "install-aldowsc-service\.sh$"` ]]; then
+    printf "\n:: Installing alwdowsc.service...\n"
     ./bin/install-aldowsc-service.sh
 fi
 
-########################################################
 # zoomwsc
-########################################################
-echo :: Fetching zoomwsc repository...
-cd $GS/zoomwsc
-git fetch
-SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
-# GOPKG_FILE_CHANGED=`git diff --name-only master...origin/master | grep "Gopkg\.toml$"`
-if [[ ! -z $SOME_FILES_CHANGED ]]; then
+pull_roll $GS/zoomwsc
+if [[ $? == 1 ]]; then
     INSTALL_ZOOMWSC=true
-    echo Merging zoomwsc repository...
-    git merge
 fi
 
-# if [[ ! -z $GOPKG_FILE_CHANGED ]]; then
-    # INSTALL_ZOOMWSC=true
-    # echo Updating packages...
-    # dep ensure
-# fi
-
-if [[ ! -z $SECRET_FILES_CHANGED ]]; then
-    INSTALL_ZOOMWSC=true
-    echo :: Revealing secret files...
-    git secret reveal
-fi
-
-########################################################
 # zunkasrv
-########################################################
-echo :: Fetching zunkasrv repository...
-cd $GS/zunkasrv
-git fetch
-SOME_FILES_CHANGED=`git diff --name-only master...origin/master`
-SECRET_FILES_CHANGED=`git diff --name-only master...origin/master | grep "\.secret$"`
-if [[ ! -z $SOME_FILES_CHANGED ]]; then
+pull_roll $GS/zunkasrv
+if [[ $? == 1 ]]; then
     INSTALL_ZUNKASRV=true
-    git merge
-    echo Merging zunkasrv repository...
-fi
-if [[ ! -z $SECRET_FILES_CHANGED ]]; then
-    echo :: Revealing secret files...
-    git secret reveal
 fi
 
 ########################################################
@@ -132,23 +83,23 @@ fi
 ########################################################
 # Install aldowsc.
 if [[ $INSTALL_ALDOWSC == true ]]; then
-    echo :: Installing aldowsc...
+    printf "\n:: Installing aldowsc...\n"
     cd $GS/aldowsc
     go install
 fi
 
 # Install zoomwsc.
 if [[ $INSTALL_ZOOMWSC == true ]]; then
-    echo :: Installing zoomwsc...
+    printf "\n:: Installing zoomwsc...\n"
     cd $GS/zoomwsc
     go install
 fi
 
 # Install zunkasrv.
 if [[ $INSTALL_ZUNKASRV == true ]]; then
-    echo :: Installing zunkasrv...
+    printf "\n:: Installing zunkasrv...\n"
     cd $GS/zunkasrv
     go install
-    echo :: Signaling to restart zunka_srv...
+    printf "\n:: Signaling to restart zunka_srv...\n"
     echo true > $ZUNKAPATH/restart-zunka-srv 
 fi
