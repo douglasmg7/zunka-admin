@@ -33,7 +33,6 @@
 
 	<h3>Descrição</h3>
 	<p>{{.Product.Description}}</p>
-    <img src='{{.Product.PictureLink}}'>
 
 	<h3>Produto id</h3>
 	<p>{{.Product.Id}}</p>
@@ -46,6 +45,8 @@
     {{else}}
 	    <p>{{.Product.MongodbId}}</p>
 	{{end}}
+
+    <img src='{{.Product.PictureLink}}'>
 
 	<h3>Data de criação</h3>
 	<p>{{.Product.CreatedAt}}</p>
