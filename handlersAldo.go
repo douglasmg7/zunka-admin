@@ -145,7 +145,7 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	data.Product.MongodbId = data.Product.MongodbId[1 : len(data.Product.MongodbId)-1]
 
 	// Update product with _id from mongodb store.
-	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodbId = $1 WHERE id = $2;`)
+	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE id = $2;`)
 	HandleError(w, err)
 	defer stmt.Close()
 	_, err = stmt.Exec(data.Product.MongodbId, data.Product.Id)
@@ -159,7 +159,7 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 // Remove mongodb id from Product.
 func aldoProductMongodbIdHandlerDelete(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	// Update mongodb store id.
-	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodbId = $1 WHERE id = $2;`)
+	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE id = $2;`)
 	HandleError(w, err)
 	defer stmt.Close()
 	fmt.Println("code:", ps.ByName("code"))

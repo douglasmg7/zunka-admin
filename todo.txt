@@ -1,4 +1,5 @@
-aldo product list pagination, showing only 10.
+[ commit ]
+    Included category into aldo product page.
 
 implement password change.
 
