@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"math"
@@ -36,13 +37,19 @@ func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 // Product item.
 func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
 	data := struct {
-		Session     *SessionData
-		HeadMessage string
-		Product     aldoutil.Product
-	}{session, "", aldoutil.Product{}}
+		Session              *SessionData
+		HeadMessage          string
+		Product              aldoutil.Product
+		TechnicalDescription template.HTML
+		RMAProcedure         template.HTML
+	}{session, "", aldoutil.Product{}, "", ""}
 
 	err = dbAldo.Get(&data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
 	HandleError(w, err)
+
+	// Not escaped.
+	data.TechnicalDescription = template.HTML(data.Product.TechnicalDescription)
+	data.RMAProcedure = template.HTML(data.Product.RMAProcedure)
 
 	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
 	HandleError(w, err)

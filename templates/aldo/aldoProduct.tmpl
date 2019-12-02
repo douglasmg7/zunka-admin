@@ -17,6 +17,18 @@
     .danger {
         color: var(--red);
     }
+    .techinical-description p,
+    .rma-procedure p
+    {
+        font-size: 1.2em;
+        background-color: var(--white);
+        padding: .5em;
+    }
+    .techinical-description strong,
+    .rma-procedure strong
+    {
+        font-weight: 500;
+    }
 </style>
 {{end}}
 
@@ -76,7 +88,9 @@
 	<p>{{.Product.SuggestionPrice.Format}}</p>
 
 	<h3>Descrição técnica</h3>
-	<p>{{.Product.TechnicalDescription}}</p>
+    <div class="techinical-description">
+        <p> {{.TechnicalDescription}} </p>
+    </div>
 
 	<h3>Comprimento</h3>
 	<p>{{.Product.Length}} mm</p>
@@ -96,6 +110,8 @@
 	<p>{{.Product.WarrantyPeriod}} meses</p>
 
 	<h3>Procedimento RMA</h3>
-	<p>{{.Product.RMAProcedure}}</p>
+    <div class="rma-procedure">
+	    <p>{{.RMAProcedure}}</p>
+    </div>
 </div>
 {{end}}
