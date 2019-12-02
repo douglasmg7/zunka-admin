@@ -35,25 +35,25 @@ pull_roll () {
     fi
 }
 
-# bluetang 
-pull_roll $GS/bluetang
-if [[ $? == 1 ]]; then
-    INSTALL_ZUNKASRV=true
-fi
+# # bluetang 
+# pull_roll $GS/bluetang
+# if [[ $? == 1 ]]; then
+    # INSTALL_ZUNKASRV=true
+# fi
 
-# currency
-pull_roll $GS/currency
-if [[ $? == 1 ]]; then
-    INSTALL_ZUNKASRV=true
-    INSTALL_ALDOWSC=true
-fi
+# # currency
+# pull_roll $GS/currency
+# if [[ $? == 1 ]]; then
+    # INSTALL_ZUNKASRV=true
+    # INSTALL_ALDOWSC=true
+# fi
 
-# aldoutil
-pull_roll $GS/aldoutil
-if [[ $? == 1 ]]; then
-    INSTALL_ZUNKASRV=true
-    INSTALL_ALDOWSC=true
-fi
+# # aldoutil
+# pull_roll $GS/aldoutil
+# if [[ $? == 1 ]]; then
+    # INSTALL_ZUNKASRV=true
+    # INSTALL_ALDOWSC=true
+# fi
 
 # aldowsc
 pull_roll $GS/aldowsc
