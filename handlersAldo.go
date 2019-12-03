@@ -11,7 +11,7 @@ import (
 	"math"
 	"net/http"
 	"os/exec"
-	"regexp"
+	// "regexp"
 	"strconv"
 	"strings"
 
@@ -58,10 +58,12 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 // Add product to zunka site.
 func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
 	data := struct {
-		Session     *SessionData
-		HeadMessage string
-		Product     aldoutil.Product
-	}{session, "", aldoutil.Product{}}
+		Session              *SessionData
+		HeadMessage          string
+		Product              aldoutil.Product
+		TechnicalDescription template.HTML
+		RMAProcedure         template.HTML
+	}{session, "", aldoutil.Product{}, "", ""}
 
 	// Get product.
 	err = dbAldo.Get(&data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
@@ -82,23 +84,28 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	storeProduct.DealerProductMaker = strings.Title(strings.ToLower(data.Product.Brand))
 
 	// Description.
-	data.Product.TechnicalDescription = strings.TrimSpace(data.Product.TechnicalDescription)
+	storeProduct.DealerProductDesc = strings.TrimSpace(data.Product.TechnicalDescription)
+	// log.Println("data.Product.TechnicalDescription:", data.Product.TechnicalDescription)
+	// log.Println("storeProduct.DealerProductDesc:", storeProduct.DealerProductDesc)
 
-	// Description.
-	// Split by <br/>
-	techDescs := regexp.MustCompile(`\<\s*br\s*\/*\>`).Split(data.Product.TechnicalDescription, -1)
-	// Remove html tags.
-	// Remove blank intens.
-	reg := regexp.MustCompile(`\<[^>]*\>`)
-	buffer := bytes.Buffer{}
-	for _, val := range techDescs {
-		val = strings.TrimSpace(reg.ReplaceAllString(val, ""))
-		if val != "" {
-			buffer.WriteString(strings.ReplaceAll(val, ":", ";"))
-			buffer.WriteString("\n")
-		}
-	}
-	storeProduct.DealerProductDesc = strings.TrimSpace(buffer.String())
+	// // Description.
+	// data.Product.TechnicalDescription = strings.TrimSpace(data.Product.TechnicalDescription)
+
+	// // Description.
+	// // Split by <br/>
+	// techDescs := regexp.MustCompile(`\<\s*br\s*\/*\>`).Split(data.Product.TechnicalDescription, -1)
+	// // Remove html tags.
+	// // Remove blank intens.
+	// reg := regexp.MustCompile(`\<[^>]*\>`)
+	// buffer := bytes.Buffer{}
+	// for _, val := range techDescs {
+	// val = strings.TrimSpace(reg.ReplaceAllString(val, ""))
+	// if val != "" {
+	// buffer.WriteString(strings.ReplaceAll(val, ":", ";"))
+	// buffer.WriteString("\n")
+	// }
+	// }
+	// storeProduct.DealerProductDesc = strings.TrimSpace(buffer.String())
 
 	// Months in days.
 	storeProduct.DealerProductWarrantyDays = data.Product.WarrantyPeriod * 30
@@ -157,6 +164,10 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	defer stmt.Close()
 	_, err = stmt.Exec(data.Product.MongodbId, data.Product.Id)
 	HandleError(w, err)
+
+	// Not escaped.
+	data.TechnicalDescription = template.HTML(data.Product.TechnicalDescription)
+	data.RMAProcedure = template.HTML(data.Product.RMAProcedure)
 
 	// Render template.
 	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
