@@ -11,8 +11,6 @@ import (
 	"math"
 	"net/http"
 	"os/exec"
-	// "regexp"
-	"strconv"
 	"strings"
 
 	"github.com/douglasmg7/aldoutil"
@@ -72,7 +70,7 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	// Set store product.
 	storeProduct := aldoutil.StoreProduct{}
 	storeProduct.DealerName = "Aldo"
-	storeProduct.DealerProductId = strconv.Itoa(data.Product.Id)
+	storeProduct.DealerProductId = data.Product.Code
 
 	// Title.
 	storeProduct.DealerProductTitle = strings.Title(strings.ToLower(data.Product.Description))
@@ -177,7 +175,7 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 // Remove mongodb id from Product.
 func aldoProductMongodbIdHandlerDelete(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	// Update mongodb store id.
-	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE id = $2;`)
+	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE code = $2;`)
 	HandleError(w, err)
 	defer stmt.Close()
 	fmt.Println("code:", ps.ByName("code"))
