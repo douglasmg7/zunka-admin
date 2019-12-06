@@ -73,7 +73,8 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	storeProduct.DealerProductId = data.Product.Code
 
 	// Title.
-	storeProduct.DealerProductTitle = strings.Title(strings.ToLower(data.Product.Description))
+	// storeProduct.DealerProductTitle = strings.Title(strings.ToLower(data.Product.Description))
+	storeProduct.DealerProductTitle = data.Product.Description
 
 	// Category.
 	storeProduct.DealerProductCategory = strings.Title(strings.ToLower(data.Product.Category))
@@ -117,6 +118,8 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	storeProduct.DealerProductWeight = data.Product.Weight
 	// Price.
 	storeProduct.DealerProductPrice = int(data.Product.DealerPrice)
+	// Suggestion price.
+	storeProduct.DealerProductFinalPriceSuggestion = int(data.Product.SuggestionPrice)
 	// Last update.
 	storeProduct.DealerProductLastUpdate = data.Product.ChangedAt
 	// Active.
