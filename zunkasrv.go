@@ -356,6 +356,7 @@ type logger struct {
 // Handle interface.
 // todo - why DELETE is logging twice?
 func (l *logger) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	log.Printf("%s %s - begin", req.Method, req.URL.Path)
 	start := time.Now()
 	l.handler.ServeHTTP(w, req)
 	log.Printf("%s %s %v", req.Method, req.URL.Path, time.Since(start))

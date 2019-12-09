@@ -87,6 +87,9 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	// log.Println("data.Product.TechnicalDescription:", data.Product.TechnicalDescription)
 	// log.Println("storeProduct.DealerProductDesc:", storeProduct.DealerProductDesc)
 
+	// Image.
+	storeProduct.DealerProductImagesLink = data.Product.PictureLink
+
 	// // Description.
 	// data.Product.TechnicalDescription = strings.TrimSpace(data.Product.TechnicalDescription)
 
