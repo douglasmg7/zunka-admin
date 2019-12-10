@@ -21,8 +21,8 @@ pull_roll () {
         return
     fi
     if [[ ! -z $GOPKG_LOCK_CHANGED ]]; then
-        echo :: Running dep ensure...
-        dep ensure
+        echo :: Running dep ensure -vendor-only ...
+        dep ensure -vendor-only
     fi
     if [[ ! -z $SECRET_FILES_CHANGED ]]; then
         echo :: Revealing secret files...
