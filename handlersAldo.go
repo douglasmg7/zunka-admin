@@ -184,7 +184,7 @@ func aldoProductMongodbIdHandlerDelete(w http.ResponseWriter, req *http.Request,
 	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE code = $2;`)
 	HandleError(w, err)
 	defer stmt.Close()
-	fmt.Println("code:", ps.ByName("code"))
+	// fmt.Println("code:", ps.ByName("code"))
 	_, err = stmt.Exec("", ps.ByName("code"))
 	// _, err = stmt.Exec(ps.ByName("code"), "")
 	HandleError(w, err)
