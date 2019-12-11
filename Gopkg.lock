@@ -26,6 +26,19 @@
   version = "v0.1.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:e15127ad80334ba757c4b60d462217b9257698ea575e8ac6158db98da51e74bd"
+  name = "github.com/gomarkdown/markdown"
+  packages = [
+    ".",
+    "ast",
+    "html",
+    "parser",
+  ]
+  pruneopts = "UT"
+  revision = "fbea82c4bb03ba306f5cd63e7e4c406e5e8d0f61"
+
+[[projects]]
   digest = "1:6c41d4f998a03b6604227ccad36edaed6126c397e5d78709ef4814a1145a6757"
   name = "github.com/jmoiron/sqlx"
   packages = [
@@ -69,7 +82,7 @@
     "blowfish",
   ]
   pruneopts = "UT"
-  revision = "b544559bb6d1b5c62fba4af5e843ff542174f079"
+  revision = "e9b2fee46413994441b28dfca259d911d963dfed"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -77,6 +90,7 @@
   input-imports = [
     "github.com/douglasmg7/aldoutil",
     "github.com/douglasmg7/bluetang",
+    "github.com/gomarkdown/markdown",
     "github.com/jmoiron/sqlx",
     "github.com/julienschmidt/httprouter",
     "github.com/mattn/go-sqlite3",

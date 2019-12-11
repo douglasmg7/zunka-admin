@@ -2,15 +2,13 @@ package main
 
 import (
 	"fmt"
-	// "github.com/douglasmg7/bluetang"
+	"github.com/gomarkdown/markdown"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/mattn/go-sqlite3"
-
-	// "github.com/satori/go.uuid"
-
+	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
-	// "time"
 )
 
 type valueMsg struct {
@@ -60,6 +58,25 @@ func indexHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params,
 func cleanSessionsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	sessions.CleanSessions()
 	http.Redirect(w, req, "/ns/", http.StatusSeeOther)
+}
+
+// Changelog page.
+func changelogHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+	// Read change log markdown file.
+	md, err := ioutil.ReadFile("changelog.md")
+	HandleError(w, err)
+	// md := []byte("## markdown document")
+	output := markdown.ToHTML(md, nil, nil)
+
+	data := struct {
+		Session     *SessionData
+		HeadMessage string
+		Version     string
+		Changelog   template.HTML
+	}{session, "", version, template.HTML(output)}
+
+	err = tmplChangelog.ExecuteTemplate(w, "changelog.gohtml", data)
+	HandleError(w, err)
 }
 
 /**************************************************************************************************

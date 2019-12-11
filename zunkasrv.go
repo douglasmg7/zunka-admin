@@ -25,6 +25,8 @@ var tmplMaster, tmplIndex, tmplDeniedAccess *template.Template
 
 // Misc.
 var tmplMessage *template.Template
+var tmplChangelog *template.Template
+var tmplTest *template.Template
 
 // User.
 var tmplUserAdd *template.Template
@@ -48,9 +50,6 @@ var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *tem
 
 // Student.
 var tmplStudent, tmplAllStudent, tmplNewStudent *template.Template
-
-// Test.
-var tmplTest *template.Template
 
 var dev bool
 var port string
@@ -138,6 +137,7 @@ func init() {
 	tmplDeniedAccess = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/deniedAccess.tpl"))
 	// Misc.
 	tmplMessage = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/message.tpl"))
+	tmplChangelog = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/changelog.gohtml"))
 	tmplTest = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/misc/test.gohtml"))
 	// User.
 	tmplUserAdd = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/userAdd.tpl"))
@@ -192,6 +192,11 @@ func main() {
 
 	// Clean the session cache.
 	router.GET("/ns/clean-sessions", checkPermission(cleanSessionsHandler, "admin"))
+	// Changelog page.
+	router.GET("/ns/changelog", checkPermission(changelogHandler, "admin"))
+	// Test.
+	router.GET("/ns/test", checkPermission(testPageHandler, "admin"))
+	router.POST("/ns/test/send-email", checkPermission(testSendMailPost, "admin"))
 
 	// Aldo.
 	// Products list page.
@@ -244,10 +249,6 @@ func main() {
 	router.GET("/ns/student/new", checkPermission(newStudentHandler, "editStudent"))
 	router.POST("/ns/student/new", checkPermission(newStudentHandlerPost, "editStudent"))
 	router.GET("/ns/student/id/:id", checkPermission(studentByIdHandler, "editStudent"))
-
-	// Test.
-	router.GET("/ns/test", checkPermission(testPageHandler, "admin"))
-	router.POST("/ns/test/send-email", checkPermission(testSendMailPost, "admin"))
 
 	// start server
 	router.ServeFiles("/static/*filepath", http.Dir("./static/"))
@@ -356,7 +357,7 @@ type logger struct {
 // Handle interface.
 // todo - why DELETE is logging twice?
 func (l *logger) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	log.Printf("%s %s - begin", req.Method, req.URL.Path)
+	// log.Printf("%s %s - begin", req.Method, req.URL.Path)
 	start := time.Now()
 	l.handler.ServeHTTP(w, req)
 	log.Printf("%s %s %v", req.Method, req.URL.Path, time.Since(start))

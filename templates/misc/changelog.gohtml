@@ -1,0 +1,18 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+    ul {
+      list-style-type: disc;
+    }
+</style>
+{{end}}
+
+{{define "title"}} Changelog {{end}}
+
+{{define "content"}}
+    <div class="content">
+        <h1> Versão atual {{ .Version }} </h1>
+        {{ .Changelog }} 
+    </div>
+{{end}}
