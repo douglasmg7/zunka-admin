@@ -25,7 +25,8 @@ func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 		Products    []aldoutil.Product
 	}{session, "", []aldoutil.Product{}}
 
-	err = dbAldo.Select(&data.Products, "SELECT * FROM product order by description LIMIT 100 ")
+	err = dbAldo.Select(&data.Products, "SELECT * FROM product order by description")
+	// err = dbAldo.Select(&data.Products, "SELECT * FROM product order by description LIMIT 100 ")
 	HandleError(w, err)
 
 	err = tmplAldoProducts.ExecuteTemplate(w, "aldoProducts.tmpl", data)

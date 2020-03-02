@@ -1,7 +1,8 @@
 package main
 
 const (
-	version string = "0.5.0"
+	// Removed limit 100 from product select.
+	version string = "0.5.1"
 )
 
 /*
