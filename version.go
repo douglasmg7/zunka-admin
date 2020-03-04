@@ -2,7 +2,7 @@ package main
 
 const (
 	// Removed limit 100 from product select.
-	// Using aldoutil v0.2.0 without product id.
+	// Using aldoutil v1.0.0 without product id.
 	version string = "0.6.0"
 )
 
