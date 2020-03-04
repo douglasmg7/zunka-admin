@@ -164,10 +164,11 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	data.Product.MongodbId = data.Product.MongodbId[1 : len(data.Product.MongodbId)-1]
 
 	// Update product with _id from mongodb store.
-	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE id = $2;`)
+	// stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE id = $2;`)
+	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE code = $2;`)
 	HandleError(w, err)
 	defer stmt.Close()
-	_, err = stmt.Exec(data.Product.MongodbId, data.Product.Id)
+	_, err = stmt.Exec(data.Product.MongodbId, data.Product.Code)
 	HandleError(w, err)
 
 	// Not escaped.
