@@ -13,16 +13,16 @@ pull_roll () {
     git pull
     REV_NEW=`git rev-parse HEAD`
     SOME_FILES_CHANGED=`git diff $REV_OLD --name-only`
-    GOPKG_LOCK_CHANGED=`git diff $REV_OLD --name-only | grep "Gopkg\.lock$"`
+    GO_CHECKSUM=`git diff $REV_OLD --name-only | grep "go\.sum$"`
     SECRET_FILES_CHANGED=`git diff $REV_OLD --name-only | grep "\.secret$"`
     # Confirm if local repository not have modifications.
     if [[ $REV_NEW == $REV_OLD && ! -z $SOME_FILES_CHANGED ]];then
         printf "Local repository have modifications.\n"
         return
     fi
-    if [[ ! -z $GOPKG_LOCK_CHANGED ]]; then
-        echo :: Running dep ensure -vendor-only ...
-        dep ensure -vendor-only
+    if [[ ! -z $GO_CHECKSUM ]]; then
+        echo :: Running go get
+        go get
     fi
     if [[ ! -z $SECRET_FILES_CHANGED ]]; then
         echo :: Revealing secret files...
