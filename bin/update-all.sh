@@ -13,17 +13,17 @@ pull_roll () {
     git pull
     REV_NEW=`git rev-parse HEAD`
     SOME_FILES_CHANGED=`git diff $REV_OLD --name-only`
-    GO_CHECKSUM=`git diff $REV_OLD --name-only | grep "go\.sum$"`
+    # GO_CHECKSUM=`git diff $REV_OLD --name-only | grep "go\.sum$"`
     SECRET_FILES_CHANGED=`git diff $REV_OLD --name-only | grep "\.secret$"`
     # Confirm if local repository not have modifications.
     if [[ $REV_NEW == $REV_OLD && ! -z $SOME_FILES_CHANGED ]];then
         printf "Local repository have modifications.\n"
         return
     fi
-    if [[ ! -z $GO_CHECKSUM ]]; then
-        echo :: Running go get
-        go get
-    fi
+    # if [[ ! -z $GO_CHECKSUM ]]; then
+        # echo :: Running go get
+        # go get
+    # fi
     if [[ ! -z $SECRET_FILES_CHANGED ]]; then
         echo :: Revealing secret files...
         git secret reveal
@@ -35,31 +35,24 @@ pull_roll () {
     fi
 }
 
-# # bluetang 
-# pull_roll $GS/bluetang
-# if [[ $? == 1 ]]; then
-    # INSTALL_ZUNKASRV=true
-# fi
+# zunkasrv
+pull_roll $GS/zunkasrv
+if [[ $? == 1 ]]; then
+    INSTALL_ZUNKASRV=true
+fi
 
-# # currency
-# pull_roll $GS/currency
-# if [[ $? == 1 ]]; then
-    # INSTALL_ZUNKASRV=true
-    # INSTALL_ALDOWSC=true
-# fi
-
-# # aldoutil
-# pull_roll $GS/aldoutil
-# if [[ $? == 1 ]]; then
-    # INSTALL_ZUNKASRV=true
-    # INSTALL_ALDOWSC=true
-# fi
+# freightsrv
+pull_roll $GS/freightsrv
+if [[ $? == 1 ]]; then
+    INSTALL_FREIGHTSRV=true
+fi
 
 # aldowsc
 pull_roll $GS/aldowsc
 if [[ $? == 1 ]]; then
     INSTALL_ALDOWSC=true
 fi
+
 # aldowsc.service
 if [[ ! -z `git diff --name-only $REV_OLD | grep "install-aldowsc-service\.sh$"` ]]; then
     printf "\n:: Installing alwdowsc.service...\n"
@@ -72,15 +65,42 @@ if [[ $? == 1 ]]; then
     INSTALL_ZOOMWSC=true
 fi
 
-# zunkasrv
-pull_roll $GS/zunkasrv
+# zoomproducts
+pull_roll $GS/zoomproducts
 if [[ $? == 1 ]]; then
-    INSTALL_ZUNKASRV=true
+    INSTALL_ZOOMPRODUCTS=true
 fi
 
 ########################################################
 # Install
 ########################################################
+# Install zunkasrv.
+if [[ $INSTALL_ZUNKASRV == true ]]; then
+    printf "\n:: Installing zunkasrv...\n"
+    cd $GS/zunkasrv
+    go install
+    printf "\n:: Signaling to restart zunkasrv...\n"
+    echo true > $ZUNKAPATH/restart-zunkasrv 
+fi
+
+# Install freightsrv.
+if [[ $INSTALL_FREIGHTSRV == true ]]; then
+    printf "\n:: Installing freightsrv...\n"
+    cd $GS/freightsrv
+    go install
+    printf "\n:: Signaling to restart freightsrv...\n"
+    echo true > $ZUNKAPATH/restart-freightsrv 
+fi
+
+# Install zoomproducts.
+if [[ $INSTALL_ZOOMPRODUCTS == true ]]; then
+    printf "\n:: Installing zoomproducts...\n"
+    cd $GS/zoomproducts
+    go install
+    printf "\n:: Signaling to restart zoomproducts...\n"
+    echo true > $ZUNKAPATH/restart-zoomproducts 
+fi
+
 # Install aldowsc.
 if [[ $INSTALL_ALDOWSC == true ]]; then
     printf "\n:: Installing aldowsc...\n"
@@ -93,13 +113,4 @@ if [[ $INSTALL_ZOOMWSC == true ]]; then
     printf "\n:: Installing zoomwsc...\n"
     cd $GS/zoomwsc
     go install
-fi
-
-# Install zunkasrv.
-if [[ $INSTALL_ZUNKASRV == true ]]; then
-    printf "\n:: Installing zunkasrv...\n"
-    cd $GS/zunkasrv
-    go install
-    printf "\n:: Signaling to restart zunka_srv...\n"
-    echo true > $ZUNKAPATH/restart-zunka-srv 
 fi
