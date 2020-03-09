@@ -1,9 +1,15 @@
 package main
 
 const (
+	// Using environment variable to set run mode.
+	version string = "1.0.0"
+
+	// // Using zunkasrv folder for logs.
+	// version string = "0.6.1"
+
 	// Removed limit 100 from product select.
 	// Using aldoutil v1.0.0 without product id.
-	version string = "0.6.0"
+	// version string = "0.6.0"
 )
 
 /*

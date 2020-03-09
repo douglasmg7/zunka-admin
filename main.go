@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -51,7 +50,7 @@ var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *tem
 // Student.
 var tmplStudent, tmplAllStudent, tmplNewStudent *template.Template
 
-var dev bool
+var production bool
 var port string
 
 // Db.
@@ -71,6 +70,12 @@ var sessions = Sessions{
 }
 
 func init() {
+
+	// Check if production mode.
+	if os.Getenv("RUN_MODE") == "production" {
+		production = true
+	}
+
 	// Port.
 	port = "8080"
 
@@ -86,7 +91,7 @@ func init() {
 		panic("GS env not defined.")
 	}
 
-	logPath := path.Join(zunkaPath, "log", "zunka-srv")
+	logPath := path.Join(zunkaPath, "log", "zunkasrv")
 	// Create log path.
 	os.MkdirAll(logPath, os.ModePerm)
 
@@ -118,15 +123,6 @@ func init() {
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Ldate | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds)
-
-	// Run mode.
-	mode := "production"
-	if len(os.Args) > 1 && strings.HasPrefix(os.Args[1], "dev") {
-		dev = true
-		mode = "development"
-	}
-	// Log start.
-	log.Printf("*** Starting zunka srv in %v mode (version %s) ***\n", mode, version)
 
 	/************************************************************************************************
 	* Load templates
@@ -169,6 +165,13 @@ func init() {
 }
 
 func main() {
+	// Log start.
+	runMode := "development"
+	if production {
+		runMode = "production"
+	}
+	log.Printf("Running in %v mode (version %s)\n", runMode, version)
+
 	// Start data base.
 	dbZunka, err = sql.Open("sqlite3", dbZunkaFile)
 	if err != nil {

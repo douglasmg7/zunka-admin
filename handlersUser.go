@@ -184,7 +184,7 @@ func userChangeEmailHandlerPost(w http.ResponseWriter, req *http.Request, _ http
 		log.Fatal(err)
 	}
 	// Log change email confirmation on dev mode.
-	if dev {
+	if !production {
 		log.Println(`http://localhost:8080/user/change/email-confirmation/` + uuid.String())
 	}
 	// Render page with next step to complete the email change.

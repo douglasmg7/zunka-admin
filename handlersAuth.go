@@ -147,15 +147,15 @@ func authSignupHandlerPost(w http.ResponseWriter, req *http.Request, _ httproute
 		log.Fatal(err)
 	}
 	// Log email confirmation on dev mode.
-	if dev {
-		log.Println(`http://localhost:8080/ns/auth/signup/confirmation/` + uuid.String())
-	} else {
+	if production {
 		sendMail([]string{data.Email.Value},
 			"Solicitação de criação de conta no sistema zunkasrv.",
 			"Você recebeu este email porquê você (ou alguem) requisitou a criação de uma conta no sistema zunkasrv (https://www.zunka.com.br/ns/) usando este email.\r\n\r\n"+
 				"Por favor clique no link, ou cole-o no seu navegador de internet para concluir a criação da conta.\r\n\r\n"+
 				"http://localhost:8080/ns/auth/signup/confirmation/"+uuid.String()+"\r\n\r\n"+
 				"Se não foi você que requisitou esta criação de conta, por favor ignore este email e nenhuma conta será criada.\r\n")
+	} else {
+		log.Println(`http://localhost:8080/ns/auth/signup/confirmation/` + uuid.String())
 	}
 	// Render page with next step to complete signup.
 	dataMsg.TitleMsg = "Pŕoximo passo"
@@ -351,7 +351,7 @@ func passwordRecoveryHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 		log.Fatal(err)
 	}
 	// Log email confirmation on dev mode.
-	if dev {
+	if !production {
 		log.Println(`http://localhost:8080/auth/password/reset/` + uuid.String())
 	}
 	// Render page with next step to reset password.

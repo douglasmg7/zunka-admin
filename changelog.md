@@ -1,3 +1,11 @@
+## 1.0.0 (09 mar 2020)
+
+### Alterações
+* Usando variável de ambiente para definir o modo de execução.
+* Using pasta zunkasrv para logs.
+
+
+
 ## 0.6.0 (04 mar 2020)
 
 ### Alterações
