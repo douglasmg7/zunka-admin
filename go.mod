@@ -5,7 +5,6 @@ go 1.14
 require (
 	github.com/douglasmg7/aldoutil v1.0.0
 	github.com/douglasmg7/bluetang v0.1.0
-	github.com/douglasmg7/currency v0.2.0 // indirect
 	github.com/gomarkdown/markdown v0.0.0-20200127000047-1813ea067497
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/julienschmidt/httprouter v1.3.0
