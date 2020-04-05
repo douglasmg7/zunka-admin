@@ -1,8 +1,11 @@
 package main
 
 const (
-	// Using environment variable to set run mode.
-	version string = "1.0.0"
+	version string = "1.0.1"
+	// Log prefix.
+
+	// version string = "1.0.0"
+	// // Using environment variable to set run mode.
 
 	// // Using zunkasrv folder for logs.
 	// version string = "0.6.1"

@@ -118,7 +118,8 @@ func init() {
 	// Log configuration.
 	mw := io.MultiWriter(os.Stdout, logFile)
 	log.SetOutput(mw)
-	log.SetFlags(log.Ldate | log.Lmicroseconds)
+	log.SetPrefix("[zunkasrv] ")
+	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lmsgprefix)
 	// log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Ldate | log.Lshortfile)
