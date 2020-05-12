@@ -1,8 +1,10 @@
 package main
 
 const (
-	version string = "1.0.1"
-	// Log prefix.
+	version string = "1.0.2"
+
+	// version string = "1.0.1"
+	// // Log prefix.
 
 	// version string = "1.0.0"
 	// // Using environment variable to set run mode.

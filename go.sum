@@ -2,6 +2,10 @@ github.com/douglasmg7/aldoutil v0.5.0 h1:b82VjO/8YH5Fj6LQ9HRmLLgsIwDNit1nAjCI8uQ
 github.com/douglasmg7/aldoutil v0.5.0/go.mod h1:/zDTPhv6Te482Sflqi/XkahzZCzqCvoBzhTH6gxPGTE=
 github.com/douglasmg7/aldoutil v1.0.0 h1:QnYHg4PJWwZ1nlEtX89GUb31rV3N1vCFBwaDiNR7CXo=
 github.com/douglasmg7/aldoutil v1.0.0/go.mod h1:dXPQJ7Yo1CkgXGzPL3cH3NmjjvvQdi23xVjUMP3ho8k=
+github.com/douglasmg7/aldoutil v1.0.1 h1:sxmI/BAGd/jFHyig256hoPM8YvLgSrW6YH1WpMKOicY=
+github.com/douglasmg7/aldoutil v1.0.1/go.mod h1:dXPQJ7Yo1CkgXGzPL3cH3NmjjvvQdi23xVjUMP3ho8k=
+github.com/douglasmg7/aldoutil v1.0.2 h1:09uY4gqW3Bmh22S+g591g/qQmjCWSw5B64m7Krx866g=
+github.com/douglasmg7/aldoutil v1.0.2/go.mod h1:dXPQJ7Yo1CkgXGzPL3cH3NmjjvvQdi23xVjUMP3ho8k=
 github.com/douglasmg7/bluetang v0.1.0 h1:ujs26ufesuutEmz25piT0/zkdxZ78aGvwCRcbipyXUA=
 github.com/douglasmg7/bluetang v0.1.0/go.mod h1:e12TAE6oZg4TkT0ST5m2YwWDGfr7pw35XLpmtd55OWI=
 github.com/douglasmg7/currency v0.2.0 h1:gnGRRs/mX/rh8EcIeCEY7UeUREDAry9B9B+AP2S/AjY=

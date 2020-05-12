@@ -3,7 +3,7 @@ module github.com/douglasmg7/zunkasrv
 go 1.14
 
 require (
-	github.com/douglasmg7/aldoutil v1.0.0
+	github.com/douglasmg7/aldoutil v1.0.2
 	github.com/douglasmg7/bluetang v0.1.0
 	github.com/gomarkdown/markdown v0.0.0-20200127000047-1813ea067497
 	github.com/jmoiron/sqlx v1.2.0

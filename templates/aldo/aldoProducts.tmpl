@@ -10,6 +10,14 @@
         padding-left: .3em;
         background-color: var(--green-lighter);
     }
+    p.product.new {
+        padding: 0 .3em;
+        border: 3px solid var(--green-lighter);
+    }
+    p.product.changed {
+        padding: 0 .3em;
+        border: 3px solid var(--yellow);
+    }
     h3 {
         margin-bottom: 1em;
     }
@@ -32,7 +40,7 @@
 <div class="content">
     <h3>Produtos Aldo</h3>
     {{range .Products}}
-        <p class='product {{if .MongodbId}}hasMongodbId{{end}}' onclick="location.href='/ns/aldo/product/{{.Code}}'"> {{.Description}} </p>
+        <p class='product {{if .MongodbId}}hasMongodbId{{end}} {{.Status $.ValidDate}}' onclick="location.href='/ns/aldo/product/{{.Code}}'"> {{.Description}} </p>
     {{end}}
 	<!-- <table> -->
 		<!-- <tbody> -->

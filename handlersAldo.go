@@ -12,10 +12,31 @@ import (
 	"net/http"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/douglasmg7/aldoutil"
 	"github.com/julienschmidt/httprouter"
 )
+
+// func isProductNew(product aldoutil.Product) bool {
+// if product.ChangedAt.Equal(product.CreatedAt) {
+// limitDate := time.Now().Add(time.Hour * 24 * 10)
+// if product.ChangedAt.Before(limitDate) {
+// return true
+// }
+// }
+// return false
+// }
+
+// func isProductModified(product aldoutil.Product) bool {
+// if !product.ChangedAt.Equal(product.CreatedAt) {
+// limitDate := time.Now().Add(time.Hour * 24 * 10)
+// if product.ChangedAt.Before(limitDate) {
+// return true
+// }
+// }
+// return false
+// }
 
 // Product list.
 func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
@@ -23,11 +44,28 @@ func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 		Session     *SessionData
 		HeadMessage string
 		Products    []aldoutil.Product
-	}{session, "", []aldoutil.Product{}}
+		ValidDate   time.Time
+	}{session, "", []aldoutil.Product{}, time.Now().Add(-time.Hour * 240)}
 
 	err = dbAldo.Select(&data.Products, "SELECT * FROM product order by description")
 	// err = dbAldo.Select(&data.Products, "SELECT * FROM product order by description LIMIT 100 ")
 	HandleError(w, err)
+
+	// // Test - keep it commented.
+	// i := 0
+	// // Force new.
+	// almostNow := time.Now().Add(-time.Hour * 48)
+	// data.Products[i].CreatedAt = almostNow
+	// data.Products[i].ChangedAt = almostNow
+	// // Force changed.
+	// // data.Products[i].ChangedAt = almostNow.Add(time.Hour * 24)
+	// // Logs.
+	// log.Printf("status: %v", data.Products[i].StoreProductId)
+	// log.Printf("CreatedAt: %v", data.Products[i].CreatedAt)
+	// log.Printf("ChangedAt: %v", data.Products[i].ChangedAt)
+	// log.Printf("ValidateDate: %v", data.ValidDate)
+	// log.Printf("status: %v", data.Products[i].Status(data.ValidDate))
+	// // End test.
 
 	err = tmplAldoProducts.ExecuteTemplate(w, "aldoProducts.tmpl", data)
 	HandleError(w, err)
