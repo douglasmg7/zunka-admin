@@ -60,10 +60,14 @@ func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 	// // Force changed.
 	// // data.Products[i].ChangedAt = almostNow.Add(time.Hour * 24)
 	// // Logs.
-	// log.Printf("status: %v", data.Products[i].StoreProductId)
-	// log.Printf("CreatedAt: %v", data.Products[i].CreatedAt)
-	// log.Printf("ChangedAt: %v", data.Products[i].ChangedAt)
-	// log.Printf("ValidateDate: %v", data.ValidDate)
+	// // log.Printf("Code: %v", data.Products[i].Code)
+	// // log.Printf("CreatedAt: %v", data.Products[i].CreatedAt)
+	// // log.Printf("ChangedAt: %v", data.Products[i].ChangedAt)
+	// // log.Printf("ValidateDate: %v", data.ValidDate)
+	// // Force unavailable.
+	// // data.Products[i].Availability = false
+	// // Force removed.
+	// // data.Products[i].Removed = true
 	// log.Printf("status: %v", data.Products[i].Status(data.ValidDate))
 	// // End test.
 
@@ -74,20 +78,43 @@ func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 // Product item.
 func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
 	data := struct {
-		Session              *SessionData
-		HeadMessage          string
-		Product              aldoutil.Product
-		TechnicalDescription template.HTML
-		RMAProcedure         template.HTML
-	}{session, "", aldoutil.Product{}, "", ""}
+		Session                 *SessionData
+		HeadMessage             string
+		Product                 *aldoutil.Product
+		TechnicalDescription    template.HTML
+		RMAProcedure            template.HTML
+		Status                  string
+		ShowButtonCreateProduct bool
+	}{session, "", &aldoutil.Product{}, "", "", "", false}
 
-	err = dbAldo.Get(&data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
+	err = dbAldo.Get(data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
 	HandleError(w, err)
 
 	// Not escaped.
 	data.TechnicalDescription = template.HTML(data.Product.TechnicalDescription)
 	data.RMAProcedure = template.HTML(data.Product.RMAProcedure)
 
+	// // Test - keep commented.
+	// // Force new.
+	// almostNow := time.Now().Add(-time.Hour * 48)
+	// data.Product.CreatedAt = almostNow
+	// data.Product.ChangedAt = almostNow
+	// // Force changed.
+	// // data.Product.ChangedAt = almostNow.Add(time.Hour * 24)
+	// // Logs.
+	// // Force unavailable.
+	// // data.Product.Availability = false
+	// // Force removed.
+	// // data.Product.Removed = true
+	// // End test.
+
+	// Status.
+	data.Status = data.Product.Status(time.Now().Add(-time.Hour * 240))
+	// Show button create product on zunkasite.
+	if data.Product.MongodbId == "" && (data.Status == "new" || data.Status == "changed" || data.Status == "") {
+		data.ShowButtonCreateProduct = true
+	}
+	// Render template.
 	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
 	HandleError(w, err)
 }

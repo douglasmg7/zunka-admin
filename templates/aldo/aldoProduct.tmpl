@@ -17,6 +17,18 @@
     .danger {
         color: var(--red);
     }
+    h3.status.new {
+        color: var(--green);
+    }
+    h3.status.changed {
+        color: var(--yellow);
+    }
+    h3.status.unavailable {
+        color: var(--orange);
+    }
+    h3.status.removed {
+        color: var(--red);
+    }
     .techinical-description p,
     .rma-procedure p
     {
@@ -37,11 +49,10 @@
 {{define "content"}}
 <div class="content">
     <h2> Produto Aldo </h2>
-
-    {{if not .Product.Availability}}<h3 class='danger'> Indisponível </h3>{{end}}
-    {{if .Product.New}}<h3 class='success'> Novo </h3>{{end}} 
-    {{if .Product.Changed}}<h3 class='warn'> Modificado </h3>{{end}}
-    {{if .Product.Removed}}<h3 class='danger'> Removido </h3>{{end}}
+    {{if (eq .Status "new")}} <h3 class="status new">Novo</h3> {{end}}
+    {{if (eq .Status "changed")}} <h3 class="status changed">Alterado</h3> {{end}}
+    {{if (eq .Status "unavailable")}} <h3 class="status unavailable">Indisponível</h3> {{end}}
+    {{if (eq .Status "removed")}} <h3 class="status removed">Removido</h3> {{end}}
 
 	<h3>Descrição</h3>
 	<p>{{.Product.Description}}</p>
@@ -49,12 +60,13 @@
 	<h3>Categoria</h3>
 	<p>{{.Product.Category}}</p>
 
-	<h3>Produto id (loja)</h3>
-	{{if not .Product.MongodbId}}
+	{{if .ShowButtonCreateProduct}}
         <form action="" method="post">
             <input class="btn" type="submit" value='Criar produto'>
         </form>
-    {{else}}
+    {{end}}
+    {{if ne .Product.MongodbId ""}}
+	    <h3>Produto id (loja)</h3>
 	    <p>{{.Product.MongodbId}}</p>
 	{{end}}
 

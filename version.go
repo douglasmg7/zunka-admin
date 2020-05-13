@@ -1,7 +1,9 @@
 package main
 
 const (
-	version string = "1.0.2"
+	version string = "1.0.3"
+	// Show legend for product list status.
+	// Show product status as a border color.
 
 	// version string = "1.0.1"
 	// // Log prefix.

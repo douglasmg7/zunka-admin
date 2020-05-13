@@ -2,24 +2,39 @@
 
 {{define "embedded-css"}} 
 <style type="text/css">
+    h3 {
+        margin-bottom: .1em;
+    }
+    div.legend {
+        margin-bottom: 2em;
+    }
+    div.legend span {
+        margin: 1px;
+        display: inline-block;
+    }
     p.product {
 		cursor: pointer;
-        margin-bottom: .8em;
+        margin: .8em 0;
 	}
-    p.hasMongodbId {
-        padding-left: .3em;
+    p.hasMongodbId, div.legend span.hasMongodbId {
+        padding: .3em;
         background-color: var(--green-lighter);
     }
-    p.product.new {
+    p.product.new, div.legend span.new {
         padding: 0 .3em;
-        border: 3px solid var(--green-lighter);
+        border: 5px solid var(--green-lighter);
     }
-    p.product.changed {
+    p.product.changed, div.legend span.changed {
         padding: 0 .3em;
-        border: 3px solid var(--yellow);
+        border: 5px solid var(--yellow);
     }
-    h3 {
-        margin-bottom: 1em;
+    p.product.unavailable, div.legend span.unavailable {
+        padding: 0 .3em;
+        border: 5px solid var(--orange);
+    }
+    p.product.removed, div.legend span.removed {
+        padding: 0 .3em;
+        border: 5px solid var(--red);
     }
 	table {
 		margin-top: .5em;
@@ -39,6 +54,14 @@
 {{define "content"}}
 <div class="content">
     <h3>Produtos Aldo</h3>
+    <!-- Legend -->
+    <div class='legend'>
+        <span class='hasMongodbId'>CADASTRADO</span>
+        <span class='new'>NOVO</span>
+        <span class='changed'>ALTERADO</span>
+        <span class='unavailable'>INDISPONÍVEL</span>
+        <span class='removed'>REMOVIDO</span>
+    </div>
     {{range .Products}}
         <p class='product {{if .MongodbId}}hasMongodbId{{end}} {{.Status $.ValidDate}}' onclick="location.href='/ns/aldo/product/{{.Code}}'"> {{.Description}} </p>
     {{end}}
