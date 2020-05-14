@@ -121,47 +121,40 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 
 // Add product to zunka site.
 func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
-	data := struct {
-		Session              *SessionData
-		HeadMessage          string
-		Product              aldoutil.Product
-		TechnicalDescription template.HTML
-		RMAProcedure         template.HTML
-	}{session, "", aldoutil.Product{}, "", ""}
-
 	// Get product.
-	err = dbAldo.Get(&data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
+	product := aldoutil.Product{}
+	err = dbAldo.Get(&product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
 	HandleError(w, err)
 
 	// Set store product.
 	storeProduct := aldoutil.StoreProduct{}
 	storeProduct.DealerName = "Aldo"
-	storeProduct.DealerProductId = data.Product.Code
+	storeProduct.DealerProductId = product.Code
 
 	// Title.
-	// storeProduct.DealerProductTitle = strings.Title(strings.ToLower(data.Product.Description))
-	storeProduct.DealerProductTitle = data.Product.Description
+	// storeProduct.DealerProductTitle = strings.Title(strings.ToLower(product.Description))
+	storeProduct.DealerProductTitle = product.Description
 
 	// Category.
-	storeProduct.DealerProductCategory = strings.Title(strings.ToLower(data.Product.Category))
+	storeProduct.DealerProductCategory = strings.Title(strings.ToLower(product.Category))
 
 	// Maker.
-	storeProduct.DealerProductMaker = strings.Title(strings.ToLower(data.Product.Brand))
+	storeProduct.DealerProductMaker = strings.Title(strings.ToLower(product.Brand))
 
 	// Description.
-	storeProduct.DealerProductDesc = strings.TrimSpace(data.Product.TechnicalDescription)
-	// log.Println("data.Product.TechnicalDescription:", data.Product.TechnicalDescription)
+	storeProduct.DealerProductDesc = strings.TrimSpace(product.TechnicalDescription)
+	// log.Println("product.TechnicalDescription:", product.TechnicalDescription)
 	// log.Println("storeProduct.DealerProductDesc:", storeProduct.DealerProductDesc)
 
 	// Image.
-	storeProduct.DealerProductImagesLink = data.Product.PictureLink
+	storeProduct.DealerProductImagesLink = product.PictureLink
 
 	// // Description.
-	// data.Product.TechnicalDescription = strings.TrimSpace(data.Product.TechnicalDescription)
+	// product.TechnicalDescription = strings.TrimSpace(product.TechnicalDescription)
 
 	// // Description.
 	// // Split by <br/>
-	// techDescs := regexp.MustCompile(`\<\s*br\s*\/*\>`).Split(data.Product.TechnicalDescription, -1)
+	// techDescs := regexp.MustCompile(`\<\s*br\s*\/*\>`).Split(product.TechnicalDescription, -1)
 	// // Remove html tags.
 	// // Remove blank intens.
 	// reg := regexp.MustCompile(`\<[^>]*\>`)
@@ -176,23 +169,23 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	// storeProduct.DealerProductDesc = strings.TrimSpace(buffer.String())
 
 	// Months in days.
-	storeProduct.DealerProductWarrantyDays = data.Product.WarrantyPeriod * 30
+	storeProduct.DealerProductWarrantyDays = product.WarrantyPeriod * 30
 	// Length in cm.
-	storeProduct.DealerProductDeep = int(math.Ceil(float64(data.Product.Length) / 10))
+	storeProduct.DealerProductDeep = int(math.Ceil(float64(product.Length) / 10))
 	// Width in cm.
-	storeProduct.DealerProductWidth = int(math.Ceil(float64(data.Product.Width) / 10))
+	storeProduct.DealerProductWidth = int(math.Ceil(float64(product.Width) / 10))
 	// Height in cm.
-	storeProduct.DealerProductHeight = int(math.Ceil(float64(data.Product.Height) / 10))
+	storeProduct.DealerProductHeight = int(math.Ceil(float64(product.Height) / 10))
 	// Weight in grams.
-	storeProduct.DealerProductWeight = data.Product.Weight
+	storeProduct.DealerProductWeight = product.Weight
 	// Price.
-	storeProduct.DealerProductPrice = int(data.Product.DealerPrice)
+	storeProduct.DealerProductPrice = int(product.DealerPrice)
 	// Suggestion price.
-	storeProduct.DealerProductFinalPriceSuggestion = int(data.Product.SuggestionPrice)
+	storeProduct.DealerProductFinalPriceSuggestion = int(product.SuggestionPrice)
 	// Last update.
-	storeProduct.DealerProductLastUpdate = data.Product.ChangedAt
+	storeProduct.DealerProductLastUpdate = product.ChangedAt
 	// Active.
-	storeProduct.DealerProductActive = data.Product.Availability
+	storeProduct.DealerProductActive = product.Availability
 
 	// Convert to json.
 	reqBody, err := json.Marshal(storeProduct)
@@ -224,25 +217,20 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 		return
 	}
 	// Mongodb id from created product.
-	data.Product.MongodbId = string(resBody)
+	product.MongodbId = string(resBody)
 	// Remove suround double quotes.
-	data.Product.MongodbId = data.Product.MongodbId[1 : len(data.Product.MongodbId)-1]
+	product.MongodbId = product.MongodbId[1 : len(product.MongodbId)-1]
 
 	// Update product with _id from mongodb store.
 	// stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE id = $2;`)
 	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE code = $2;`)
 	HandleError(w, err)
 	defer stmt.Close()
-	_, err = stmt.Exec(data.Product.MongodbId, data.Product.Code)
+	_, err = stmt.Exec(product.MongodbId, product.Code)
 	HandleError(w, err)
 
-	// Not escaped.
-	data.TechnicalDescription = template.HTML(data.Product.TechnicalDescription)
-	data.RMAProcedure = template.HTML(data.Product.RMAProcedure)
-
-	// Render template.
-	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
-	HandleError(w, err)
+	// Render categories page.
+	http.Redirect(w, req, "/ns/aldo/product/"+product.Code, http.StatusSeeOther)
 }
 
 // Remove mongodb id from Product.

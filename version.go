@@ -1,9 +1,12 @@
 package main
 
 const (
-	version string = "1.0.3"
-	// Show legend for product list status.
-	// Show product status as a border color.
+	version string = "1.0.4"
+	// Bugfix - Removed render on post product, redirect to get product.
+
+	// version string = "1.0.3"
+	// // Show legend for product list status.
+	// // Show product status as a border color.
 
 	// version string = "1.0.1"
 	// // Log prefix.
