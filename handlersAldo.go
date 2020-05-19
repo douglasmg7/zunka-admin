@@ -18,25 +18,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-// func isProductNew(product aldoutil.Product) bool {
-// if product.ChangedAt.Equal(product.CreatedAt) {
-// limitDate := time.Now().Add(time.Hour * 24 * 10)
-// if product.ChangedAt.Before(limitDate) {
-// return true
-// }
-// }
-// return false
-// }
-
-// func isProductModified(product aldoutil.Product) bool {
-// if !product.ChangedAt.Equal(product.CreatedAt) {
-// limitDate := time.Now().Add(time.Hour * 24 * 10)
-// if product.ChangedAt.Before(limitDate) {
-// return true
-// }
-// }
-// return false
-// }
+const (
+	VALID_DATE = time.Hour * 720
+)
 
 // Product list.
 func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
@@ -45,18 +29,25 @@ func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 		HeadMessage string
 		Products    []aldoutil.Product
 		ValidDate   time.Time
-	}{session, "", []aldoutil.Product{}, time.Now().Add(-time.Hour * 240)}
+	}{session, "", []aldoutil.Product{}, time.Now().Add(-VALID_DATE)}
 
 	err = dbAldo.Select(&data.Products, "SELECT * FROM product order by description")
 	// err = dbAldo.Select(&data.Products, "SELECT * FROM product order by description LIMIT 100 ")
 	HandleError(w, err)
 
-	// // Test - keep it commented.
-	// i := 0
-	// // Force new.
-	// almostNow := time.Now().Add(-time.Hour * 48)
-	// data.Products[i].CreatedAt = almostNow
-	// data.Products[i].ChangedAt = almostNow
+	// // Logs.
+	// log.Printf("code: %v, status: %v", data.Products[0].Code, data.Products[0].Status(data.ValidDate))
+	// log.Printf("CreatedAt: %v", data.Products[0].CreatedAt)
+	// log.Printf("ChangedAt: %v", data.Products[0].ChangedAt)
+	// log.Printf("MongodbId: %v", data.Products[0].MongodbId)
+	// log.Printf("ValidateDate: %v", data.ValidDate)
+
+	// Test - keep it commented.
+	i := 0
+	// Force new.
+	almostNow := time.Now().Add(-time.Hour * 48)
+	data.Products[i].CreatedAt = almostNow
+	data.Products[i].ChangedAt = almostNow
 	// // Force changed.
 	// // data.Products[i].ChangedAt = almostNow.Add(time.Hour * 24)
 	// // Logs.
@@ -109,7 +100,7 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 	// // End test.
 
 	// Status.
-	data.Status = data.Product.Status(time.Now().Add(-time.Hour * 240))
+	data.Status = data.Product.Status(time.Now().Add(VALID_DATE))
 	// Show button create product on zunkasite.
 	if data.Product.MongodbId == "" && (data.Status == "new" || data.Status == "changed" || data.Status == "") {
 		data.ShowButtonCreateProduct = true
@@ -221,12 +212,11 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	// Remove suround double quotes.
 	product.MongodbId = product.MongodbId[1 : len(product.MongodbId)-1]
 
-	// Update product with _id from mongodb store.
-	// stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE id = $2;`)
-	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1 WHERE code = $2;`)
+	// Update product with _id from mongodb store and set status_cleaned_at.
+	stmt, err := dbAldo.Prepare(`UPDATE product SET mongodb_id = $1, status_cleaned_at=$2 WHERE code = $3;`)
 	HandleError(w, err)
 	defer stmt.Close()
-	_, err = stmt.Exec(product.MongodbId, product.Code)
+	_, err = stmt.Exec(product.MongodbId, time.Now(), product.Code)
 	HandleError(w, err)
 
 	// Render categories page.
