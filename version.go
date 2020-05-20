@@ -1,8 +1,15 @@
 package main
 
 const (
-	version string = "1.0.4"
-	// Bugfix - Removed render on post product, redirect to get product.
+	version string = "1.1.0"
+	// Set status_cleaned when product are created on zunkasite.
+	// On product aldo page:
+	//		Product loja id is a link to zunkasite product.
+	//		Exit button.
+	//		Button to check product status.
+
+	// version string = "1.0.4"
+	// // Bugfix - Removed render on post product, redirect to get product.
 
 	// version string = "1.0.3"
 	// // Show legend for product list status.

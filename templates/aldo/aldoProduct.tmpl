@@ -41,6 +41,12 @@
     {
         font-weight: 500;
     }
+    a {
+        font-size: 2.2rem;
+    }
+    input.exit {
+        margin-top: 2em;
+    }
 </style>
 {{end}}
 
@@ -53,6 +59,12 @@
     {{if (eq .Status "changed")}} <h3 class="status changed">Alterado</h3> {{end}}
     {{if (eq .Status "unavailable")}} <h3 class="status unavailable">Indisponível</h3> {{end}}
     {{if (eq .Status "removed")}} <h3 class="status removed">Removido</h3> {{end}}
+
+    {{if or (eq .Status "new")  (eq .Status "changed")}}
+        <form action="/ns/aldo/product/{{.Product.Code}}/checked" method="post">
+            <input class="btn" type="submit" value='Verificado'>
+        </form>
+    {{end}}
 
 	<h3>Descrição</h3>
 	<p>{{.Product.Description}}</p>
@@ -67,7 +79,7 @@
     {{end}}
     {{if ne .Product.MongodbId ""}}
 	    <h3>Produto id (loja)</h3>
-	    <p>{{.Product.MongodbId}}</p>
+	    <a href='/admin/product/{{.Product.MongodbId}}'>{{.Product.MongodbId}}</a>
 	{{end}}
 
     <img src='{{.Product.PictureLink}}'>
@@ -116,5 +128,8 @@
     <div class="rma-procedure">
 	    <p>{{.RMAProcedure}}</p>
     </div>
+
+    <!-- Products page. -->
+    <input class="btn exit" type="button" onclick="location.href='/ns/aldo/products'" value='Sair'>
 </div>
 {{end}}

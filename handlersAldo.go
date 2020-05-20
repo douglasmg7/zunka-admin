@@ -43,11 +43,11 @@ func aldoProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.
 	// log.Printf("ValidateDate: %v", data.ValidDate)
 
 	// Test - keep it commented.
-	i := 0
+	// i := 0
 	// Force new.
-	almostNow := time.Now().Add(-time.Hour * 48)
-	data.Products[i].CreatedAt = almostNow
-	data.Products[i].ChangedAt = almostNow
+	// almostNow := time.Now().Add(-time.Minute * 1)
+	// data.Products[i].CreatedAt = almostNow
+	// data.Products[i].ChangedAt = almostNow
 	// // Force changed.
 	// // data.Products[i].ChangedAt = almostNow.Add(time.Hour * 24)
 	// // Logs.
@@ -85,14 +85,14 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 	data.TechnicalDescription = template.HTML(data.Product.TechnicalDescription)
 	data.RMAProcedure = template.HTML(data.Product.RMAProcedure)
 
-	// // Test - keep commented.
-	// // Force new.
-	// almostNow := time.Now().Add(-time.Hour * 48)
+	// Test - keep commented.
+	// Force new.
+	// almostNow := time.Now().Add(-time.Hour * 1)
+	// data.Product.StatusCleanedAt = almostNow.Add(-time.Hour * 1)
 	// data.Product.CreatedAt = almostNow
 	// data.Product.ChangedAt = almostNow
-	// // Force changed.
-	// // data.Product.ChangedAt = almostNow.Add(time.Hour * 24)
-	// // Logs.
+	// Force changed.
+	// data.Product.ChangedAt = almostNow.Add(time.Hour * 24)
 	// // Force unavailable.
 	// // data.Product.Availability = false
 	// // Force removed.
@@ -100,11 +100,20 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 	// // End test.
 
 	// Status.
-	data.Status = data.Product.Status(time.Now().Add(VALID_DATE))
+	data.Status = data.Product.Status(time.Now().Add(-VALID_DATE))
 	// Show button create product on zunkasite.
 	if data.Product.MongodbId == "" && (data.Status == "new" || data.Status == "changed" || data.Status == "") {
 		data.ShowButtonCreateProduct = true
 	}
+
+	// Log.
+	// log.Printf("ValidDate: %v", time.Now().Add(-VALID_DATE))
+	// log.Printf("CreatedAt: %v", data.Product.CreatedAt)
+	// log.Printf("ChangedAt: %v", data.Product.ChangedAt)
+	// log.Printf("StatusCleanedAt: %v", data.Product.StatusCleanedAt)
+	// log.Printf("MongodbId: %v", data.Product.MongodbId)
+	// log.Printf("Status: %v", data.Status)
+
 	// Render template.
 	err = tmplAldoProduct.ExecuteTemplate(w, "aldoProduct.tmpl", data)
 	HandleError(w, err)
@@ -221,6 +230,20 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 
 	// Render categories page.
 	http.Redirect(w, req, "/ns/aldo/product/"+product.Code, http.StatusSeeOther)
+}
+
+// Aldo product checked.
+func aldoProductCheckedHandlerPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
+	productCode := ps.ByName("code")
+	// Update product status_cleaned_at field.
+	stmt, err := dbAldo.Prepare(`UPDATE product SET status_cleaned_at=$1 WHERE code = $2;`)
+	HandleError(w, err)
+	defer stmt.Close()
+	_, err = stmt.Exec(time.Now(), productCode)
+	HandleError(w, err)
+
+	// Render categories page.
+	http.Redirect(w, req, "/ns/aldo/product/"+ps.ByName("code"), http.StatusSeeOther)
 }
 
 // Remove mongodb id from Product.

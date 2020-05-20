@@ -209,6 +209,8 @@ func main() {
 	router.GET("/ns/aldo/product/:code", checkPermission(aldoProductHandler, "read"))
 	// Create product on zunka server.
 	router.POST("/ns/aldo/product/:code", checkPermission(aldoProductHandlerPost, "write"))
+	// Check product change.
+	router.POST("/ns/aldo/product/:code/checked", checkPermission(aldoProductCheckedHandlerPost, "write"))
 	// Product removed from site, so remove his reference from the site system.
 	router.DELETE("/ns/aldo/product/mongodb_id/:code", checkApiAuthorization(aldoProductMongodbIdHandlerDelete))
 	// Categories page.
