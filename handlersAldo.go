@@ -85,6 +85,15 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 	data.TechnicalDescription = template.HTML(data.Product.TechnicalDescription)
 	data.RMAProcedure = template.HTML(data.Product.RMAProcedure)
 
+	// Select history.
+	products_history := []aldoutil.Product{}
+	err = dbAldo.Select(&products_history, "SELECT * FROM product_history WHERE code=? AND changed_at < ? ORDER BY changed_at DESC LIMIT 1", ps.ByName("code"), data.Product.StatusCleanedAt)
+	HandleError(w, err)
+
+	for _, product := range products_history {
+		fmt.Printf("Prodcut history: %s, %v, %v\n", product.Code, product.DealerPrice, product.ChangedAt)
+	}
+
 	// Test - keep commented.
 	// Force new.
 	// almostNow := time.Now().Add(-time.Hour * 1)
