@@ -8,6 +8,9 @@
     input.btn {
         margin-top: 0;
     }
+    input.create-product {
+        margin-top: 1rem;
+    }
     .success {
         color: var(--green);
     }
@@ -17,10 +20,14 @@
     .danger {
         color: var(--red);
     }
+    h3 {
+        font-weight: 500;
+    }
     h3.status.new {
         color: var(--green);
     }
-    h3.status.changed {
+    h3.status.changed
+    {
         color: var(--yellow);
     }
     h3.status.unavailable {
@@ -47,6 +54,13 @@
     input.exit {
         margin-top: 2em;
     }
+    p.new {
+        background-color: var(--green-lll);
+        margin-bottom: 1rem;
+    }
+    p.old {
+        background-color: var(--red-lll);
+    }
 </style>
 {{end}}
 
@@ -66,15 +80,28 @@
         </form>
     {{end}}
 
+
 	<h3>Descrição</h3>
-	<p>{{.Product.Description}}</p>
+    {{if or (ne .Status "changed") (eq .Product.Description .ProductOld.Description)}}
+	    <p>{{.Product.Description}}</p>
+    {{else}}
+        <p class="new">{{.Product.Description}}</p>
+	    <p class="old">{{.ProductOld.Description}}</p>
+    {{end}}
+
 
 	<h3>Categoria</h3>
-	<p>{{.Product.Category}}</p>
+    {{if or (ne .Status "changed") (eq .Product.Category .ProductOld.Category)}}
+	    <p>{{.Product.Category}}</p>
+    {{else}}
+        <p class="new">{{.Product.Category}}</p>
+	    <p class="old">{{.ProductOld.Category}}</p>
+    {{end}}
+
 
 	{{if .ShowButtonCreateProduct}}
         <form action="" method="post">
-            <input class="btn" type="submit" value='Criar produto'>
+            <input class="btn create-product" type="submit" value='Criar produto'>
         </form>
     {{end}}
     {{if ne .Product.MongodbId ""}}
@@ -84,49 +111,121 @@
 
     <img src='{{.Product.PictureLink}}'>
 
+
 	<h3>Data de criação</h3>
 	<p>{{.Product.CreatedAt}}</p>
 
+
 	<h3>Data de modificação</h3>
-	<p>{{.Product.ChangedAt}}</p>
+    {{if or (ne .Status "changed") (eq .Product.ChangedAt .ProductOld.ChangedAt)}}
+	    <p>{{.Product.ChangedAt}}</p>
+    {{else}}
+        <p class="new">{{.Product.ChangedAt}}</p>
+	    <p class="old">{{.ProductOld.ChangedAt}}</p>
+    {{end}}
+    
+    
+	<h3>Data verificado</h3>
+	<p>{{.Product.StatusCleanedAt}}</p>
+
 
 	<h3>Código Aldo</h3>
 	<p>{{.Product.Code}}</p>
 
+
 	<h3>Marca</h3>
-	<p>{{.Product.Brand}}</p>
+    {{if or (ne .Status "changed") (eq .Product.Brand .ProductOld.Brand)}}
+	    <p>{{.Product.Brand}}</p>
+    {{else}}
+        <p class="new">{{.Product.Brand}}</p>
+	    <p class="old">{{.ProductOld.Brand}}</p>
+    {{end}}
+
 
 	<h3>Preço do fornecedor</h3>
-	<p>{{.Product.DealerPrice.Format}}</p>
+    {{if or (ne .Status "changed") (eq .Product.DealerPrice .ProductOld.DealerPrice)}}
+        <p>{{.Product.DealerPrice.Format}}</p>
+    {{else}}
+        <p class="new">{{.Product.DealerPrice.Format}}</p>
+	    <p class="old">{{.ProductOld.DealerPrice.Format}}</p>
+    {{end}}
+
 
 	<h3>Preço sugerido</h3>
-	<p>{{.Product.SuggestionPrice.Format}}</p>
+    {{if or (ne .Status "changed") (eq .Product.SuggestionPrice .ProductOld.SuggestionPrice)}}
+	    <p>{{.Product.SuggestionPrice.Format}}</p>
+    {{else}}
+        <p class="new">{{.Product.SuggestionPrice.Format}}</p>
+	    <p class="old">{{.ProductOld.SuggestionPrice.Format}}</p>
+    {{end}}
+
 
 	<h3>Descrição técnica</h3>
     <div class="techinical-description">
-        <p> {{.TechnicalDescription}} </p>
+        {{if or (ne .Status "changed") (eq .TechnicalDescription .TechnicalDescriptionOld)}}
+            <p>{{.TechnicalDescription}}</p>
+        {{else}}
+            <p class="new">{{.TechnicalDescription}}</p>
+            <p class="old">{{.TechnicalDescriptionOld}}</p>
+        {{end}}
     </div>
 
 	<h3>Comprimento</h3>
-	<p>{{.Product.Length}} mm</p>
+    {{if or (ne .Status "changed") (eq .Product.Length .ProductOld.Length)}}
+        <p>{{.Product.Length}}</p>
+    {{else}}
+        <p class="new">{{.Product.Length}}</p>
+        <p class="old">{{.ProductOld.Length}}</p>
+    {{end}}
+
 
 	<h3>Largura</h3>
-	<p>{{.Product.Width}} mm</p>
+    {{if or (ne .Status "changed") (eq .Product.Width .ProductOld.Width)}}
+        <p>{{.Product.Width}}</p>
+    {{else}}
+        <p class="new">{{.Product.Width}}</p>
+        <p class="old">{{.ProductOld.Width}}</p>
+    {{end}}
+
 
 	<h3>Altura</h3>
-	<p>{{.Product.Height}} mm</p>
+    {{if or (ne .Status "changed") (eq .Product.Height .ProductOld.Height)}}
+        <p>{{.Product.Height}}</p>
+    {{else}}
+        <p class="new">{{.Product.Height}}</p>
+        <p class="old">{{.ProductOld.Height}}</p>
+    {{end}}
+
 
 	<h3>Peso</h3>
-	<p>{{.Product.Weight}} gramas</p>
+    {{if or (ne .Status "changed") (eq .Product.Weight .ProductOld.Weight)}}
+        <p>{{.Product.Weight}}</p>
+    {{else}}
+        <p class="new">{{.Product.Weight}}</p>
+        <p class="old">{{.ProductOld.Weight}}</p>
+    {{end}}
+
 
 	<!-- PictureLink          string      `db:"picture_link"` -->
+
 	
 	<h3>Tempo de garantia</h3>
-	<p>{{.Product.WarrantyPeriod}} meses</p>
+    {{if or (ne .Status "changed") (eq .Product.WarrantyPeriod .ProductOld.WarrantyPeriod)}}
+        <p>{{.Product.WarrantyPeriod}} meses</p>
+    {{else}}
+        <p class="new">{{.Product.WarrantyPeriod}} meses</p>
+        <p class="old">{{.ProductOld.WarrantyPeriod}} meses</p>
+    {{end}}
+
 
 	<h3>Procedimento RMA</h3>
     <div class="rma-procedure">
-	    <p>{{.RMAProcedure}}</p>
+        {{if or (ne .Status "changed") (eq .Product.RMAProcedure .ProductOld.RMAProcedure)}}
+            <p>{{.Product.RMAProcedure}}</p>
+        {{else}}
+            <p class="new">{{.Product.RMAProcedure}}</p>
+            <p class="old">{{.ProductOld.RMAProcedure}}</p>
+        {{end}}
     </div>
 
     <!-- Products page. -->

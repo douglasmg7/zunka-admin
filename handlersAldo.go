@@ -74,9 +74,12 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 		Product                 *aldoutil.Product
 		TechnicalDescription    template.HTML
 		RMAProcedure            template.HTML
+		ProductOld              *aldoutil.Product
+		TechnicalDescriptionOld template.HTML
+		RMAProcedureOld         template.HTML
 		Status                  string
 		ShowButtonCreateProduct bool
-	}{session, "", &aldoutil.Product{}, "", "", "", false}
+	}{session, "", &aldoutil.Product{}, "", "", &aldoutil.Product{}, "", "", "", false}
 
 	err = dbAldo.Get(data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
 	HandleError(w, err)
@@ -86,13 +89,19 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 	data.RMAProcedure = template.HTML(data.Product.RMAProcedure)
 
 	// Select history.
-	products_history := []aldoutil.Product{}
-	err = dbAldo.Select(&products_history, "SELECT * FROM product_history WHERE code=? AND changed_at < ? ORDER BY changed_at DESC LIMIT 1", ps.ByName("code"), data.Product.StatusCleanedAt)
-	HandleError(w, err)
+	// products_history := []aldoutil.Product{}
+	// err = dbAldo.Select(&products_history, "SELECT * FROM product_history WHERE code=? AND changed_at < ? ORDER BY changed_at DESC LIMIT 1", ps.ByName("code"), data.Product.StatusCleanedAt)
+	// HandleError(w, err)
+	// for _, product := range products_history {
+	// fmt.Printf("Prodcut history: %s, %v, %v\n", product.Code, product.DealerPrice, product.ChangedAt)
+	// }
 
-	for _, product := range products_history {
-		fmt.Printf("Prodcut history: %s, %v, %v\n", product.Code, product.DealerPrice, product.ChangedAt)
-	}
+	productsTemp := []aldoutil.Product{}
+	err = dbAldo.Select(&productsTemp, "SELECT * FROM product_history WHERE code=? AND changed_at < ? ORDER BY changed_at DESC LIMIT 1", ps.ByName("code"), data.Product.StatusCleanedAt)
+	HandleError(w, err)
+	data.ProductOld = &productsTemp[0]
+	data.TechnicalDescriptionOld = template.HTML(data.ProductOld.TechnicalDescription)
+	data.RMAProcedureOld = template.HTML(data.ProductOld.RMAProcedure)
 
 	// Test - keep commented.
 	// Force new.
