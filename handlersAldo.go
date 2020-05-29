@@ -88,18 +88,49 @@ func aldoProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.
 	data.TechnicalDescription = template.HTML(data.Product.TechnicalDescription)
 	data.RMAProcedure = template.HTML(data.Product.RMAProcedure)
 
-	// Select history.
-	// products_history := []aldoutil.Product{}
-	// err = dbAldo.Select(&products_history, "SELECT * FROM product_history WHERE code=? AND changed_at < ? ORDER BY changed_at DESC LIMIT 1", ps.ByName("code"), data.Product.StatusCleanedAt)
-	// HandleError(w, err)
-	// for _, product := range products_history {
-	// fmt.Printf("Prodcut history: %s, %v, %v\n", product.Code, product.DealerPrice, product.ChangedAt)
-	// }
-
 	productsTemp := []aldoutil.Product{}
 	err = dbAldo.Select(&productsTemp, "SELECT * FROM product_history WHERE code=? AND changed_at < ? ORDER BY changed_at DESC LIMIT 1", ps.ByName("code"), data.Product.StatusCleanedAt)
 	HandleError(w, err)
-	data.ProductOld = &productsTemp[0]
+	// If some history before status_cleaned_at.
+	if len(productsTemp) > 0 {
+		data.ProductOld = &productsTemp[0]
+		fmt.Printf("Prodcut history: %s, Price: %v, ChangedAt: %v\n", productsTemp[0].Code, productsTemp[0].DealerPrice, productsTemp[0].ChangedAt)
+	} else {
+		// Find the fist history.
+		err = dbAldo.Select(&productsTemp, "SELECT * FROM product_history WHERE code=? ORDER BY changed_at LIMIT 1", ps.ByName("code"))
+		HandleError(w, err)
+		if len(productsTemp) > 0 {
+			data.ProductOld = &productsTemp[0]
+			fmt.Println("first history")
+			fmt.Printf("Prodcut history: %s, Price: %v, ChangedAt: %v\n", productsTemp[0].Code, productsTemp[0].DealerPrice, productsTemp[0].ChangedAt)
+		} else {
+			// No history, poduct not changed.
+			data.ProductOld = data.Product
+			fmt.Println("No history")
+		}
+	}
+
+	// // Get last seen.
+	// t0, err := time.Parse(time.RFC3339, "0002-01-01T00:00:00+03:00")
+	// HandleError(w, err)
+	// // No status_cleaned_at set yet.
+	// if data.Product.StatusCleanedAt.Before(t0) {
+	// err = dbAldo.Select(&productsTemp, "SELECT * FROM product_history WHERE code=? ORDER BY changed_at LIMIT 1", ps.ByName("code"))
+	// HandleError(w, err)
+	// // If some history.
+	// if len(productsTemp) > 0 {
+	// data.ProductOld = &productsTemp[0]
+	// } else {
+	// // No history, poduct not changed.
+	// data.ProductOld = data.Product
+	// }
+	// } else {
+	// // status_cleaned_at alredy set.
+	// err = dbAldo.Select(&productsTemp, "SELECT * FROM product_history WHERE code=? AND changed_at < ? ORDER BY changed_at DESC LIMIT 1", ps.ByName("code"), data.Product.StatusCleanedAt)
+	// HandleError(w, err)
+	// data.ProductOld = &productsTemp[0]
+	// }
+
 	data.TechnicalDescriptionOld = template.HTML(data.ProductOld.TechnicalDescription)
 	data.RMAProcedureOld = template.HTML(data.ProductOld.RMAProcedure)
 
