@@ -1,3 +1,20 @@
+## 1.1.1 (28 mai 2020)
+
+### Melhorias
+* Exibe diferenças dos ítens modificados na página de produto da Aldo.
+
+
+
+## 1.1.0 (20 mai 2020)
+
+### Melhorias
+* Limpa status do producto Aldo quando produto é criado no site da Zunka.
+* Na página do produto da Aldo, id do produto no site é um link para o produto no site da Zunka.
+* Criação do botão sair na página do produto da Aldo.
+* Criação do botão verificado na página do produto da Aldo.
+
+
+
 ## 1.0.2 (11 abr 2020)
 
 ### Melhorias
