@@ -11,3 +11,4 @@ mkdir -p $ZUNKAPATH/xml
 # Create dbs.
 $GS/zunkasrv/bin/db/create_db.sh
 $GS/aldowsc/bin/db/create_db.sh
+$GS/allnations/bin/db/create_db.sh
