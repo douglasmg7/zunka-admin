@@ -10,6 +10,15 @@
               <a class="item" href="/ns/aldo/categories">Categorias</a>
           </div>
         </div>
+        <div class="sub-menu">
+          <!-- <a class="item toggle-items" href="#">Aldo</a> -->
+          <div class="item toggle-items">Allnations</div>
+          <div class="items">
+              <a class="item back" href="#">< Menu</a>
+              <a class="item" href="/ns/allnations/products">Produtos</a>
+              <a class="item" href="/ns/allnations/categories">Categorias</a>
+          </div>
+        </div>
         <!-- Admin -->
         {{if .Session }} {{if .Session.CheckPermission "admin"}}
         <div class="sub-menu">

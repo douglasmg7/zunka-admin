@@ -42,7 +42,7 @@ var tmplUserDeleteAccount *template.Template
 var tmplAldoProducts, tmplAldoProduct, tmplAldoCategories *template.Template
 
 // Allnations.
-var tmplAllnationsProducts, tmplAllnationsConfig *template.Template
+var tmplAllnationsProducts, tmplAllnationsConfig, tmplALLnationsCategories *template.Template
 
 // Auth.
 var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *template.Template
@@ -56,7 +56,8 @@ var port string
 // Db.
 var dbZunka *sql.DB
 var dbAldo *sqlx.DB
-var dbZunkaFile, dbAldoFile string
+var dbAllnations *sqlx.DB
+var dbZunkaFile, dbAldoFile, dbAllnationsFile string
 
 var zunkaPath string
 var GS string
@@ -110,6 +111,17 @@ func init() {
 	dbAldoFile = path.Join(zunkaPath, "db", dbAldoFile)
 	// log.Println("aldoDb:", dbAldoFile)
 
+	// Allnations db.
+	dbAllnationsFile = os.Getenv("ALLNATIONS_DB")
+	if dbAllnationsFile == "" {
+		panic("ALLNATIONS_DB not defined.")
+	}
+	// Dev mode.
+	if !production {
+		dbAllnationsFile += "-dev"
+	}
+	// log.Println("dbAllnationsFile:", dbAllnationsFile)
+
 	// Log file.
 	logFile, err := os.OpenFile(path.Join(logPath, "zunkasrv.log"), os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 	if err != nil {
@@ -149,6 +161,7 @@ func init() {
 	// Allnations.
 	tmplAllnationsProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProducts.tpl"))
 	tmplAllnationsConfig = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsConfig.tpl"))
+	tmplALLnationsCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsCategories.tmpl"))
 	// Auth.
 	tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))
 	tmplAuthSignin = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signin.tpl"))
@@ -184,8 +197,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Aldo.
 	dbAldo = sqlx.MustConnect("sqlite3", dbAldoFile)
 	defer dbAldo.Close()
+
+	// Allnations.
+	dbAllnations = sqlx.MustConnect("sqlite3", dbAllnationsFile)
+	defer dbAllnations.Close()
 
 	// Init router.
 	router := httprouter.New()
