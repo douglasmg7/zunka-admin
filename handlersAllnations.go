@@ -1,29 +1,45 @@
 package main
 
 import (
-	"github.com/julienschmidt/httprouter"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
+	"time"
+
+	"github.com/julienschmidt/httprouter"
 	// "os/exec"
 )
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// PRODUCT
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Product list.
 func allnationsProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	data := struct {
 		Session     *SessionData
 		HeadMessage string
-	}{session, ""}
-	// fmt.Println("session: ", data.Session)
-	err = tmplAllnationsProducts.ExecuteTemplate(w, "allnationsProducts.tpl", data)
-	HandleError(w, err)
-}
+		Products    []AllnationsProduct
+		ValidDate   time.Time
+	}{session, "", []AllnationsProduct{}, time.Now().Add(-VALID_DATE)}
 
-func allnationsConfigHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	data := struct {
-		Session     *SessionData
-		HeadMessage string
-	}{session, ""}
-	// fmt.Println("session: ", data.Session)
-	err = tmplAllnationsConfig.ExecuteTemplate(w, "allnationsConfig.tpl", data)
+	// Get selected categories.
+	categories := []AllnationsCategory{}
+	err = dbAllnations.Select(&categories, "SELECT * FROM category WHERE selected = true")
+	categoriesSlice := []string{}
+	for _, category := range categories {
+		categoriesSlice = append(categoriesSlice, fmt.Sprintf("\"%v\"", category.Name))
+	}
+	categoriesList := strings.Join(categoriesSlice, ", ")
+	log.Printf("Categories: %v", categoriesList)
+
+	// Get products.
+	// err = dbAllnations.Select(&data.Products, "SELECT * FROM product order by description")
+	fmt.Printf("SELECT * FROM product WHERE category IN (%v) ORDER BY description\n", categoriesList)
+	err = dbAllnations.Select(&data.Products, fmt.Sprintf("SELECT * FROM product WHERE category IN (%v) ORDER BY description", categoriesList))
+	HandleError(w, err)
+
+	err = tmplAllnationsProducts.ExecuteTemplate(w, "allnationsProducts.tmpl", data)
 	HandleError(w, err)
 }
 
@@ -42,7 +58,6 @@ func allnationsCategoriesHandler(w http.ResponseWriter, req *http.Request, _ htt
 	err = dbAllnations.Select(&data.Categories, "SELECT * FROM category order by name")
 	HandleError(w, err)
 
-	log.Printf("Categories: %v", data.Categories)
 	// Render page.
 	err = tmplAllnationsCategories.ExecuteTemplate(w, "allnationsCategories.tmpl", data)
 	HandleError(w, err)

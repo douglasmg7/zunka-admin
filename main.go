@@ -42,7 +42,7 @@ var tmplUserDeleteAccount *template.Template
 var tmplAldoProducts, tmplAldoProduct, tmplAldoCategories *template.Template
 
 // Allnations.
-var tmplAllnationsProducts, tmplAllnationsConfig, tmplAllnationsCategories *template.Template
+var tmplAllnationsProducts, tmplAllnationsCategories *template.Template
 
 // Auth.
 var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *template.Template
@@ -159,7 +159,7 @@ func init() {
 	tmplAldoProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProducts.tmpl"))
 	tmplAldoCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoCategories.tmpl"))
 	// Allnations.
-	tmplAllnationsProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProducts.tpl"))
+	tmplAllnationsProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProducts.tmpl"))
 	tmplAllnationsCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsCategories.tmpl"))
 	// Auth.
 	tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))
@@ -236,8 +236,8 @@ func main() {
 	router.POST("/ns/aldo/categories", checkPermission(aldoCategoriesHandlerPost, "write"))
 
 	// Allnations.
-	router.GET("/allnations/products", checkPermission(allnationsProductsHandler, "read"))
-	router.GET("/allnations/config", checkPermission(allnationsConfigHandler, "read"))
+	// Products list page.
+	router.GET("/ns/allnations/products", checkPermission(allnationsProductsHandler, "read"))
 	// Categories page.
 	router.GET("/ns/allnations/categories", checkPermission(allnationsCategoriesHandler, "read"))
 	// Save categories.
