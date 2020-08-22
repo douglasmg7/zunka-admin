@@ -20,19 +20,19 @@
 </style>
 {{end}}
 
-{{define "title"}}Categorias Aldo{{end}}
+{{define "title"}}Categorias Allnations{{end}}
 
 {{define "content"}}
 <div class="content">
     <form method='post'>
-        <h3>Categorias Aldo</h3>
+        <h3>Categorias Allnations</h3>
         {{range .Categories}}
             <input type='checkbox' name='{{.Name}}' id='{{.Name}}' {{if .Selected}}checked{{end}} />
             <label for='{{.Name}}'> {{.Text}} - {{.ProductsQty}} </label>
             <br>
         {{end}}
         <input class="btn btn-success" type="submit" value="Salvar">
-        <input class="btn" onclick='window.location.href="/ns/aldo/products"' value="Sair">
+        <input class="btn" onclick='window.location.href="/ns/allnations/products"' value="Sair">
     </form>
 </div>
 {{end}}
