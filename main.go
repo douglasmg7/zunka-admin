@@ -42,7 +42,7 @@ var tmplUserDeleteAccount *template.Template
 var tmplAldoProducts, tmplAldoProduct, tmplAldoCategories *template.Template
 
 // Allnations.
-var tmplAllnationsProducts, tmplAllnationsCategories *template.Template
+var tmplAllnationsProducts, tmplAllnationsProduct, tmplAllnationsCategories *template.Template
 
 // Auth.
 var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *template.Template
@@ -155,11 +155,12 @@ func init() {
 	tmplUserChangeEmail = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeEmail.tpl"))
 	tmplUserChangeMobile = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/user/userChangeMobile.tpl"))
 	// Aldo.
-	tmplAldoProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProduct.tmpl"))
 	tmplAldoProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProducts.tmpl"))
+	tmplAldoProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoProduct.tmpl"))
 	tmplAldoCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/aldo/aldoCategories.tmpl"))
 	// Allnations.
 	tmplAllnationsProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProducts.tmpl"))
+	tmplAllnationsProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProduct.tmpl"))
 	tmplAllnationsCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsCategories.tmpl"))
 	// Auth.
 	tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))
@@ -238,6 +239,8 @@ func main() {
 	// Allnations.
 	// Products list page.
 	router.GET("/ns/allnations/products", checkPermission(allnationsProductsHandler, "read"))
+	// Product page.
+	router.GET("/ns/allnations/product/:code", checkPermission(allnationsProductHandler, "read"))
 	// Categories page.
 	router.GET("/ns/allnations/categories", checkPermission(allnationsCategoriesHandler, "read"))
 	// Save categories.

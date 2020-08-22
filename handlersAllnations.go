@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"strings"
@@ -34,12 +35,66 @@ func allnationsProductsHandler(w http.ResponseWriter, req *http.Request, _ httpr
 	log.Printf("Categories: %v", categoriesList)
 
 	// Get products.
-	// err = dbAllnations.Select(&data.Products, "SELECT * FROM product order by description")
-	fmt.Printf("SELECT * FROM product WHERE category IN (%v) ORDER BY description\n", categoriesList)
 	err = dbAllnations.Select(&data.Products, fmt.Sprintf("SELECT * FROM product WHERE category IN (%v) ORDER BY description", categoriesList))
 	HandleError(w, err)
 
 	err = tmplAllnationsProducts.ExecuteTemplate(w, "allnationsProducts.tmpl", data)
+	HandleError(w, err)
+}
+
+// Product item.
+func allnationsProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
+	data := struct {
+		Session                 *SessionData
+		HeadMessage             string
+		Product                 *AllnationsProduct
+		TechnicalDescription    template.HTML
+		ProductOld              *AllnationsProduct
+		TechnicalDescriptionOld template.HTML
+		RMAProcedureOld         template.HTML
+		Status                  string
+		ShowButtonCreateProduct bool
+	}{session, "", &AllnationsProduct{}, "", &AllnationsProduct{}, "", "", "", false}
+
+	err = dbAllnations.Get(data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
+	HandleError(w, err)
+
+	// Not escaped.
+	data.TechnicalDescription = template.HTML(data.Product.TechnicalDescription)
+
+	productsTemp := []AllnationsProduct{}
+	err = dbAllnations.Select(&productsTemp, "SELECT * FROM product_history WHERE code=? AND changed_at < ? ORDER BY changed_at DESC LIMIT 1", ps.ByName("code"), data.Product.CheckedAt)
+	HandleError(w, err)
+	// If some history before checked_at.
+	if len(productsTemp) > 0 {
+		data.ProductOld = &productsTemp[0]
+		fmt.Printf("Prodcut history: %s, Price: %v, ChangedAt: %v\n", productsTemp[0].Code, productsTemp[0].PriceSale, productsTemp[0].ChangedAt)
+	} else {
+		// Find the fist history.
+		err = dbAllnations.Select(&productsTemp, "SELECT * FROM product_history WHERE code=? ORDER BY changed_at LIMIT 1", ps.ByName("code"))
+		HandleError(w, err)
+		if len(productsTemp) > 0 {
+			data.ProductOld = &productsTemp[0]
+			fmt.Println("first history")
+			fmt.Printf("Prodcut history: %s, Price: %v, ChangedAt: %v\n", productsTemp[0].Code, productsTemp[0].PriceSale, productsTemp[0].ChangedAt)
+		} else {
+			// No history, poduct not changed.
+			data.ProductOld = data.Product
+			fmt.Println("No history")
+		}
+	}
+
+	data.TechnicalDescriptionOld = template.HTML(data.ProductOld.TechnicalDescription)
+
+	// Status.
+	data.Status = data.Product.Status(time.Now().Add(-VALID_DATE))
+	// Show button create product on zunkasite.
+	if data.Product.ZunkaProductId == "" && (data.Status == "new" || data.Status == "changed" || data.Status == "") {
+		data.ShowButtonCreateProduct = true
+	}
+
+	// Render template.
+	err = tmplAllnationsProduct.ExecuteTemplate(w, "allnationsProduct.tmpl", data)
 	HandleError(w, err)
 }
 

@@ -1,0 +1,368 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+	tr {
+		cursor: pointer;
+	}
+    input.btn {
+        margin-top: 0;
+    }
+    input.create-product {
+        margin-top: 1rem;
+    }
+    .success {
+        color: var(--green);
+    }
+    .warn {
+        color: var(--yellow);
+    }
+    .danger {
+        color: var(--red);
+    }
+    h3 {
+        font-weight: 500;
+    }
+    h3.status.new {
+        color: var(--green);
+    }
+    h3.status.changed
+    {
+        color: var(--yellow);
+    }
+    h3.status.unavailable {
+        color: var(--orange);
+    }
+    h3.status.removed {
+        color: var(--red);
+    }
+    .techinical-description p,
+    .rma-procedure p
+    {
+        font-size: 1.2em;
+        background-color: var(--white);
+        padding: .5em;
+    }
+    .techinical-description strong,
+    .rma-procedure strong
+    {
+        font-weight: 500;
+    }
+    a {
+        font-size: 2.2rem;
+    }
+    input.exit {
+        margin-top: 2em;
+    }
+    p.new {
+        background-color: var(--green-lll);
+        margin-bottom: 1rem;
+    }
+    p.old {
+        background-color: var(--red-lll);
+    }
+</style>
+{{end}}
+
+{{define "title"}} Produtos Allnations {{end}}
+
+{{define "content"}}
+<div class="content">
+    <h2> Produto Allnations </h2>
+    {{if (eq .Status "new")}} <h3 class="status new">Novo</h3> {{end}}
+    {{if (eq .Status "changed")}} <h3 class="status changed">Alterado</h3> {{end}}
+    {{if (eq .Status "unavailable")}} <h3 class="status unavailable">Indisponível</h3> {{end}}
+    {{if (eq .Status "removed")}} <h3 class="status removed">Removido</h3> {{end}}
+
+    {{if or (eq .Status "new")  (eq .Status "changed")}}
+        <form action="/ns/allnations/product/{{.Product.Code}}/checked" method="post">
+            <input class="btn" type="submit" value='Verificado'>
+        </form>
+    {{end}}
+
+
+	<h3>Descrição</h3>
+    {{if or (ne .Status "changed") (eq .Product.Description .ProductOld.Description)}}
+	    <p>{{.Product.Description}}</p>
+    {{else}}
+        <p class="new">{{.Product.Description}}</p>
+	    <p class="old">{{.ProductOld.Description}}</p>
+    {{end}}
+    
+
+	<h3>Departamento</h3>
+    {{if or (ne .Status "changed") (eq .Product.Department .ProductOld.Department)}}
+	    <p>{{.Product.Department}}</p>
+    {{else}}
+        <p class="new">{{.Product.Department}}</p>
+	    <p class="old">{{.ProductOld.Department}}</p>
+    {{end}}
+
+
+	<h3>Categoria</h3>
+    {{if or (ne .Status "changed") (eq .Product.Category .ProductOld.Category)}}
+	    <p>{{.Product.Category}}</p>
+    {{else}}
+        <p class="new">{{.Product.Category}}</p>
+	    <p class="old">{{.ProductOld.Category}}</p>
+    {{end}}
+
+
+	<h3>Subcategoria</h3>
+    {{if or (ne .Status "changed") (eq .Product.SubCategory .ProductOld.SubCategory)}}
+	    <p>{{.Product.SubCategory}}</p>
+    {{else}}
+        <p class="new">{{.Product.SubCategory}}</p>
+	    <p class="old">{{.ProductOld.SubCategory}}</p>
+    {{end}}
+
+
+	{{if .ShowButtonCreateProduct}}
+        <form action="" method="post">
+            <input class="btn create-product" type="submit" value='Criar produto'>
+        </form>
+    {{end}}
+    {{if ne .Product.ZunkaProductId ""}}
+	    <h3>Produto id (loja)</h3>
+	    <a href='/admin/product/{{.Product.ZunkaProductId}}'>{{.Product.ZunkaProductId}}</a>
+	{{end}}
+
+
+    <img src='{{.Product.UrlImage}}-01'>
+    <img src='{{.Product.UrlImage}}-02'>
+    <img src='{{.Product.UrlImage}}-03'>
+    <img src='{{.Product.UrlImage}}-04'>
+    <img src='{{.Product.UrlImage}}-05'>
+    <img src='{{.Product.UrlImage}}-06'>
+    <img src='{{.Product.UrlImage}}-07'>
+    <img src='{{.Product.UrlImage}}-08'>
+    <img src='{{.Product.UrlImage}}-09'>
+    <img src='{{.Product.UrlImage}}-10'>
+
+
+	<h3>Timestamp</h3>
+    {{if or (ne .Status "changed") (eq .Product.Timestamp .ProductOld.Timestamp)}}
+	    <p>{{.Product.Timestamp}}</p>
+    {{else}}
+        <p class="new">{{.Product.Timestamp}}</p>
+	    <p class="old">{{.ProductOld.Timestamp}}</p>
+    {{end}}
+
+
+	<h3>Data de criação</h3>
+	<p>{{.Product.CreatedAt}}</p>
+
+
+	<h3>Data de modificação</h3>
+    {{if or (ne .Status "changed") (eq .Product.ChangedAt .ProductOld.ChangedAt)}}
+	    <p>{{.Product.ChangedAt}}</p>
+    {{else}}
+        <p class="new">{{.Product.ChangedAt}}</p>
+	    <p class="old">{{.ProductOld.ChangedAt}}</p>
+    {{end}}
+    
+    
+    {{ if not .Product.CheckedAt.IsZero }}
+        <h3>Data verificado</h3>
+        <p>{{.Product.CheckedAt}}</p>
+    {{ end }}
+
+
+	<h3>Código Allnations</h3>
+	<p>{{.Product.Code}}</p>
+
+
+	<h3>Fabricante</h3>
+    {{if or (ne .Status "changed") (eq .Product.Maker .ProductOld.Maker)}}
+	    <p>{{.Product.Maker}}</p>
+    {{else}}
+        <p class="new">{{.Product.Maker}}</p>
+	    <p class="old">{{.ProductOld.Maker}}</p>
+    {{end}}
+
+
+	<h3>Part Number</h3>
+    {{if or (ne .Status "changed") (eq .Product.PartNumber .ProductOld.PartNumber)}}
+	    <p>{{.Product.PartNumber}}</p>
+    {{else}}
+        <p class="new">{{.Product.PartNumber}}</p>
+	    <p class="old">{{.ProductOld.PartNumber}}</p>
+    {{end}}
+
+
+	<h3>EAN</h3>
+    {{if or (ne .Status "changed") (eq .Product.Ean .ProductOld.Ean)}}
+	    <p>{{.Product.Ean}}</p>
+    {{else}}
+        <p class="new">{{.Product.Ean}}</p>
+	    <p class="old">{{.ProductOld.Ean}}</p>
+    {{end}}
+
+
+	<h3>Preço para venda</h3>
+    {{if or (ne .Status "changed") (eq .Product.PriceSale .ProductOld.PriceSale)}}
+        <p>{{.Product.PriceSale.Format}}</p>
+    {{else}}
+        <p class="new">{{.Product.PriceSale.Format}}</p>
+	    <p class="old">{{.ProductOld.PriceSale.Format}}</p>
+    {{end}}
+
+
+	<h3>Preço sem substituição tributária</h3>
+    {{if or (ne .Status "changed") (eq .Product.PriceWithoutSt .ProductOld.PriceWithoutSt)}}
+	    <p>{{.Product.PriceWithoutSt.Format}}</p>
+    {{else}}
+        <p class="new">{{.Product.PriceWithoutSt.Format}}</p>
+	    <p class="old">{{.ProductOld.PriceWithoutSt.Format}}</p>
+    {{end}}
+
+
+	<h3>Incide ICMS ST</h3>
+    {{if or (ne .Status "changed") (eq .Product.IcmsStTaxation .ProductOld.IcmsStTaxation)}}
+        {{ if .Product.IcmsStTaxation }}
+	        <p>Sim</p>
+        {{ else }}
+            <p>Não</p>
+        {{ end }}
+    {{else}}
+        {{ if .Product.IcmsStTaxation }}
+	        <p class="new">Sim</p>
+        {{ else }}
+	        <p class="new">Não</p>
+        {{ end }}
+        {{ if .ProductOld.IcmsStTaxation }}
+	        <p class="old">Sim</p>
+        {{ else }}
+	        <p class="old">Não</p>
+        {{ end }}
+    {{end}}
+
+
+	<h3>Ativo</h3>
+    {{if or (ne .Status "changed") (eq .Product.Active .ProductOld.Active)}}
+        {{ if .Product.Active }}
+	        <p>Sim</p>
+        {{ else }}
+            <p>Não</p>
+        {{ end }}
+    {{else}}
+        {{ if .Product.Active }}
+	        <p class="new">Sim</p>
+        {{ else }}
+	        <p class="new">Não</p>
+        {{ end }}
+        {{ if .ProductOld.Active }}
+	        <p class="old">Sim</p>
+        {{ else }}
+	        <p class="old">Não</p>
+        {{ end }}
+    {{end}}
+
+
+	<h3>Disponível</h3>
+    {{if or (ne .Status "changed") (eq .Product.Availability .ProductOld.Availability)}}
+        {{ if .Product.Availability }}
+	        <p>Sim</p>
+        {{ else }}
+            <p>Não</p>
+        {{ end }}
+    {{else}}
+        {{ if .Product.Availability }}
+	        <p class="new">Sim</p>
+        {{ else }}
+	        <p class="new">Não</p>
+        {{ end }}
+        {{ if .ProductOld.Availability }}
+	        <p class="old">Sim</p>
+        {{ else }}
+	        <p class="old">Não</p>
+        {{ end }}
+    {{end}}
+
+
+	<h3>Origem</h3>
+    {{if or (ne .Status "changed") (eq .Product.Origin .ProductOld.Origin)}}
+	    <p>{{.Product.Origin}}</p>
+    {{else}}
+        <p class="new">{{.Product.Origin}}</p>
+	    <p class="old">{{.ProductOld.Origin}}</p>
+    {{end}}
+
+
+	<h3>Localização do estoque</h3>
+    {{if or (ne .Status "changed") (eq .Product.StockOrigin .ProductOld.StockOrigin)}}
+	    <p>{{.Product.StockOrigin}}</p>
+    {{else}}
+        <p class="new">{{.Product.StockOrigin}}</p>
+	    <p class="old">{{.ProductOld.StockOrigin}}</p>
+    {{end}}
+
+
+	<h3>Quantidade em estoque</h3>
+    {{if or (ne .Status "changed") (eq .Product.StockQty .ProductOld.StockQty)}}
+	    <p>{{.Product.StockQty}}</p>
+    {{else}}
+        <p class="new">{{.Product.StockQty}}</p>
+	    <p class="old">{{.ProductOld.StockQty}}</p>
+    {{end}}
+
+
+	<h3>Descrição técnica</h3>
+    <div class="techinical-description">
+        {{if or (ne .Status "changed") (eq .TechnicalDescription .TechnicalDescriptionOld)}}
+            <p>{{.TechnicalDescription}}</p>
+        {{else}}
+            <p class="new">{{.TechnicalDescription}}</p>
+            <p class="old">{{.TechnicalDescriptionOld}}</p>
+        {{end}}
+    </div>
+
+
+	<h3>Comprimento</h3>
+    {{if or (ne .Status "changed") (eq .Product.LengthMm .ProductOld.LengthMm)}}
+        <p>{{.Product.LengthMm}} mm</p>
+    {{else}}
+        <p class="new">{{.Product.LengthMm}} mm</p>
+        <p class="old">{{.ProductOld.LengthMm}} mm</p>
+    {{end}}
+
+
+	<h3>Largura</h3>
+    {{if or (ne .Status "changed") (eq .Product.WidthMm .ProductOld.WidthMm)}}
+        <p>{{.Product.WidthMm}} mm</p>
+    {{else}}
+        <p class="new">{{.Product.WidthMm}} mm</p>
+        <p class="old">{{.ProductOld.WidthMm}} mm</p>
+    {{end}}
+
+
+	<h3>Altura</h3>
+    {{if or (ne .Status "changed") (eq .Product.HeightMm .ProductOld.HeightMm)}}
+        <p>{{.Product.HeightMm}} mm</p>
+    {{else}}
+        <p class="new">{{.Product.HeightMm}} mm</p>
+        <p class="old">{{.ProductOld.HeightMm}} mm</p>
+    {{end}}
+
+
+	<h3>Peso</h3>
+    {{if or (ne .Status "changed") (eq .Product.WeightG .ProductOld.WeightG)}}
+        <p>{{.Product.WeightG}} g</p>
+    {{else}}
+        <p class="new">{{.Product.WeightG}} g</p>
+        <p class="old">{{.ProductOld.WeightG}} g</p>
+    {{end}}
+
+
+	<h3>Tempo de garantia</h3>
+    {{if or (ne .Status "changed") (eq .Product.WarrantyMonth .ProductOld.WarrantyMonth)}}
+        <p>{{.Product.WarrantyMonth}} meses</p>
+    {{else}}
+        <p class="new">{{.Product.WarrantyMonth}} meses</p>
+        <p class="old">{{.ProductOld.WarrantyMonth}} meses</p>
+    {{end}}
+
+    <!-- Products page. -->
+    <input class="btn exit" type="button" onclick="location.href='/ns/allnations/products'" value='Sair'>
+</div>
+{{end}}
