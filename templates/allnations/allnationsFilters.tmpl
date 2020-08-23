@@ -1,0 +1,46 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+    h3 {
+        margin-bottom: .5em;
+    }   
+    label {
+        display: inline-block;
+        font-size: 1.4em;
+        margin-top: .5em;
+        margin-bottom: 0em;
+    }
+    input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        position: relative;
+        top: 3px;
+        margin-right: .6rem;
+    }
+    input[type='text'] {
+        max-width: 10em;
+        display: block;
+    }
+</style>
+{{end}}
+
+{{define "title"}}Filtros Allnations{{end}}
+
+{{define "content"}}
+<div class="content">
+    <form method='post'>
+        <h3>Filtros Allnations</h3>
+        <input type='checkbox' name='onlyActive' id='onlyActive' {{if .Filters.OnlyActive}}checked{{end}} />
+        <label for='onlyActive'> Apenas produtos ativos </label>
+        <br>
+        <input type='checkbox' name='onlyAvailability' id='onlyAvailability' {{if .Filters.OnlyAvailability}}checked{{end}} />
+        <label for='onlyAvailability'> Apenas produtos disponíveis </label>
+        <br>
+        <label for='minPrice'> Preço mínimo </label>
+        <input type="text" id="minPrice" name="minPrice" value={{.Filters.MinPrice}}>
+        <label for='maxPrice'> Preço máximo </label>
+        <input type="text" id="maxPrice" name="maxPrice" value={{.Filters.MaxPrice}}>
+    </form>
+</div>
+{{end}}
