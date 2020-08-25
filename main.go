@@ -57,7 +57,7 @@ var port string
 var dbZunka *sql.DB
 var dbAldo *sqlx.DB
 var dbAllnations *sqlx.DB
-var dbZunkaFile, dbAldoFile, dbAllnationsFile string
+var dbZunkaFile, dbAldoFile, dbAllnationsFile, allnationsFiltersFile string
 
 var zunkaPath string
 var GS string
@@ -92,9 +92,14 @@ func init() {
 		panic("GS env not defined.")
 	}
 
+	// Log path.
 	logPath := path.Join(zunkaPath, "log", "zunkasrv")
-	// Create log path.
 	os.MkdirAll(logPath, os.ModePerm)
+
+	// Data path.
+	dataPath := path.Join(zunkaPath, "data", "zunkasrv")
+	os.MkdirAll(dataPath, os.ModePerm)
+	allnationsFiltersFile = path.Join(dataPath, "filters.data")
 
 	// Zunka db.
 	dbZunkaFile = os.Getenv("ZUNKA_SRV_DB")

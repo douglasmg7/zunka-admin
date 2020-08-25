@@ -1,13 +1,11 @@
 package main
 
 import (
-	"encoding/gob"
 	"fmt"
 	"html/template"
 	// "io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -15,28 +13,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	// "os/exec"
 )
-
-// Write struct to file.
-func writeGob(filePath string, object interface{}) error {
-	file, err := os.Create(filePath)
-	if err == nil {
-		encoder := gob.NewEncoder(file)
-		encoder.Encode(object)
-	}
-	file.Close()
-	return err
-}
-
-// Read struct from file.
-func readGob(filePath string, object interface{}) error {
-	file, err := os.Open(filePath)
-	if err == nil {
-		decoder := gob.NewDecoder(file)
-		err = decoder.Decode(object)
-	}
-	file.Close()
-	return err
-}
 
 // Allnations Filters.
 type AllnationsFilters struct {
@@ -64,10 +40,9 @@ func allnationsFiltersHandler(w http.ResponseWriter, req *http.Request, _ httpro
 		MinPrice:         "1000",
 		MaxPrice:         "100000000",
 	}
-	// filters := new(AllnationsFilters)
 
 	// Read filter from file.
-	err := readGob("/home/douglasmg7/filters.data", &filters)
+	err := readGob(allnationsFiltersFile, &filters)
 	if err != nil {
 		// log.Printf("Error: %v", err)
 		log.Printf("Using default values for Allnations filters: %v", filters)
@@ -97,7 +72,15 @@ func allnationsFiltersHandlerPost(w http.ResponseWriter, req *http.Request, _ ht
 	// HandleError(w, err)
 	// log.Printf("receive body: %v", string(body))
 
-	// if req.PostFormValue()
+	if req.PostFormValue("onlyActive") != "" {
+		filters.OnlyActive = true
+		log.Printf("onlyActive: true")
+	}
+
+	if req.PostFormValue("onlyAvailability") != "" {
+		filters.OnlyAvailability = true
+		log.Printf("onlyAvailability: true")
+	}
 
 	// Validate min price.
 	filters.MinPrice = req.PostFormValue("minPrice")
@@ -131,18 +114,10 @@ func allnationsFiltersHandlerPost(w http.ResponseWriter, req *http.Request, _ ht
 		HandleError(w, err)
 	} else {
 		// Save filters and go to products page.
-		err := writeGob("/home/douglasmg7/filters.data", filters)
+		err := writeGob(allnationsFiltersFile, filters)
 		HandleError(w, err)
 		http.Redirect(w, req, "/ns/allnations/products", http.StatusSeeOther)
 	}
-
-	// // Read filter from file.
-	// err := readGob("filters.data", filters)
-	// if err != nil {
-	// log.Printf("Using default values for Allnations filters: %v", filters)
-	// } else {
-	// log.Printf("Using Allnations filters: %v", filters)
-	// }
 
 	// http.Redirect(w, req, "/ns/allnations/filters", http.StatusSeeOther)
 	// w.WriteHeader(200)
