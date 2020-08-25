@@ -4,9 +4,11 @@ import (
 	"encoding/gob"
 	"fmt"
 	"html/template"
+	// "io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -40,8 +42,14 @@ func readGob(filePath string, object interface{}) error {
 type AllnationsFilters struct {
 	OnlyActive       bool
 	OnlyAvailability bool
-	MinPrice         int
-	MaxPrice         int
+	MinPrice         string
+	MaxPrice         string
+}
+
+// Validation filters.
+type AllnationsFiltersValidation struct {
+	MinPrice string
+	MaxPrice string
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,16 +58,18 @@ type AllnationsFilters struct {
 // Get all filters.
 func allnationsFiltersHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	// todo - maker
-	// Default filters.
-	filters := AllnationsFilters{
+	filters := &AllnationsFilters{
 		OnlyActive:       false,
 		OnlyAvailability: false,
-		MinPrice:         100_00,
-		MaxPrice:         1000_000_00,
+		MinPrice:         "1000",
+		MaxPrice:         "100000000",
 	}
+	// filters := new(AllnationsFilters)
+
 	// Read filter from file.
-	err := readGob("filters.data", filters)
+	err := readGob("/home/douglasmg7/filters.data", &filters)
 	if err != nil {
+		// log.Printf("Error: %v", err)
 		log.Printf("Using default values for Allnations filters: %v", filters)
 	} else {
 		log.Printf("Using Allnations filters: %v", filters)
@@ -69,11 +79,74 @@ func allnationsFiltersHandler(w http.ResponseWriter, req *http.Request, _ httpro
 		Session     *SessionData
 		HeadMessage string
 		Filters     AllnationsFilters
-	}{session, "", filters}
+		Validation  AllnationsFiltersValidation
+	}{session, "", *filters, AllnationsFiltersValidation{"", ""}}
 
 	// Render page.
 	err = tmplAllnationsFilters.ExecuteTemplate(w, "allnationsFilters.tmpl", data)
 	HandleError(w, err)
+}
+
+// Save filter.
+func allnationsFiltersHandlerPost(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+	filters := AllnationsFilters{}
+	validation := AllnationsFiltersValidation{}
+
+	// defer req.Body.Close()
+	// body, err := ioutil.ReadAll(req.Body)
+	// HandleError(w, err)
+	// log.Printf("receive body: %v", string(body))
+
+	// if req.PostFormValue()
+
+	// Validate min price.
+	filters.MinPrice = req.PostFormValue("minPrice")
+	log.Printf("filters.MinPrice: %s", filters.MinPrice)
+	_, err = strconv.ParseUint(filters.MinPrice, 10, 64)
+	if err != nil {
+		log.Printf("err: %s", err)
+		validation.MinPrice = "número inválido"
+	}
+
+	// Validate max price.
+	filters.MaxPrice = req.PostFormValue("maxPrice")
+	_, err = strconv.ParseUint(filters.MaxPrice, 10, 64)
+	if err != nil {
+		validation.MaxPrice = "número inválido"
+	}
+
+	// Some invalid fields.
+	if validation.MinPrice != "" && validation.MaxPrice != "" {
+		data := struct {
+			Session     *SessionData
+			HeadMessage string
+			Filters     AllnationsFilters
+			Validation  AllnationsFiltersValidation
+		}{session, "", filters, validation}
+
+		log.Printf("sending data: %v", data)
+
+		// Render page.
+		err = tmplAllnationsFilters.ExecuteTemplate(w, "allnationsFilters.tmpl", data)
+		HandleError(w, err)
+	} else {
+		// Save filters and go to products page.
+		err := writeGob("/home/douglasmg7/filters.data", filters)
+		HandleError(w, err)
+		http.Redirect(w, req, "/ns/allnations/products", http.StatusSeeOther)
+	}
+
+	// // Read filter from file.
+	// err := readGob("filters.data", filters)
+	// if err != nil {
+	// log.Printf("Using default values for Allnations filters: %v", filters)
+	// } else {
+	// log.Printf("Using Allnations filters: %v", filters)
+	// }
+
+	// http.Redirect(w, req, "/ns/allnations/filters", http.StatusSeeOther)
+	// w.WriteHeader(200)
+	// w.Write([]byte("500 - Something bad happened!"))
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

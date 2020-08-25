@@ -35,6 +35,11 @@ ul {
 .error {
     color: var(--red-lighter);
 }
+
+label.invalid {
+    color: var(--red-lighter);
+}
+
 .warn-msg,
 .success-msg {
     padding: 0.4em 1em;

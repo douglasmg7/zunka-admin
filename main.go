@@ -249,6 +249,8 @@ func main() {
 	router.POST("/ns/allnations/categories", checkPermission(allnationsCategoriesHandlerPost, "write"))
 	// Filter page.
 	router.GET("/ns/allnations/filters", checkPermission(allnationsFiltersHandler, "read"))
+	// Save filter.
+	router.POST("/ns/allnations/filters", checkPermission(allnationsFiltersHandlerPost, "write"))
 
 	// Auth - signup.
 	router.GET("/ns/auth/signup", confirmNoLogged(authSignupHandler))

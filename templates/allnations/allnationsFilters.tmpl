@@ -31,16 +31,64 @@
 <div class="content">
     <form method='post'>
         <h3>Filtros Allnations</h3>
+
+        <!-- Only active -->
         <input type='checkbox' name='onlyActive' id='onlyActive' {{if .Filters.OnlyActive}}checked{{end}} />
         <label for='onlyActive'> Apenas produtos ativos </label>
         <br>
+
+        <!-- Only availability -->
         <input type='checkbox' name='onlyAvailability' id='onlyAvailability' {{if .Filters.OnlyAvailability}}checked{{end}} />
         <label for='onlyAvailability'> Apenas produtos disponíveis </label>
         <br>
-        <label for='minPrice'> Preço mínimo </label>
-        <input type="text" id="minPrice" name="minPrice" value={{.Filters.MinPrice}}>
-        <label for='maxPrice'> Preço máximo </label>
-        <input type="text" id="maxPrice" name="maxPrice" value={{.Filters.MaxPrice}}>
+
+        <!-- Min price -->
+        <div>
+            {{if .Validation.MinPrice}} 
+                <label for="minPrice" class="invalid"> Preço mínimo ({{.Validation.MinPrice}}) </label>
+            {{else}}
+                <label for="minPrice"> Preço mínimo </label>
+            {{end}}
+            <input type="text" id="minPrice" name="minPrice" value={{.Filters.MinPrice}}>
+        </div>
+
+        <!-- Max price -->
+        <div>
+            {{if .Validation.MaxPrice}} 
+                <label for="maxPrice" class="invalid"> Preço mínimo ({{.Validation.MaxPrice}}) </label>
+            {{else}}
+                <label for="maxPrice"> Preço mínimo </label>
+            {{end}}
+            <input type="text" id="maxPrice" name="maxPrice" value={{.Filters.MaxPrice}}>
+        </div>
+
+        <!-- submit -->
+        <input class="btn btn-info" type="submit" value="Salvar">
     </form>
 </div>
+{{end}}
+
+{{define "embedded-js"}} 
+    <script>
+        // Save.
+        function save() {
+            console.info("-Change");
+            fetch('filters', {
+                method: 'POST',
+                body: 'savee'
+            })
+            // .then(response => response.json())
+            .then(response => {
+                console.log(response.status);
+                response.text()
+                    .then(text => {
+                        console.log('body:', text);
+                    });
+                // console.log('response:', response.text);
+            })
+            .catch(error => {
+                console.log('Catch error:', error.response.text);
+            });
+        }
+    </script>
 {{end}}
