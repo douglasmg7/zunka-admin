@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"log"
@@ -152,12 +153,32 @@ func allnationsProductsHandler(w http.ResponseWriter, req *http.Request, _ httpr
 		categoriesSlice = append(categoriesSlice, fmt.Sprintf("\"%v\"", category.Name))
 	}
 	categoriesList := strings.Join(categoriesSlice, ", ")
-	log.Printf("Categories: %v", categoriesList)
+	log.Printf("categoriesList: %v", categoriesList)
+
+	// Filters.
+	filters := bytes.Buffer{}
+	// Only active.
+	if allnationsFilters.OnlyActive {
+		filters.WriteString(" AND active = true ")
+	}
+	// Only availability.
+	if allnationsFilters.OnlyAvailability {
+		filters.WriteString(" AND availability = true ")
+	}
+	// Min price.
+	minPrice, err := strconv.ParseUint(allnationsFilters.MinPrice, 10, 64)
+	HandleError(w, err)
+	filters.WriteString(fmt.Sprintf(" AND price_sale >= %v ", minPrice))
+	// Max price.
+	maxPrice, err := strconv.ParseUint(allnationsFilters.MaxPrice, 10, 64)
+	HandleError(w, err)
+	filters.WriteString(fmt.Sprintf(" AND price_sale <= %v ", maxPrice))
 
 	// Get products.
 	err = dbAllnations.Select(&data.Products, fmt.Sprintf(
-		"SELECT * FROM product WHERE category IN (%v) AND active = true AND availability = true  ORDER BY description", categoriesList))
+		"SELECT * FROM product WHERE category IN (%s) %s ORDER BY description", categoriesList, filters.String()))
 	HandleError(w, err)
+	fmt.Printf("SELECT * FROM product WHERE category IN (%s) (%s) ORDER BY description", categoriesList, filters.String())
 
 	err = tmplAllnationsProducts.ExecuteTemplate(w, "allnationsProducts.tmpl", data)
 	HandleError(w, err)
