@@ -57,12 +57,15 @@ var port string
 var dbZunka *sql.DB
 var dbAldo *sqlx.DB
 var dbAllnations *sqlx.DB
-var dbZunkaFile, dbAldoFile, dbAllnationsFile, allnationsFiltersFile string
+var dbZunkaFile, dbAldoFile, dbAllnationsFile string
 
 var zunkaPath string
 var GS string
 
 var err error
+
+// Data path.
+var dataPath string
 
 // Sessions from each user.
 var sessions = Sessions{
@@ -70,8 +73,10 @@ var sessions = Sessions{
 	mapSessionData: map[int]*SessionData{},
 }
 
-func init() {
+// Allnations filter.
+var allnationsFilters *AllnationsFilters
 
+func init() {
 	// Check if production mode.
 	if os.Getenv("RUN_MODE") == "production" {
 		production = true
@@ -97,9 +102,8 @@ func init() {
 	os.MkdirAll(logPath, os.ModePerm)
 
 	// Data path.
-	dataPath := path.Join(zunkaPath, "data", "zunkasrv")
+	dataPath = path.Join(zunkaPath, "data", "zunkasrv")
 	os.MkdirAll(dataPath, os.ModePerm)
-	allnationsFiltersFile = path.Join(dataPath, "filters.data")
 
 	// Zunka db.
 	dbZunkaFile = os.Getenv("ZUNKA_SRV_DB")
@@ -125,7 +129,6 @@ func init() {
 	if !production {
 		dbAllnationsFile += "-dev"
 	}
-	// log.Println("dbAllnationsFile:", dbAllnationsFile)
 
 	// Log file.
 	logFile, err := os.OpenFile(path.Join(logPath, "zunkasrv.log"), os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
@@ -178,11 +181,6 @@ func init() {
 	tmplStudent = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/student.tpl"))
 	tmplAllStudent = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allStudent.tpl"))
 	tmplNewStudent = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/newStudent.tpl"))
-
-	// debug templates
-	// for _, tplItem := range tmplAll["user_add"].Templates() {
-	// 	log.Println(tplItem.Name())
-	// }
 }
 
 func main() {
@@ -192,6 +190,9 @@ func main() {
 		runMode = "production"
 	}
 	log.Printf("Running in %v mode (version %s)\n", runMode, version)
+
+	// Load allnations filters.
+	allnationsFilters = LoadAllnationsFilters(path.Join(dataPath, "filters.data"))
 
 	// Start data base.
 	dbZunka, err = sql.Open("sqlite3", dbZunkaFile)
@@ -302,7 +303,6 @@ func main() {
 /**************************************************************************************************
 * Middleware
 **************************************************************************************************/
-
 // Handle with session.
 type handleS func(w http.ResponseWriter, req *http.Request, p httprouter.Params, session *SessionData)
 
@@ -389,7 +389,6 @@ func checkApiAuthorization(h httprouter.Handle) httprouter.Handle {
 /**************************************************************************************************
 * Logger middleware
 **************************************************************************************************/
-
 // Logger struct.
 type logger struct {
 	handler http.Handler

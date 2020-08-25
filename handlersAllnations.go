@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"html/template"
-	// "io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,7 +10,6 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
-	// "os/exec"
 )
 
 // Allnations Filters.
@@ -20,6 +18,29 @@ type AllnationsFilters struct {
 	OnlyAvailability bool
 	MinPrice         string
 	MaxPrice         string
+	PathData         string
+}
+
+// Load allnations filters.
+func LoadAllnationsFilters(path string) *AllnationsFilters {
+	allnationsFilters := AllnationsFilters{}
+	allnationsFilters.PathData = path
+	// Read allnations filters.
+	err = readGob(allnationsFilters.PathData, &allnationsFilters)
+	if err != nil {
+		log.Printf("[warn] Not found Allnations filters data")
+		allnationsFilters.MinPrice = "100"
+		allnationsFilters.MaxPrice = "100000000"
+		log.Printf("Allnations filters: %v", allnationsFilters)
+	} else {
+		log.Printf("Allnations filters: %v", allnationsFilters)
+	}
+	return &allnationsFilters
+}
+
+// Save filters.
+func (f *AllnationsFilters) Save() error {
+	return writeGob(f.PathData, f)
 }
 
 // Validation filters.
@@ -31,33 +52,16 @@ type AllnationsFiltersValidation struct {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // FILTERS
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Get all filters.
+// Get filters.
 func allnationsFiltersHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	// todo - maker
-	filters := &AllnationsFilters{
-		OnlyActive:       false,
-		OnlyAvailability: false,
-		MinPrice:         "1000",
-		MaxPrice:         "100000000",
-	}
-
-	// Read filter from file.
-	err := readGob(allnationsFiltersFile, &filters)
-	if err != nil {
-		// log.Printf("Error: %v", err)
-		log.Printf("Using default values for Allnations filters: %v", filters)
-	} else {
-		log.Printf("Using Allnations filters: %v", filters)
-	}
-
 	data := struct {
 		Session     *SessionData
 		HeadMessage string
 		Filters     AllnationsFilters
 		Validation  AllnationsFiltersValidation
-	}{session, "", *filters, AllnationsFiltersValidation{"", ""}}
+	}{session, "", *allnationsFilters, AllnationsFiltersValidation{"", ""}}
 
-	// Render page.
+	// Render filters page.
 	err = tmplAllnationsFilters.ExecuteTemplate(w, "allnationsFilters.tmpl", data)
 	HandleError(w, err)
 }
@@ -114,7 +118,11 @@ func allnationsFiltersHandlerPost(w http.ResponseWriter, req *http.Request, _ ht
 		HandleError(w, err)
 	} else {
 		// Save filters and go to products page.
-		err := writeGob(allnationsFiltersFile, filters)
+		allnationsFilters.OnlyActive = filters.OnlyActive
+		allnationsFilters.OnlyAvailability = filters.OnlyAvailability
+		allnationsFilters.MinPrice = filters.MinPrice
+		allnationsFilters.MaxPrice = filters.MaxPrice
+		err = allnationsFilters.Save()
 		HandleError(w, err)
 		http.Redirect(w, req, "/ns/allnations/products", http.StatusSeeOther)
 	}
