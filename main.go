@@ -42,7 +42,7 @@ var tmplUserDeleteAccount *template.Template
 var tmplAldoProducts, tmplAldoProduct, tmplAldoCategories *template.Template
 
 // Allnations.
-var tmplAllnationsProducts, tmplAllnationsProduct, tmplAllnationsCategories, tmplAllnationsFilters *template.Template
+var tmplAllnationsProducts, tmplAllnationsProduct, tmplAllnationsFilters, tmplAllnationsCategories, tmplAllnationsMakers *template.Template
 
 // Auth.
 var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *template.Template
@@ -76,6 +76,7 @@ var sessions = Sessions{
 // Allnations.
 var allnationsFilters *AllnationsFilters
 var allnationsSelectedCategories *AllnationsSelectedCategories
+var allnationsSelectedMakers *AllnationsSelectedMakers
 
 func init() {
 	// Check if production mode.
@@ -170,8 +171,9 @@ func init() {
 	// Allnations.
 	tmplAllnationsProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProducts.tmpl"))
 	tmplAllnationsProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsProduct.tmpl"))
-	tmplAllnationsCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsCategories.tmpl"))
 	tmplAllnationsFilters = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsFilters.tmpl"))
+	tmplAllnationsCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsCategories.tmpl"))
+	tmplAllnationsMakers = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsMakers.gohtml"))
 
 	// Auth.
 	tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))
@@ -195,6 +197,7 @@ func main() {
 	// Load allnations data.
 	allnationsFilters = LoadAllnationsFilters(path.Join(dataPath, "filters.data"))
 	allnationsSelectedCategories = LoadAllnationsSelectedCategories(path.Join(dataPath, "selected_categories.data"))
+	allnationsSelectedMakers = LoadAllnationsSelectedMakers(path.Join(dataPath, "selected_makers.data"))
 
 	// Start data base.
 	dbZunka, err = sql.Open("sqlite3", dbZunkaFile)
@@ -251,14 +254,18 @@ func main() {
 	router.GET("/ns/allnations/products", checkPermission(allnationsProductsHandler, "read"))
 	// Product page.
 	router.GET("/ns/allnations/product/:code", checkPermission(allnationsProductHandler, "read"))
-	// Categories page.
-	router.GET("/ns/allnations/categories", checkPermission(allnationsCategoriesHandler, "read"))
-	// Save categories.
-	router.POST("/ns/allnations/categories", checkPermission(allnationsCategoriesHandlerPost, "write"))
 	// Filter page.
 	router.GET("/ns/allnations/filters", checkPermission(allnationsFiltersHandler, "read"))
 	// Save filter.
 	router.POST("/ns/allnations/filters", checkPermission(allnationsFiltersHandlerPost, "write"))
+	// Categories page.
+	router.GET("/ns/allnations/categories", checkPermission(allnationsCategoriesHandler, "read"))
+	// Save categories.
+	router.POST("/ns/allnations/categories", checkPermission(allnationsCategoriesHandlerPost, "write"))
+	// Makers page.
+	router.GET("/ns/allnations/makers", checkPermission(allnationsMakersHandler, "read"))
+	// Save categories.
+	router.POST("/ns/allnations/makers", checkPermission(allnationsMakersHandlerPost, "write"))
 
 	// Auth - signup.
 	router.GET("/ns/auth/signup", confirmNoLogged(authSignupHandler))
