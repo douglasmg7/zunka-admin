@@ -73,8 +73,9 @@ var sessions = Sessions{
 	mapSessionData: map[int]*SessionData{},
 }
 
-// Allnations filter.
+// Allnations.
 var allnationsFilters *AllnationsFilters
+var allnationsSelectedCategories *AllnationsSelectedCategories
 
 func init() {
 	// Check if production mode.
@@ -191,8 +192,9 @@ func main() {
 	}
 	log.Printf("Running in %v mode (version %s)\n", runMode, version)
 
-	// Load allnations filters.
+	// Load allnations data.
 	allnationsFilters = LoadAllnationsFilters(path.Join(dataPath, "filters.data"))
+	allnationsSelectedCategories = LoadAllnationsSelectedCategories(path.Join(dataPath, "selected_categories.data"))
 
 	// Start data base.
 	dbZunka, err = sql.Open("sqlite3", dbZunkaFile)

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bytes"
+	// "bytes"
 	"fmt"
 	"html/template"
 	"log"
@@ -13,6 +13,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// ALLNATIONS FILTERS
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Allnations Filters.
 type AllnationsFilters struct {
 	OnlyActive       bool
@@ -20,6 +23,7 @@ type AllnationsFilters struct {
 	MinPrice         string
 	MaxPrice         string
 	PathData         string
+	SqlFilter        string
 }
 
 // Load allnations filters.
@@ -32,22 +36,87 @@ func LoadAllnationsFilters(path string) *AllnationsFilters {
 		log.Printf("[warn] Not found Allnations filters data")
 		allnationsFilters.MinPrice = "100"
 		allnationsFilters.MaxPrice = "100000000"
-		log.Printf("Allnations filters: %v", allnationsFilters)
-	} else {
-		log.Printf("Allnations filters: %v", allnationsFilters)
 	}
+	log.Printf("Allnations filters: %v", allnationsFilters)
 	return &allnationsFilters
 }
 
 // Save filters.
 func (f *AllnationsFilters) Save() error {
+	f.UpdateSqlFilter()
 	return writeGob(f.PathData, f)
+}
+
+// Update sql filter.
+func (f *AllnationsFilters) UpdateSqlFilter() {
+	// Filters.
+	filtersArray := []string{}
+	// Only active.
+	if f.OnlyActive {
+		filtersArray = append(filtersArray, " active = true ")
+	}
+	// Only availability.
+	if f.OnlyAvailability {
+		filtersArray = append(filtersArray, " availability = true ")
+	}
+	// Min price.
+	minPrice, err := strconv.ParseUint(f.MinPrice, 10, 64)
+	if err != nil {
+		log.Panicf("[error] Updatindg sql filter: %s", err)
+	}
+	filtersArray = append(filtersArray, fmt.Sprintf(" price_sale >= %v ", minPrice))
+	// Max price.
+	maxPrice, err := strconv.ParseUint(f.MaxPrice, 10, 64)
+	if err != nil {
+		log.Panicf("[error] Updatindg sql filter: %s", err)
+	}
+	filtersArray = append(filtersArray, fmt.Sprintf(" price_sale <= %v ", maxPrice))
+
+	f.SqlFilter = strings.Join(filtersArray, " AND ")
 }
 
 // Validation filters.
 type AllnationsFiltersValidation struct {
 	MinPrice string
 	MaxPrice string
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// SELECTED CATEGORIES
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Allnations Filters.
+type AllnationsSelectedCategories struct {
+	Categories    []string
+	SqlCategories string
+	PathData      string
+}
+
+// Load allnations filters.
+func LoadAllnationsSelectedCategories(path string) *AllnationsSelectedCategories {
+	allnationsSelectedCategories := AllnationsSelectedCategories{}
+	allnationsSelectedCategories.PathData = path
+	// Read allnations selected categories.
+	err = readGob(allnationsSelectedCategories.PathData, &allnationsSelectedCategories)
+	if err != nil {
+		log.Printf("[warn] Not found Allnations selected categories data")
+	}
+	log.Printf("Allnations selected categories: %v", allnationsSelectedCategories)
+	return &allnationsSelectedCategories
+}
+
+// Save filters.
+func (f *AllnationsSelectedCategories) Save() error {
+	f.UpdateSqlCategories()
+	return writeGob(f.PathData, f)
+}
+
+// Update sql filter.
+func (f *AllnationsSelectedCategories) UpdateSqlCategories() {
+	categories := []string{}
+	for _, category := range f.Categories {
+		categories = append(categories, fmt.Sprintf("\"%s\"", category))
+	}
+	f.SqlCategories = strings.Join(categories, ", ")
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,71 +214,16 @@ func allnationsProductsHandler(w http.ResponseWriter, req *http.Request, _ httpr
 		ValidDate   time.Time
 	}{session, "", []AllnationsProduct{}, time.Now().Add(-VALID_DATE)}
 
-	// Get selected categories.
-	categories := []AllnationsCategory{}
-	err = dbAllnations.Select(&categories, "SELECT * FROM category WHERE selected = true")
-	categoriesSlice := []string{}
-	for _, category := range categories {
-		categoriesSlice = append(categoriesSlice, fmt.Sprintf("\"%v\"", category.Name))
-	}
-	categoriesList := strings.Join(categoriesSlice, ", ")
-	log.Printf("categoriesList: %v", categoriesList)
-
-	// Filters.
-	filters := bytes.Buffer{}
-	// Only active.
-	if allnationsFilters.OnlyActive {
-		filters.WriteString(" AND active = true ")
-	}
-	// Only availability.
-	if allnationsFilters.OnlyAvailability {
-		filters.WriteString(" AND availability = true ")
-	}
-	// Min price.
-	minPrice, err := strconv.ParseUint(allnationsFilters.MinPrice, 10, 64)
-	HandleError(w, err)
-	filters.WriteString(fmt.Sprintf(" AND price_sale >= %v ", minPrice))
-	// Max price.
-	maxPrice, err := strconv.ParseUint(allnationsFilters.MaxPrice, 10, 64)
-	HandleError(w, err)
-	filters.WriteString(fmt.Sprintf(" AND price_sale <= %v ", maxPrice))
-
 	// Get products.
+	log.Println(fmt.Sprintf(
+		"SELECT * FROM product WHERE category IN (%s) AND %s ORDER BY description", allnationsSelectedCategories.SqlCategories, allnationsFilters.SqlFilter))
 	err = dbAllnations.Select(&data.Products, fmt.Sprintf(
-		"SELECT * FROM product WHERE category IN (%s) %s ORDER BY description", categoriesList, filters.String()))
+		"SELECT * FROM product WHERE category IN (%s) AND %s ORDER BY description", allnationsSelectedCategories.SqlCategories, allnationsFilters.SqlFilter))
 	HandleError(w, err)
-	fmt.Printf("SELECT * FROM product WHERE category IN (%s) (%s) ORDER BY description", categoriesList, filters.String())
 
 	err = tmplAllnationsProducts.ExecuteTemplate(w, "allnationsProducts.tmpl", data)
 	HandleError(w, err)
 }
-
-// // Product list.
-// func allnationsProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-// data := struct {
-// Session     *SessionData
-// HeadMessage string
-// Products    []AllnationsProduct
-// ValidDate   time.Time
-// }{session, "", []AllnationsProduct{}, time.Now().Add(-VALID_DATE)}
-
-// // Get selected categories.
-// categories := []AllnationsCategory{}
-// err = dbAllnations.Select(&categories, "SELECT * FROM category WHERE selected = true")
-// categoriesSlice := []string{}
-// for _, category := range categories {
-// categoriesSlice = append(categoriesSlice, fmt.Sprintf("\"%v\"", category.Name))
-// }
-// categoriesList := strings.Join(categoriesSlice, ", ")
-// log.Printf("Categories: %v", categoriesList)
-
-// // Get products.
-// err = dbAllnations.Select(&data.Products, fmt.Sprintf("SELECT * FROM product WHERE category IN (%v) ORDER BY description", categoriesList))
-// HandleError(w, err)
-
-// err = tmplAllnationsProducts.ExecuteTemplate(w, "allnationsProducts.tmpl", data)
-// HandleError(w, err)
-// }
 
 // Product item.
 func allnationsProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
@@ -272,7 +286,7 @@ func allnationsProductHandler(w http.ResponseWriter, req *http.Request, ps httpr
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // CATEGORY
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Get all categories.
+// Get categories.
 func allnationsCategoriesHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	data := struct {
 		Session     *SessionData
@@ -280,67 +294,37 @@ func allnationsCategoriesHandler(w http.ResponseWriter, req *http.Request, _ htt
 		Categories  []AllnationsCategory
 	}{session, "", []AllnationsCategory{}}
 
-	// Get categories from db.
-	// select category, count(category) from product group by category
-	// err = dbAllnations.Select(&data.Categories, "SELECT * FROM category order by name")
-	sql := "SELECT category as name, count(category) as products_qty, true as selected FROM product " +
-		"WHERE category IN (\"ARMAZENAMENTO\", \"SCANNER\") AND active = true AND availability = true AND price_sale > 323000 " +
-		"GROUP BY category " +
-		"ORDER BY name"
+	sql := fmt.Sprintf("SELECT category as name, count(category) as products_qty, false as selected FROM product "+
+		"WHERE  %s GROUP BY category ORDER BY name", allnationsFilters.SqlFilter)
 	err = dbAllnations.Select(&data.Categories, sql)
 	HandleError(w, err)
+
+	m := make(map[string]bool)
+	for _, selectedCategory := range allnationsSelectedCategories.Categories {
+		m[selectedCategory] = true
+	}
+	log.Printf("m: %v", m)
+	for i := range data.Categories {
+		if m[data.Categories[i].Name] {
+			data.Categories[i].Selected = true
+		}
+	}
 
 	// Render page.
 	err = tmplAllnationsCategories.ExecuteTemplate(w, "allnationsCategories.tmpl", data)
 	HandleError(w, err)
 }
 
-// // Get all categories.
-// func allnationsCategoriesHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-// data := struct {
-// Session     *SessionData
-// HeadMessage string
-// Categories  []AllnationsCategory
-// }{session, "", []AllnationsCategory{}}
-
-// // Get categories from db.
-// err = dbAllnations.Select(&data.Categories, "SELECT * FROM category order by name")
-// HandleError(w, err)
-
-// // Render page.
-// err = tmplAllnationsCategories.ExecuteTemplate(w, "allnationsCategories.tmpl", data)
-// HandleError(w, err)
-// }
-
 // Save categories.
 func allnationsCategoriesHandlerPost(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	// Get categories from db.
-	categories := []AllnationsCategory{}
-	err = dbAllnations.Select(&categories, "SELECT * FROM category order by name")
-	HandleError(w, err)
-	// Prepare update.
-	stmt, err := dbAllnations.Prepare(`UPDATE category SET selected = $1 WHERE name = $2;`)
-	HandleError(w, err)
-	defer stmt.Close()
 
-	// For each category on db.
-	for _, category := range categories {
-		// Update changed categories.
-		if (category.Selected && (req.PostFormValue(category.Name) == "")) || (!category.Selected && (req.PostFormValue(category.Name) != "")) {
-			// fmt.Println("Updated category:", category.Name)
-			_, err = stmt.Exec(!category.Selected, category.Name)
-			HandleError(w, err)
-		}
+	req.ParseForm()
+	allnationsSelectedCategories.Categories = []string{}
+	for key := range req.PostForm {
+		allnationsSelectedCategories.Categories = append(allnationsSelectedCategories.Categories, key)
 	}
-	// Render categories page.
-	http.Redirect(w, req, "/ns/allnations/categories", http.StatusSeeOther)
-
-	// todo - Run script to process xml products.
-	// cmd := exec.Command(GS + "/aldowsc/bin/process-xml-products.sh")
-	// err = cmd.Start()
-	// if err != nil {
-	// log.Printf("Error running script to process XML Allnations products. %s", err)
-	// }
-
-	return
+	allnationsSelectedCategories.UpdateSqlCategories()
+	err := allnationsSelectedCategories.Save()
+	HandleError(w, err)
+	http.Redirect(w, req, "/ns/allnations/products", http.StatusSeeOther)
 }
