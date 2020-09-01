@@ -254,6 +254,12 @@ func main() {
 	router.GET("/ns/allnations/products", checkPermission(allnationsProductsHandler, "read"))
 	// Product page.
 	router.GET("/ns/allnations/product/:code", checkPermission(allnationsProductHandler, "read"))
+	// Create product on zunka server.
+	router.POST("/ns/allnations/product/:code", checkPermission(allnationsProductHandlerPost, "write"))
+	// Check product change.
+	router.POST("/ns/allnations/product/:code/checked", checkPermission(allnationsProductCheckedHandlerPost, "write"))
+	// Product removed from site, so remove his reference from zunkasrv.
+	router.DELETE("/ns/allnations/product/zunka_product_id/:code", checkApiAuthorization(allnationsProductZunkaProductIdHandlerDelete))
 	// Filter page.
 	router.GET("/ns/allnations/filters", checkPermission(allnationsFiltersHandler, "read"))
 	// Save filter.

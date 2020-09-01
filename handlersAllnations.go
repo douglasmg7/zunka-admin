@@ -2,13 +2,20 @@ package main
 
 import (
 	// "bytes"
+	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/douglasmg7/aldoutil"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -175,6 +182,126 @@ func allnationsProductHandler(w http.ResponseWriter, req *http.Request, ps httpr
 	// Render template.
 	err = tmplAllnationsProduct.ExecuteTemplate(w, "allnationsProduct.tmpl", data)
 	HandleError(w, err)
+}
+
+// Add product to zunka site.
+func allnationsProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
+	// Get product.
+	product := AllnationsProduct{}
+	// Get product.
+	err = dbAllnations.Get(&product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
+	HandleError(w, err)
+
+	// Set store product.
+	storeProduct := aldoutil.StoreProduct{}
+	storeProduct.DealerName = "Allnations"
+	storeProduct.DealerProductId = product.Code
+
+	// Title.
+	// storeProduct.DealerProductTitle = strings.Title(strings.ToLower(product.Description))
+	storeProduct.DealerProductTitle = product.Description
+	// Category.
+	storeProduct.DealerProductCategory = strings.Title(strings.ToLower(product.Category))
+	// Maker.
+	storeProduct.DealerProductMaker = strings.Title(strings.ToLower(product.Maker))
+	// Description.
+	storeProduct.DealerProductDesc = strings.TrimSpace(product.TechnicalDescription)
+	// log.Println("product.TechnicalDescription:", product.TechnicalDescription)
+	// log.Println("storeProduct.DealerProductDesc:", storeProduct.DealerProductDesc)
+	// Image.
+	storeProduct.DealerProductImagesLink = product.UrlImage
+
+	// Months in days.
+	storeProduct.DealerProductWarrantyDays = product.WarrantyMonth * 30
+	// Length in cm.
+	storeProduct.DealerProductDeep = int(math.Ceil(float64(product.LengthMm) / 10))
+	// Width in cm.
+	storeProduct.DealerProductWidth = int(math.Ceil(float64(product.WidthMm) / 10))
+	// Height in cm.
+	storeProduct.DealerProductHeight = int(math.Ceil(float64(product.HeightMm) / 10))
+	// Weight in grams.
+	storeProduct.DealerProductWeight = product.WeightG
+	// Price.
+	storeProduct.DealerProductPrice = int(product.PriceSale)
+	// Suggestion price.
+	storeProduct.DealerProductFinalPriceSuggestion = int(product.PriceSale)
+	// Last update.
+	storeProduct.DealerProductLastUpdate = product.ChangedAt
+	// Active.
+	storeProduct.DealerProductActive = product.Availability && product.Active
+	// Stock.
+	storeProduct.StoreProductQtd = product.StockQty
+
+	// Convert to json.
+	reqBody, err := json.Marshal(storeProduct)
+	HandleError(w, err)
+
+	// Log request.
+	// log.Println("request body: " + string(reqBody))
+
+	// Request product add.
+	client := &http.Client{}
+	req, err = http.NewRequest("POST", zunkaSiteHost()+"/setup/product/add", bytes.NewBuffer(reqBody))
+	req.Header.Set("Content-Type", "application/json")
+	HandleError(w, err)
+	req.SetBasicAuth(zunkaSiteUser(), zunkaSitePass())
+	res, err := client.Do(req)
+	HandleError(w, err)
+
+	// res, err := http.Post("http://localhost:3080/setup/product/add", "application/json", bytes.NewBuffer(reqBody))
+	defer res.Body.Close()
+	HandleError(w, err)
+
+	// Result.
+	resBody, err := ioutil.ReadAll(res.Body)
+	HandleError(w, err)
+	// No 200 status.
+	if res.StatusCode != 200 {
+		HandleError(w, errors.New(fmt.Sprintf("Error ao solicitar a criação do produto allnations no servidor zunka.\n\nstatus: %v\n\nbody: %v", res.StatusCode, string(resBody))))
+		return
+	}
+	// Mongodb id from created product.
+	product.ZunkaProductId = string(resBody)
+	// Remove suround double quotes.
+	product.ZunkaProductId = product.ZunkaProductId[1 : len(product.ZunkaProductId)-1]
+
+	// Update product with _id from mongodb store and set checked_at.
+	stmt, err := dbAllnations.Prepare(`UPDATE product SET zunka_product_id = $1, checked_at=$2 WHERE code = $3;`)
+	HandleError(w, err)
+	defer stmt.Close()
+	_, err = stmt.Exec(product.ZunkaProductId, time.Now(), product.Code)
+	HandleError(w, err)
+
+	// Render product page.
+	http.Redirect(w, req, "/ns/allnations/product/"+product.Code, http.StatusSeeOther)
+}
+
+// Aldo product checked.
+func allnationsProductCheckedHandlerPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
+	productCode := ps.ByName("code")
+	// Update product status_cleaned_at field.
+	stmt, err := dbAllnations.Prepare(`UPDATE product SET checked_at=$1 WHERE code = $2;`)
+	HandleError(w, err)
+	defer stmt.Close()
+	_, err = stmt.Exec(time.Now(), productCode)
+	HandleError(w, err)
+
+	// Render categories page.
+	http.Redirect(w, req, "/ns/allnations/product/"+ps.ByName("code"), http.StatusSeeOther)
+}
+
+// Remove mongodb id from Product.
+func allnationsProductZunkaProductIdHandlerDelete(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	// Update mongodb store id.
+	stmt, err := dbAllnations.Prepare(`UPDATE product SET zunka_product_id = $1 WHERE code = $2;`)
+	HandleError(w, err)
+	defer stmt.Close()
+	// fmt.Println("code:", ps.ByName("code"))
+	_, err = stmt.Exec("", ps.ByName("code"))
+	// _, err = stmt.Exec(ps.ByName("code"), "")
+	HandleError(w, err)
+	// w.Write([]byte("OK"))
+	w.WriteHeader(200)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

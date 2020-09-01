@@ -261,7 +261,7 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	HandleError(w, err)
 	// No 200 status.
 	if res.StatusCode != 200 {
-		HandleError(w, errors.New(fmt.Sprintf("Error ao solicitar a criação do produto no servidor zunka.\n\nstatus: %v\n\nbody: %v", res.StatusCode, string(resBody))))
+		HandleError(w, errors.New(fmt.Sprintf("Error ao solicitar a criação do produto aldo no servidor zunka.\n\nstatus: %v\n\nbody: %v", res.StatusCode, string(resBody))))
 		// HandleError(w, errors.New(fmt.Fprintf("Error ao solicitar a criação do produto no servidor zunka.\n\nStatus: %v\nError: %v", res.StatusCode, resBody)))
 		return
 	}
