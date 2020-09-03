@@ -224,13 +224,15 @@ func allnationsProductHandlerPost(w http.ResponseWriter, req *http.Request, ps h
 	// Price.
 	storeProduct.DealerProductPrice = int(product.PriceSale)
 	// Suggestion price.
-	storeProduct.DealerProductFinalPriceSuggestion = int(product.PriceSale)
+	storeProduct.DealerProductFinalPriceSuggestion = int(product.PriceSale + product.PriceSale/3)
 	// Last update.
 	storeProduct.DealerProductLastUpdate = product.ChangedAt
 	// Active.
 	storeProduct.DealerProductActive = product.Availability && product.Active
 	// Stock.
 	storeProduct.StoreProductQtd = product.StockQty
+	// Ean.
+	storeProduct.Ean = product.Ean
 
 	// Convert to json.
 	reqBody, err := json.Marshal(storeProduct)

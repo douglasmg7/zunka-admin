@@ -16,6 +16,8 @@ github.com/douglasmg7/aldoutil v1.1.0 h1:P7KGfb6g6AVc182ejwJu5nRXHdve9pTu7nwYrZr
 github.com/douglasmg7/aldoutil v1.1.0/go.mod h1:dXPQJ7Yo1CkgXGzPL3cH3NmjjvvQdi23xVjUMP3ho8k=
 github.com/douglasmg7/aldoutil v1.2.0 h1:Vmv0M5IAsmTHRdnmAhvYmz3govgGyPjtnk3/a58ipIw=
 github.com/douglasmg7/aldoutil v1.2.0/go.mod h1:dXPQJ7Yo1CkgXGzPL3cH3NmjjvvQdi23xVjUMP3ho8k=
+github.com/douglasmg7/aldoutil v1.3.0 h1:DuSQLSutoAj7hOoAsZGaaF/gHusgTru3fuaspFxApMU=
+github.com/douglasmg7/aldoutil v1.3.0/go.mod h1:dXPQJ7Yo1CkgXGzPL3cH3NmjjvvQdi23xVjUMP3ho8k=
 github.com/douglasmg7/bluetang v0.1.0 h1:ujs26ufesuutEmz25piT0/zkdxZ78aGvwCRcbipyXUA=
 github.com/douglasmg7/bluetang v0.1.0/go.mod h1:e12TAE6oZg4TkT0ST5m2YwWDGfr7pw35XLpmtd55OWI=
 github.com/douglasmg7/bluetang v0.2.0 h1:id0rt7oUXGBUTm3Koa8ieHoul0jNn8a8iZHh/o78wj8=
