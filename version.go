@@ -1,8 +1,11 @@
 package main
 
 const (
-	version string = "1.1.1"
-	// Show diff on aldo product page.
+	version string = "1.2.0"
+	// Create allnations product on zunka site.
+
+	// version string = "1.1.1"
+	// // Show diff on aldo product page.
 
 	// version string = "1.1.0"
 	// // Set status_cleaned when product are created on zunkasite.
