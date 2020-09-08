@@ -1,3 +1,9 @@
+## 1.3.0 (08 set 2020)
+
+### Melhorias
+* Criação e remoção de produtos allnations.
+
+
 ## 1.1.1 (28 mai 2020)
 
 ### Melhorias
