@@ -237,6 +237,15 @@
 	        <p class="old">Não</p>
         {{ end }}
     {{end}}
+    
+
+	<h3>NCM</h3>
+    {{if or (ne .Status "changed") (eq .Product.Ncm .ProductOld.Ncm)}}
+	    <p>{{.Product.Ncm}}</p>
+    {{else}}
+        <p class="new">{{.Product.Ncm}}</p>
+	    <p class="old">{{.ProductOld.Ncm}}</p>
+    {{end}}
 
 
 	<h3>Ativo</h3>
