@@ -229,6 +229,8 @@ func allnationsProductHandlerPost(w http.ResponseWriter, req *http.Request, ps h
 	storeProduct.DealerProductLastUpdate = product.ChangedAt
 	// Active.
 	storeProduct.DealerProductActive = product.Availability && product.Active
+	// Origin.
+	storeProduct.DealerProductLocation = product.StockOrigin
 	// Stock.
 	storeProduct.StoreProductQtd = product.StockQty
 	// Ean.
