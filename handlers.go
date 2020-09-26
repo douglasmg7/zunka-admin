@@ -54,6 +54,12 @@ func indexHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params,
 	HandleError(w, err)
 }
 
+// Index handler.
+func indexPing(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+	HandleError(w, err)
+	w.Write([]byte("Pong"))
+}
+
 // Clean sessions cache, needed when some db update occurs.
 func cleanSessionsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	sessions.CleanSessions()

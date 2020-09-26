@@ -224,6 +224,8 @@ func main() {
 	router.GET("/ns/favicon.ico", faviconHandler)
 	router.GET("/", getSession(indexHandler))
 	router.GET("/ns/", getSession(indexHandler))
+	router.GET("/ping", getSession(indexPing))
+	router.GET("/ns/ping", getSession(indexPing))
 
 	// Clean the session cache.
 	router.GET("/ns/clean-sessions", checkPermission(cleanSessionsHandler, "admin"))
