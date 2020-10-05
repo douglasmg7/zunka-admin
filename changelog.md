@@ -1,3 +1,9 @@
+## 1.3.1 (05 out 2020)
+
+### Melhorias
+* Após criar produto é site zunka, retorna para página de lista de produtos.
+
+
 ## 1.3.0 (08 set 2020)
 
 ### Melhorias

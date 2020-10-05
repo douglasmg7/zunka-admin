@@ -277,7 +277,10 @@ func allnationsProductHandlerPost(w http.ResponseWriter, req *http.Request, ps h
 	HandleError(w, err)
 
 	// Render product page.
-	http.Redirect(w, req, "/ns/allnations/product/"+product.Code, http.StatusSeeOther)
+	// http.Redirect(w, req, "/ns/allnations/product/"+product.Code, http.StatusSeeOther)
+
+	// Back to product list.
+	http.Redirect(w, req, "/ns/allnations/products", http.StatusSeeOther)
 }
 
 // Aldo product checked.

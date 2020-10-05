@@ -278,7 +278,10 @@ func aldoProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprou
 	HandleError(w, err)
 
 	// Render categories page.
-	http.Redirect(w, req, "/ns/aldo/product/"+product.Code, http.StatusSeeOther)
+	// http.Redirect(w, req, "/ns/aldo/product/"+product.Code, http.StatusSeeOther)
+
+	// Back to product list.
+	http.Redirect(w, req, "/ns/aldo/products", http.StatusSeeOther)
 }
 
 // Aldo product checked.
