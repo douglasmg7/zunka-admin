@@ -48,7 +48,7 @@ func indexHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params,
 	data := struct {
 		Session     *SessionData
 		HeadMessage string
-	}{session, "Aviso de regatta na Lagoa dos Ingleses, dia 18/03/2019"}
+	}{session, ""}
 	// fmt.Println("session: ", data.Session)
 	err = tmplIndex.ExecuteTemplate(w, "index.tpl", data)
 	HandleError(w, err)

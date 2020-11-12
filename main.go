@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"io"
 	"log"
@@ -15,6 +14,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+const NAME = "zunkasrv"
 
 /************************************************************************************************
 * Templates
@@ -52,6 +53,13 @@ var tmplStudent, tmplAllStudent, tmplNewStudent *template.Template
 
 var production bool
 var port string
+
+// Log.
+var Trace *log.Logger
+var Debug *log.Logger
+var Info *log.Logger
+var Warn *log.Logger
+var Error *log.Logger
 
 // Db.
 var dbZunka *sql.DB
@@ -147,6 +155,12 @@ func init() {
 	// log.SetFlags(log.LstdFlags | log.Ldate | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
+	Trace = log.New(mw, "["+NAME+"] [trace] ", log.Lshortfile|log.Ldate|log.Ltime)
+	Debug = log.New(mw, "["+NAME+"] [debug] ", log.Ldate|log.Ltime)
+	Info = log.New(mw, "["+NAME+"] [info ] ", log.Ldate|log.Ltime)
+	Warn = log.New(mw, "["+NAME+"] [warn ] ", log.Ldate|log.Ltime)
+	Error = log.New(mw, "["+NAME+"] [error] ", log.Lshortfile|log.Ldate|log.Ltime)
+
 	/************************************************************************************************
 	* Load templates
 	************************************************************************************************/
@@ -199,24 +213,13 @@ func main() {
 	allnationsSelectedCategories = LoadAllnationsSelectedCategories(path.Join(dataPath, "selected_categories.data"))
 	allnationsSelectedMakers = LoadAllnationsSelectedMakers(path.Join(dataPath, "selected_makers.data"))
 
-	// Start data base.
-	dbZunka, err = sql.Open("sqlite3", dbZunkaFile)
-	if err != nil {
-		log.Fatal(fmt.Errorf("Error open db %v: %v", dbZunka, err))
-	}
-	defer dbZunka.Close()
-	err = dbZunka.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Aldo.
-	dbAldo = sqlx.MustConnect("sqlite3", dbAldoFile)
-	defer dbAldo.Close()
-
-	// Allnations.
-	dbAllnations = sqlx.MustConnect("sqlite3", dbAllnationsFile)
-	defer dbAllnations.Close()
+	// Start dbs.
+	initZunkaDB()
+	defer closeZunkaDB()
+	initAldoDB()
+	defer closeAldoDB()
+	initAllnationsDB()
+	defer closeAllnationsDB()
 
 	// Init router.
 	router := httprouter.New()
@@ -425,3 +428,7 @@ func (l *logger) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 func newLogger(h http.Handler) *logger {
 	return &logger{handler: h}
 }
+
+/**************************************************************************************************
+* Error
+**************************************************************************************************/

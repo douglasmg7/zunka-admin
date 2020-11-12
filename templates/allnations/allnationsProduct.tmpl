@@ -61,6 +61,12 @@
     p.old {
         background-color: var(--red-lll);
     }
+    div.content label {
+        display: inline;
+    }
+    a.similar-product {
+        font-size: 1.2em;
+    }
 </style>
 {{end}}
 
@@ -119,6 +125,31 @@
 
 	{{if .ShowButtonCreateProduct}}
         <form action="" method="post">
+	        <h3>Criação de produto no site</h3>
+            {{if len .SameEANZunkaProducts}}
+                <h4>Produtos com o mesmo EAN</h3>
+                {{range .SameEANZunkaProducts}}
+                    <input type="radio" id={{.MongodbId}} name="similar-product" value={{.MongodbId}}>
+                    <label for={{.MongodbId}}>{{.StoreProductTitle}}</label>
+                    <a class="similar-product" href='/admin/product/{{.MongodbId}}'>
+                        {{.MongodbId}}
+                    </a>
+                    </br>
+                {{end}}
+            {{end}}
+            {{if len .SimiliarZunkaProducts}}
+                <h4>Produtos com títulos similares</h3>
+                {{range .SimiliarZunkaProducts}}
+                    <input type="radio" id={{.MongodbId}} name="similar-product" value={{.MongodbId}}>
+                    <label for={{.MongodbId}}>{{.StoreProductTitle}}</label>
+                    <a class="similar-product" href='/admin/product/{{.MongodbId}}'>
+                        {{.MongodbId}}
+                    </a>
+                    </br>
+                {{end}}
+            {{end}}
+            <input type="radio" id="new" name="similar-product" value="new" checked=true>
+            <label for="new">Novo produto</label>
             <input class="btn create-product" type="submit" value='Criar produto'>
         </form>
     {{end}}
@@ -127,6 +158,7 @@
 	    <a href='/admin/product/{{.Product.ZunkaProductId}}'>{{.Product.ZunkaProductId}}</a>
 	{{end}}
 
+    <h3>Imagens</h3>
     <div>
         <img src='{{.Product.UrlImage}}-01'>
         <img src='{{.Product.UrlImage}}-02'>

@@ -24,3 +24,10 @@ type ZunkaProduct struct {
 	DealerProductLastUpdate           time.Time `json:"dealerProductLastUpdate"`
 	DealerProductImagesLink           string    `json:"dealerProductImagesLink"` // Images link separated by "__,__".
 }
+
+// Store product to create a new product on store.
+type ZunkaProductRx struct {
+	MongodbId         string `json:"_id"` // Identify product into store site using mongo _id.
+	StoreProductId    string `json:"storeProductId"`
+	StoreProductTitle string `json:"storeProductTitle"`
+}
