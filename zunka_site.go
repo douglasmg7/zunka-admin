@@ -10,7 +10,7 @@ import (
 )
 
 // Store product to create a new product on store.
-type ZunkaProduct struct {
+type ZunkaSiteProductTx struct {
 	// MongodbId                 string    `json:"_id"` // Identify product into store site using mongo _id.
 	DealerName                        string    `json:"dealerName"`
 	DealerProductId                   string    `json:"dealerProductId"`
@@ -28,18 +28,22 @@ type ZunkaProduct struct {
 	DealerProductPrice                int       `json:"dealerProductPrice"`
 	DealerProductLastUpdate           time.Time `json:"dealerProductLastUpdate"`
 	DealerProductImagesLink           string    `json:"dealerProductImagesLink"` // Images link separated by "__,__".
+	DealerProductLocation             string    `json:"dealerProductLocation"`
+	StoreProductQtd                   int       `json:"storeProductQtd"`
+	Ean                               string    `json:"ean"`
+	ProductIdTemplate                 string    `json:"productIdTemplate"` // Identify product to be used as template.
 }
 
 // Store product to create a new product on store.
-type ZunkaProductRx struct {
+type ZunkaSiteProductRx struct {
 	MongodbId         string `json:"_id"` // Identify product into store site using mongo _id.
 	StoreProductId    string `json:"storeProductId"`
 	StoreProductTitle string `json:"storeProductTitle"`
 }
 
 // Get products similar titles.
-func getProductsSimilarTitles(c chan []ZunkaProductRx, title string) {
-	products := []ZunkaProductRx{}
+func getProductsSimilarTitles(c chan []ZunkaSiteProductRx, title string) {
+	products := []ZunkaSiteProductRx{}
 	// Request product add.
 	client := &http.Client{}
 	// title = "GABINETE COOLER MASTER MASTERBOX LITE 3.1 TG LATERAL EM VIDRO TEMPERADO ATX/E-ATX/MINI-ITX/MICRO-AT"
@@ -88,8 +92,8 @@ func getProductsSimilarTitles(c chan []ZunkaProductRx, title string) {
 }
 
 // Get products same EAN.
-func getProductsSameEAN(c chan []ZunkaProductRx, ean string) {
-	products := []ZunkaProductRx{}
+func getProductsSameEAN(c chan []ZunkaSiteProductRx, ean string) {
+	products := []ZunkaSiteProductRx{}
 
 	// Request product add.
 	client := &http.Client{}

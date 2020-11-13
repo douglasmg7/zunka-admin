@@ -2,6 +2,7 @@ package main
 
 import (
 	// "bytes"
+
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -15,7 +16,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/douglasmg7/aldoutil"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -138,9 +138,9 @@ func allnationsProductHandler(w http.ResponseWriter, req *http.Request, ps httpr
 		RMAProcedureOld         template.HTML
 		Status                  string
 		ShowButtonCreateProduct bool
-		SimiliarZunkaProducts   []ZunkaProductRx
-		SameEANZunkaProducts    []ZunkaProductRx
-	}{session, "", &AllnationsProduct{}, "", &AllnationsProduct{}, "", "", "", false, []ZunkaProductRx{}, []ZunkaProductRx{}}
+		SimiliarZunkaProducts   []ZunkaSiteProductRx
+		SameEANZunkaProducts    []ZunkaSiteProductRx
+	}{session, "", &AllnationsProduct{}, "", &AllnationsProduct{}, "", "", "", false, []ZunkaSiteProductRx{}, []ZunkaSiteProductRx{}}
 
 	// Get product.
 	err = dbAllnations.Get(data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
@@ -181,12 +181,12 @@ func allnationsProductHandler(w http.ResponseWriter, req *http.Request, ps httpr
 		data.ShowButtonCreateProduct = true
 
 		// Similar titles.
-		chanProductsSimilarTitles := make(chan []ZunkaProductRx)
+		chanProductsSimilarTitles := make(chan []ZunkaSiteProductRx)
 		go getProductsSimilarTitles(chanProductsSimilarTitles, data.Product.Description)
 
 		// Same EAN.
 		if len(data.Product.Ean) > 0 {
-			chanProductsSameEAN := make(chan []ZunkaProductRx)
+			chanProductsSameEAN := make(chan []ZunkaSiteProductRx)
 			go getProductsSameEAN(chanProductsSameEAN, data.Product.Ean)
 			data.SimiliarZunkaProducts, data.SameEANZunkaProducts = <-chanProductsSimilarTitles, <-chanProductsSameEAN
 		} else {
@@ -202,6 +202,9 @@ func allnationsProductHandler(w http.ResponseWriter, req *http.Request, ps httpr
 
 // Add product to zunka site.
 func allnationsProductHandlerPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
+	req.ParseForm()
+	HandleError(w, err)
+
 	// Get product.
 	product := AllnationsProduct{}
 	// Get product.
@@ -209,7 +212,10 @@ func allnationsProductHandlerPost(w http.ResponseWriter, req *http.Request, ps h
 	HandleError(w, err)
 
 	// Set store product.
-	storeProduct := aldoutil.StoreProduct{}
+	// storeProduct := aldoutil.StoreProduct{}
+	storeProduct := ZunkaSiteProductTx{}
+
+	storeProduct.ProductIdTemplate = req.FormValue("similar-product")
 	storeProduct.DealerName = "Allnations"
 	storeProduct.DealerProductId = product.Code
 
