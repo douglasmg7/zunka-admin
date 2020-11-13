@@ -126,94 +126,6 @@ func allnationsProductsHandler(w http.ResponseWriter, req *http.Request, _ httpr
 	HandleError(w, err)
 }
 
-// Get products similar titles.
-func getProductsSimilarTitles(title string) (products []ZunkaProductRx) {
-	// Request product add.
-	client := &http.Client{}
-	// title = "GABINETE COOLER MASTER MASTERBOX LITE 3.1 TG LATERAL EM VIDRO TEMPERADO ATX/E-ATX/MINI-ITX/MICRO-AT"
-	req, err := http.NewRequest("GET", zunkaSiteHost()+"/setup/products-similar-title", nil)
-	if err != nil {
-		Error.Print(err)
-		return
-	}
-	// Query params
-	q := req.URL.Query()
-	q.Add("title", title)
-	req.URL.RawQuery = q.Encode()
-	// Head.
-	req.Header.Set("Content-Type", "application/json")
-	req.SetBasicAuth(zunkaSiteUser(), zunkaSitePass())
-	res, err := client.Do(req)
-	if err != nil {
-		Error.Print(err)
-		return
-	}
-	// res, err := http.Post("http://localhost:3080/setup/product/add", "application/json", bytes.NewBuffer(reqBody))
-	defer res.Body.Close()
-
-	// Result.
-	resBody, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		Error.Print(err)
-		return
-	}
-	// No 200 status.
-	if res.StatusCode != 200 {
-		Error.Print(errors.New(fmt.Sprintf("Getting products with similiar title from zunkasite.\nstatus: %v\nbody: %v", res.StatusCode, string(resBody))))
-		return
-	}
-	err = json.Unmarshal(resBody, &products)
-	if err != nil {
-		Error.Print(err)
-	}
-	// Debug.Printf("Product[0]: %v", products[0])
-	return
-}
-
-// Get products same EAN.
-func getProductsSameEAN(ean string) (products []ZunkaProductRx) {
-	// Request product add.
-	client := &http.Client{}
-	// title = "GABINETE COOLER MASTER MASTERBOX LITE 3.1 TG LATERAL EM VIDRO TEMPERADO ATX/E-ATX/MINI-ITX/MICRO-AT"
-	req, err := http.NewRequest("GET", zunkaSiteHost()+"/setup/products-same-ean", nil)
-	if err != nil {
-		Error.Print(err)
-		return
-	}
-	// Query params
-	q := req.URL.Query()
-	q.Add("ean", ean)
-	req.URL.RawQuery = q.Encode()
-	// Head.
-	req.Header.Set("Content-Type", "application/json")
-	req.SetBasicAuth(zunkaSiteUser(), zunkaSitePass())
-	res, err := client.Do(req)
-	if err != nil {
-		Error.Print(err)
-		return
-	}
-	// res, err := http.Post("http://localhost:3080/setup/product/add", "application/json", bytes.NewBuffer(reqBody))
-	defer res.Body.Close()
-
-	// Result.
-	resBody, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		Error.Print(err)
-		return
-	}
-	// No 200 status.
-	if res.StatusCode != 200 {
-		Error.Print(errors.New(fmt.Sprintf("Getting products same Ean from zunkasite.\nstatus: %v\nbody: %v", res.StatusCode, string(resBody))))
-		return
-	}
-	err = json.Unmarshal(resBody, &products)
-	if err != nil {
-		Error.Print(err)
-	}
-	// Debug.Printf("Product[0]: %v", products[0])
-	return
-}
-
 // Product item.
 func allnationsProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
 	data := struct {
@@ -267,9 +179,18 @@ func allnationsProductHandler(w http.ResponseWriter, req *http.Request, ps httpr
 	// Show option to create product on zunkasite.
 	if data.Product.ZunkaProductId == "" && (data.Status == "new" || data.Status == "changed" || data.Status == "") {
 		data.ShowButtonCreateProduct = true
-		data.SimiliarZunkaProducts = getProductsSimilarTitles(data.Product.Description)
+
+		// Similar titles.
+		chanProductsSimilarTitles := make(chan []ZunkaProductRx)
+		go getProductsSimilarTitles(chanProductsSimilarTitles, data.Product.Description)
+
+		// Same EAN.
 		if len(data.Product.Ean) > 0 {
-			data.SameEANZunkaProducts = getProductsSameEAN(data.Product.Ean)
+			chanProductsSameEAN := make(chan []ZunkaProductRx)
+			go getProductsSameEAN(chanProductsSameEAN, data.Product.Ean)
+			data.SimiliarZunkaProducts, data.SameEANZunkaProducts = <-chanProductsSimilarTitles, <-chanProductsSameEAN
+		} else {
+			data.SimiliarZunkaProducts = <-chanProductsSimilarTitles
 		}
 		// Debug.Printf("SimiliarZunkaPorudcts: %v", data.SimiliarZunkaProducts)
 	}
