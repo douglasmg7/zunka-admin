@@ -1,3 +1,10 @@
+## 1.4.0 (17 Nov 2020)
+Opção de selecionar produto como template na criação do mesmo no site da zunka.
+
+### Melhorias
+* Após criar produto é site zunka, retorna para página de lista de produtos.
+
+
 ## 1.3.1 (05 out 2020)
 
 ### Melhorias
