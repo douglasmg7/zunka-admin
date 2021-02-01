@@ -45,6 +45,9 @@ var tmplAldoProducts, tmplAldoProduct, tmplAldoCategories *template.Template
 // Allnations.
 var tmplAllnationsProducts, tmplAllnationsProduct, tmplAllnationsFilters, tmplAllnationsCategories, tmplAllnationsMakers *template.Template
 
+// Mercado Livre.
+var tmplMercadoLivreAuthUser *template.Template
+
 // Auth.
 var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *template.Template
 
@@ -188,6 +191,8 @@ func init() {
 	tmplAllnationsFilters = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsFilters.tmpl"))
 	tmplAllnationsCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsCategories.tmpl"))
 	tmplAllnationsMakers = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsMakers.gohtml"))
+	// Mercado Livre.
+	tmplMercadoLivreAuthUser = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreAuthUser.gohtml"))
 
 	// Auth.
 	tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))
@@ -277,6 +282,11 @@ func main() {
 	router.GET("/ns/allnations/makers", checkPermission(allnationsMakersHandler, "read"))
 	// Save categories.
 	router.POST("/ns/allnations/makers", checkPermission(allnationsMakersHandlerPost, "write"))
+
+	// Mercado Livre
+	// Autheticate user.
+	router.GET("/ns/ml/auth", checkPermission(mercadoLivreAuthUserHandler, "read"))
+	router.POST("/ns/ml/auth", checkPermission(mercadoLivreAuthUserHandlerPost, "write"))
 
 	// Auth - signup.
 	router.GET("/ns/auth/signup", confirmNoLogged(authSignupHandler))

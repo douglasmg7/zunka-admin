@@ -1,0 +1,52 @@
+{{template "base" .}}
+
+{{define "embedded-css"}}
+<style type="text/css">
+    .content {
+        max-width: var(--width-medium);
+    }
+    a.reset-pass {
+        display: block;
+        margin: .2em 0 1em 0;
+    }
+    p {
+        margin-bottom: 0;
+    }
+    label > span {
+        font-weight: 500;
+    }
+</style>
+{{end}}
+
+{{define "title"}}Autenticação Mercado Livre{{end}}
+
+{{define "content"}}
+<form class="content" action="/ns/ml/auth" method="post">
+    <h2 class="title">Autenticação Mercado Livre</h2>
+
+    <!-- Head messages. -->
+    {{if .SuccessMsgHead}} <div class="success-msg"> {{.SuccessMsgHead}} </div> {{end}}
+    {{if .WarnMsgHead}} <div class="warn-msg"> {{.WarnMsgHead}} </div> {{end}}
+
+    <!-- User -->
+    <label {{if .User.Msg}} class="error" {{end}} for="user">
+        {{if not .User.Msg}} Usuário do Mercado Livre {{end}}
+        {{if .User.Msg}} {{.User.Msg}} {{end}}
+    </label> 
+    <input type="text" id="user" name="user"  value={{.User.Value}}>
+
+    <!-- password -->
+    <label {{if .Password.Msg}} class="error" {{end}} for="password">
+        {{if not .Password.Msg}} Senha do Mercado Livre {{end}}
+        {{if .Password.Msg}} {{.Password.Msg}} {{end}}
+    </label> 
+    <input type="password" id="password" name="password" value={{.Password.Value}}>
+
+    <!-- submit -->
+    <input class="btn btn-info" type="submit" value="Autenticar">
+
+    <!-- Foot messages. -->
+    {{if .SuccessMsgFooter}} <div class="success-msg"> {{.SuccessMsgFooter}} </div> {{end}}
+    {{if .WarnMsgFooter}} <div class="warn-msg"> {{.WarnMsgFooter}} </div> {{end}}
+</form>
+{{end}}
