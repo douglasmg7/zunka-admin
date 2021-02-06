@@ -10,6 +10,8 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.3
+	github.com/mercadolibre/golang-sdk v0.0.0-20200312181849-7edd4ead2967
+	github.com/pkg/errors v0.9.1
 	github.com/satori/go.uuid v1.2.0
 	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073
 )

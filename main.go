@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -138,6 +140,7 @@ func init() {
 	if dbAllnationsFile == "" {
 		panic("ALLNATIONS_DB not defined.")
 	}
+
 	// Dev mode.
 	if !production {
 		dbAllnationsFile += "-dev"
@@ -153,16 +156,21 @@ func init() {
 	log.SetOutput(mw)
 	log.SetPrefix("[zunkasrv] ")
 	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lmsgprefix)
+	// log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile | log.Lmsgprefix)
+	// log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lmsgprefix)
 	// log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Ldate | log.Lshortfile)
 	// log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
-	Trace = log.New(mw, "["+NAME+"] [trace] ", log.Lshortfile|log.Ldate|log.Ltime)
-	Debug = log.New(mw, "["+NAME+"] [debug] ", log.Ldate|log.Ltime)
-	Info = log.New(mw, "["+NAME+"] [info ] ", log.Ldate|log.Ltime)
-	Warn = log.New(mw, "["+NAME+"] [warn ] ", log.Ldate|log.Ltime)
-	Error = log.New(mw, "["+NAME+"] [error] ", log.Lshortfile|log.Ldate|log.Ltime)
+	Trace = log.New(mw, "["+NAME+"] [trace] ", log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
+	Debug = log.New(mw, "["+NAME+"] [debug] ", log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
+	Info = log.New(mw, "["+NAME+"] [info ] ", log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
+	Warn = log.New(mw, "["+NAME+"] [warn ] ", log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
+	Error = log.New(mw, "["+NAME+"] [error] ", log.Ldate|log.Lmicroseconds|log.Lmsgprefix|log.Lshortfile)
+
+	// Mercado Livre.
+	loadMercadoLivreEnv()
 
 	/************************************************************************************************
 	* Load templates
@@ -284,9 +292,13 @@ func main() {
 	router.POST("/ns/allnations/makers", checkPermission(allnationsMakersHandlerPost, "write"))
 
 	// Mercado Livre
+	// Login.
+	router.GET("/ns/ml/auth/login", checkPermission(mercadoLivreAuthLoginHandler, "read"))
+	// User code.
+	router.GET("/ns/ml/auth/user", checkPermission(mercadoLivreAuthUserHandler, "read"))
 	// Autheticate user.
-	router.GET("/ns/ml/auth", checkPermission(mercadoLivreAuthUserHandler, "read"))
-	router.POST("/ns/ml/auth", checkPermission(mercadoLivreAuthUserHandlerPost, "write"))
+	// router.GET("/ns/ml/auth/login", checkPermission(mercadoLivreAuthUserHandler, "read"))
+	// router.POST("/ns/ml/auth/login", checkPermission(mercadoLivreAuthUserHandlerPost, "write"))
 
 	// Auth - signup.
 	router.GET("/ns/auth/signup", confirmNoLogged(authSignupHandler))
@@ -442,3 +454,15 @@ func newLogger(h http.Handler) *logger {
 /**************************************************************************************************
 * Error
 **************************************************************************************************/
+func checkError(err error) bool {
+	if err != nil {
+		// notice that we're using 1, so it will actually log where
+		// the error happened, 0 = this function, we don't want that.
+		_, file, line, _ := runtime.Caller(1)
+		log.Printf("[error] %s:%d: %v", filepath.Base(file), line, err)
+		// function, file, line, _ := runtime.Caller(1)
+		// log.Printf("[error] [%s] [%s:%d] %v", filepath.Base(file), runtime.FuncForPC(function).Name(), line, err)
+		return true
+	}
+	return false
+}
