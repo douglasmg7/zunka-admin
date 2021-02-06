@@ -293,9 +293,13 @@ func main() {
 
 	// Mercado Livre
 	// Login.
-	router.GET("/ns/ml/auth/login", checkPermission(mercadoLivreAuthLoginHandler, "read"))
+	router.GET("/ns/ml/auth/login", checkPermission(mercadoLivreAuthLoginHandler, "write"))
 	// User code.
-	router.GET("/ns/ml/auth/user", checkPermission(mercadoLivreAuthUserHandler, "read"))
+	router.GET("/ns/ml/auth/user", mercadoLivreAuthUserHandler)
+	router.POST("/ns/ml/auth/user", mercadoLivreAuthUserHandler)
+	// Notification
+	router.GET("/ns/ml/auth/notification", mercadoLivreNotificationHandler)
+	router.GET("/ns/ml/notification", mercadoLivreNotificationHandler)
 	// Autheticate user.
 	// router.GET("/ns/ml/auth/login", checkPermission(mercadoLivreAuthUserHandler, "read"))
 	// router.POST("/ns/ml/auth/login", checkPermission(mercadoLivreAuthUserHandlerPost, "write"))

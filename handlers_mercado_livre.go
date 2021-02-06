@@ -30,7 +30,6 @@ func loadMercadoLivreEnv() {
 
 	// MERCADO_LIVRE_SECRET_KEY
 	mercadoLivreSecretKey = os.Getenv("MERCADO_LIVRE_SECRET_KEY")
-	log.Printf("mercadoLivreSecretKey: %v", mercadoLivreSecretKey)
 	if mercadoLivreSecretKey == "" {
 		panic("MERCADO_LIVRE_SECRET_KEY env not defined.")
 	}
@@ -47,10 +46,18 @@ func mercadoLivreAuthLoginHandler(w http.ResponseWriter, req *http.Request, _ ht
 }
 
 // User code.
-func mercadoLivreAuthUserHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	userCode := req.URL.Query().Get("code")
+func mercadoLivreAuthUserHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	Debug.Printf("method: %v", req.Method)
 	Debug.Printf("url: %v", req.URL)
+	userCode := req.URL.Query().Get("code")
 	Debug.Printf("user code: %v", userCode)
+	w.Write([]byte(fmt.Sprintf("ok\nurl:  %v", req.URL)))
+}
+
+// Notification.
+func mercadoLivreNotificationHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	Debug.Printf("method: %v", req.Method)
+	Debug.Printf("url: %v", req.URL)
 	w.Write([]byte(fmt.Sprintf("ok\nurl:  %v", req.URL)))
 }
 
