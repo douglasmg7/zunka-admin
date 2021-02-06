@@ -292,14 +292,17 @@ func main() {
 	router.POST("/ns/allnations/makers", checkPermission(allnationsMakersHandlerPost, "write"))
 
 	// Mercado Livre
-	// Login.
+	// Login
 	router.GET("/ns/ml/auth/login", checkPermission(mercadoLivreAuthLoginHandler, "write"))
-	// User code.
+	// User code
 	router.GET("/ns/ml/auth/user", mercadoLivreAuthUserHandler)
-	router.POST("/ns/ml/auth/user", mercadoLivreAuthUserHandler)
 	// Notification
-	router.GET("/ns/ml/auth/notification", mercadoLivreNotificationHandler)
 	router.GET("/ns/ml/notification", mercadoLivreNotificationHandler)
+	// Show user code
+	router.GET("/ns/ml/user/code", checkPermission(mercadoLivreUserCodeHandler, "read"))
+	// Products
+	router.GET("/ns/ml/users/me", checkPermission(mercadoLivreUsersMeHandler, "read"))
+
 	// Autheticate user.
 	// router.GET("/ns/ml/auth/login", checkPermission(mercadoLivreAuthUserHandler, "read"))
 	// router.POST("/ns/ml/auth/login", checkPermission(mercadoLivreAuthUserHandlerPost, "write"))
