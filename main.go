@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"html/template"
 	"io"
@@ -12,10 +13,13 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+var ctx = context.Background()
 
 const NAME = "zunkasrv"
 
@@ -67,6 +71,7 @@ var Warn *log.Logger
 var Error *log.Logger
 
 // Db.
+var redisClient *redis.Client
 var dbZunka *sql.DB
 var dbAldo *sqlx.DB
 var dbAllnations *sqlx.DB
@@ -169,9 +174,6 @@ func init() {
 	Warn = log.New(mw, "["+NAME+"] [warn ] ", log.Ldate|log.Lmicroseconds|log.Lmsgprefix)
 	Error = log.New(mw, "["+NAME+"] [error] ", log.Ldate|log.Lmicroseconds|log.Lmsgprefix|log.Lshortfile)
 
-	// Mercado Livre.
-	loadMercadoLivreEnv()
-
 	/************************************************************************************************
 	* Load templates
 	************************************************************************************************/
@@ -227,12 +229,17 @@ func main() {
 	allnationsSelectedMakers = LoadAllnationsSelectedMakers(path.Join(dataPath, "selected_makers.data"))
 
 	// Start dbs.
+	initRedis()
+	defer closeRedis()
 	initZunkaDB()
 	defer closeZunkaDB()
 	initAldoDB()
 	defer closeAldoDB()
 	initAllnationsDB()
 	defer closeAllnationsDB()
+
+	// Mercado Livre.
+	initMercadoLivreHandler()
 
 	// Init router.
 	router := httprouter.New()

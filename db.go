@@ -5,8 +5,30 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/jmoiron/sqlx"
 )
+
+// Init redis db.
+func initRedis() {
+	// Connect to Redis DB.
+	redisClient = redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+	pong, err := redisClient.Ping(ctx).Result()
+
+	if err != nil || pong != "PONG" {
+		log.Panicf("[panic] Couldn't connect to Redis DB. %s", err)
+	}
+	// log.Printf("Connected to Redis")
+}
+
+// Close redis db.
+func closeRedis() {
+	// log.Printf("Closing Redis connection...")
+}
 
 // Init zunka db.
 func initZunkaDB() {

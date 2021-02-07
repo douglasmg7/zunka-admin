@@ -19,7 +19,8 @@ var mercadoLivreSecretKey string
 var mercadoLivreRedirectURL string
 var mercadoLivreUserCode string
 
-func loadMercadoLivreEnv() {
+// Initialize Mercado Livre handler
+func initMercadoLivreHandler() {
 	// MERCADO_LIVRE_APP_ID
 	mercadoLivreAPPIDString := os.Getenv("MERCADO_LIVRE_APP_ID")
 	if mercadoLivreAPPIDString == "" {
@@ -43,30 +44,34 @@ func loadMercadoLivreEnv() {
 	}
 
 	// MERCADO_LIVRE_USER_CODE
-	mercadoLivreUserCode = os.Getenv("MERCADO_LIVRE_USER_CODE")
-	if mercadoLivreUserCode == "" {
-		panic("MERCADO_LIVRE_USER_CODE env not defined.")
-	}
+	// setMLUserCode("TG-60201f06e8ddd200078a19b5-360790045")
+	mercadoLivreUserCode = getMLUserCode()
+	// Debug.Printf("mercadoLivreUserCode: %v", mercadoLivreUserCode)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // AUTHENTICATE USER
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Login.
+// Login
+// Redirect user to Mercado Livre login page.
 func mercadoLivreAuthLoginHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	url := sdk.GetAuthURL(mercadoLivreAPPID, sdk.AuthURLMLA, mercadoLivreRedirectURL)
+	// url := sdk.GetAuthURL(mercadoLivreAPPID, sdk.AuthURLMLA, mercadoLivreRedirectURL)
+	url := sdk.GetAuthURL(mercadoLivreAPPID, sdk.AuthURLMLB, mercadoLivreRedirectURL)
 	log.Printf("url: %v", url)
 	http.Redirect(w, req, url, http.StatusSeeOther)
 }
 
 // User code.
+// After user has logged into ML, ML call this handler to pass the user code.
 func mercadoLivreAuthUserHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	Debug.Printf("url: %v", req.URL)
 	// Save user code received.
 	mercadoLivreUserCode = req.URL.Query().Get("code")
+	setMLUserCode(mercadoLivreUserCode)
 	Debug.Printf("mercado livre user code: %v", mercadoLivreUserCode)
 
-	w.Write([]byte(fmt.Sprintf("ok\nurl:  %v", req.URL)))
+	// w.Write([]byte(fmt.Sprintf("ok\nurl:  %v", req.URL)))
+	w.Write([]byte(fmt.Sprintf("%v", req.URL)))
 }
 
 // Notification.
@@ -76,14 +81,23 @@ func mercadoLivreNotificationHandler(w http.ResponseWriter, req *http.Request, _
 	w.Write([]byte(fmt.Sprintf("ok\nurl:  %v", req.URL)))
 }
 
-// func mercadoLivreUserCodeUserHandlerPost(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+// Show ML user code.
 func mercadoLivreUserCodeHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	Debug.Printf("mercado livre user code: %v", mercadoLivreUserCode)
-	w.Write([]byte(mercadoLivreUserCode))
+	// Debug.Printf("mercado livre user code: %v", mercadoLivreUserCode)
+	if mercadoLivreUserCode != "" {
+		w.Write([]byte(mercadoLivreUserCode))
+	} else {
+		w.Write([]byte("No user code"))
+	}
 }
 
-// func mercadoLivreUserCodeUserHandlerPost(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+// Show user info.
 func mercadoLivreUsersMeHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+	// No user code.
+	if mercadoLivreUserCode == "" {
+		http.Redirect(w, req, "../auth/login", http.StatusSeeOther)
+	}
+
 	client, err := sdk.Meli(mercadoLivreAPPID, mercadoLivreUserCode, mercadoLivreSecretKey, mercadoLivreRedirectURL)
 	if err != nil {
 		HandleError(w, err)
@@ -96,10 +110,6 @@ func mercadoLivreUsersMeHandler(w http.ResponseWriter, req *http.Request, _ http
 		return
 	}
 
-	// if err != nil {
-	// log.Printf("Error %s\n", err.Error())
-	// }
-
 	userInfo, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		HandleError(w, err)
@@ -108,9 +118,6 @@ func mercadoLivreUsersMeHandler(w http.ResponseWriter, req *http.Request, _ http
 
 	fmt.Printf("response:%s\n", userInfo)
 	w.Write([]byte(userInfo))
-
-	// req.ParseForm()
-	// HandleError(w, err)
 }
 
 // Get categories.
