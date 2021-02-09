@@ -52,7 +52,7 @@ var tmplAldoProducts, tmplAldoProduct, tmplAldoCategories *template.Template
 var tmplAllnationsProducts, tmplAllnationsProduct, tmplAllnationsFilters, tmplAllnationsCategories, tmplAllnationsMakers *template.Template
 
 // Mercado Livre.
-var tmplMercadoLivreAuthUser *template.Template
+var tmplMercadoLivreAuthUser, tmplMercadoLivreText *template.Template
 
 // Auth.
 var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *template.Template
@@ -203,6 +203,7 @@ func init() {
 	tmplAllnationsMakers = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsMakers.gohtml"))
 	// Mercado Livre.
 	tmplMercadoLivreAuthUser = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreAuthUser.gohtml"))
+	tmplMercadoLivreText = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreText.gohtml"))
 
 	// Auth.
 	tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))
@@ -305,8 +306,11 @@ func main() {
 	router.GET("/ns/ml/auth/user", mercadoLivreAuthUserHandler)
 	// Notification
 	router.GET("/ns/ml/notification", mercadoLivreNotificationHandler)
+	// Load user code from zunka server. Used by zunka server in development.
+	router.GET("/ns/ml/user/load-code", checkPermission(mercadoLivreLoadUserCode, "read"))
 	// Show user code
 	router.GET("/ns/ml/user/code", checkPermission(mercadoLivreUserCodeHandler, "read"))
+	router.GET("/ns/ml/api/user-code", checkApiAuthorization(mercadoLivreAPIUserCodeHandler))
 	// Products
 	router.GET("/ns/ml/users/me", checkPermission(mercadoLivreUsersMeHandler, "read"))
 

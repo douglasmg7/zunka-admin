@@ -3,6 +3,9 @@ package main
 import (
 	// "bytes"
 
+	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -18,6 +21,14 @@ var mercadoLivreAPPID int64
 var mercadoLivreSecretKey string
 var mercadoLivreRedirectURL string
 var mercadoLivreUserCode string
+
+// type mlUserMe struct {
+// id     int    `json:"id"`
+// nickname    string `json:"nickname"`
+// registration_date date    `json:"registration_date"`
+// permalink    string    `json:"permalink"`
+// MsgError string `xml:"MsgErro"`
+// }
 
 // Initialize Mercado Livre handler
 func initMercadoLivreHandler() {
@@ -44,7 +55,7 @@ func initMercadoLivreHandler() {
 	}
 
 	// MERCADO_LIVRE_USER_CODE
-	// setMLUserCode("TG-60201f06e8ddd200078a19b5-360790045")
+	setMLUserCode("TG-60228432dbe8c8000639e79c-360790045")
 	mercadoLivreUserCode = getMLUserCode()
 	// Debug.Printf("mercadoLivreUserCode: %v", mercadoLivreUserCode)
 }
@@ -83,7 +94,18 @@ func mercadoLivreNotificationHandler(w http.ResponseWriter, req *http.Request, _
 
 // Show ML user code.
 func mercadoLivreUserCodeHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-	// Debug.Printf("mercado livre user code: %v", mercadoLivreUserCode)
+	data := struct {
+		Session *SessionData
+		Text    string
+	}{&SessionData{}, ""}
+
+	data.Text = mercadoLivreUserCode
+	err = tmplMercadoLivreText.ExecuteTemplate(w, "mercadoLivreText.gohtml", data)
+	HandleError(w, err)
+}
+
+// Send ML user code.
+func mercadoLivreAPIUserCodeHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	if mercadoLivreUserCode != "" {
 		w.Write([]byte(mercadoLivreUserCode))
 	} else {
@@ -93,6 +115,11 @@ func mercadoLivreUserCodeHandler(w http.ResponseWriter, req *http.Request, _ htt
 
 // Show user info.
 func mercadoLivreUsersMeHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+	data := struct {
+		Session *SessionData
+		Text    string
+	}{&SessionData{}, ""}
+
 	// No user code.
 	if mercadoLivreUserCode == "" {
 		http.Redirect(w, req, "../auth/login", http.StatusSeeOther)
@@ -116,28 +143,52 @@ func mercadoLivreUsersMeHandler(w http.ResponseWriter, req *http.Request, _ http
 		return
 	}
 
-	fmt.Printf("response:%s\n", userInfo)
-	w.Write([]byte(userInfo))
+	var out bytes.Buffer
+	json.Indent(&out, userInfo, "", "\t")
+	// out.WriteTo(os.Stdout)
+
+	fmt.Printf("response:%s\n", out.String())
+	// w.Write([]byte(out.String()))
+
+	data.Text = out.String()
+	err = tmplMercadoLivreText.ExecuteTemplate(w, "mercadoLivreText.gohtml", data)
+	HandleError(w, err)
 }
 
-// Get categories.
-func mercadoLivreAuthUserHandler2(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
-
-	url := sdk.GetAuthURL(mercadoLivreAPPID, sdk.AuthURLMLA, "https://www.zunka.com.br/ns/ml/auth")
-	log.Printf("url: %v", url)
-
+// Load user code from zunka server in production.
+func mercadoLivreLoadUserCode(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
 	data := struct {
-		Session          *SessionData
-		HeadMessage      string
-		User             valueMsg
-		Password         valueMsg
-		WarnMsgHead      string
-		SuccessMsgHead   string
-		WarnMsgFooter    string
-		SuccessMsgFooter string
-	}{session, "", valueMsg{"", ""}, valueMsg{"", ""}, "", "", "", ""}
+		Session *SessionData
+		Text    string
+	}{session, ""}
 
-	// Render page.
-	err = tmplMercadoLivreAuthUser.ExecuteTemplate(w, "mercadoLivreAuthUser.gohtml", data)
+	// Request user code from production server.
+	client := &http.Client{}
+	// req, err = http.NewRequest("GET", "http://localhost:8080/ns/ml/api/user-code", nil)
+	req, err = http.NewRequest("GET", "https://www.zunka.com.br/ns/ml/api/user-code", nil)
+	req.Header.Set("Content-Type", "application/json")
+	HandleError(w, err)
+	// req.SetBasicAuth(zunkaSiteUser(), zunkaSitePass())
+	req.SetBasicAuth(zunkaServerUser(), zunkaServerPass())
+	res, err := client.Do(req)
+	HandleError(w, err)
+
+	// res, err := http.Post("http://localhost:3080/setup/product/add", "application/json", bytes.NewBuffer(reqBody))
+	defer res.Body.Close()
+	HandleError(w, err)
+
+	// Result.
+	resBody, err := ioutil.ReadAll(res.Body)
+	HandleError(w, err)
+	// No 200 status.
+	if res.StatusCode != 200 {
+		HandleError(w, errors.New(fmt.Sprintf("Error ao solicitar ml user code no servidor zunka.\n\nstatus: %v\n\nbody: %v", res.StatusCode, string(resBody))))
+		return
+	}
+	mercadoLivreUserCode = string(resBody)
+	Debug.Printf("Mercado Livre user code loaded: %v", mercadoLivreUserCode)
+
+	data.Text = "Código do usuário carregado com sucesso"
+	err = tmplMercadoLivreText.ExecuteTemplate(w, "mercadoLivreText.gohtml", data)
 	HandleError(w, err)
 }

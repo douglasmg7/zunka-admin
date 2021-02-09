@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+MERCADO_LIVRE_USER_CODE=TG-60225cbe11a63d00064cbbe9-360790045
 
 CMD="curl -X POST \
 -H 'accept: application/json' \
