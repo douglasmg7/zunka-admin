@@ -168,8 +168,8 @@ func mercadoLivreLoadUserCode(w http.ResponseWriter, req *http.Request, ps httpr
 	req, err = http.NewRequest("GET", "https://www.zunka.com.br/ns/ml/api/user-code", nil)
 	req.Header.Set("Content-Type", "application/json")
 	HandleError(w, err)
-	// req.SetBasicAuth(zunkaSiteUser(), zunkaSitePass())
-	req.SetBasicAuth(zunkaServerUser(), zunkaServerPass())
+	// req.SetBasicAuth(zunkaServerUser(), zunkaServerPass())
+	req.SetBasicAuth(zunkaServerUserProduction, zunkaServerPassProduction)
 	res, err := client.Do(req)
 	HandleError(w, err)
 
