@@ -1,3 +1,7 @@
+## 1.5.0 (22 Fev 2020)
+Autenticação no Mercado Livre.
+
+
 ## 1.4.0 (17 Nov 2020)
 Opção de selecionar produto como template na criação do mesmo no site da zunka.
 

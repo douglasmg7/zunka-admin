@@ -17,7 +17,44 @@
 {{define "title"}}Mercado Livre{{end}}
 
 {{define "content"}}
-    {{range .Lines}}
-        <h3>{{.}}</h3>
-    {{end}}
+<div class="content">
+    <h3>ID</h3>
+    <h4>{{.User.ID}}</h2>
+
+    <h3>Nickname</h3>
+    <h4>{{.User.Nickname}}</h2>
+
+    <h3>Email</h3>
+    <h4>{{.User.Email}}</h2>
+
+    <h3>Identification Number</h3>
+    <h4>{{.User.Identification.Number}}</h2>
+
+    <h3>Permalink</h3>
+    <h4>{{.User.Permalink}}</h2>
+
+    <h3>Level ID</h3>
+    <h4>{{.User.SellerReputation.LevelID}}</h2>
+
+    <h3>Canceled</h3>
+    <h4>{{.User.SellerReputation.Transactions.Canceled}}</h2>
+
+    <h3>Completed</h3>
+    <h4>{{.User.SellerReputation.Transactions.Completed}}</h2>
+
+    <h3>Negative</h3>
+    <h4>{{.User.SellerReputation.Transactions.Ratings.Negative}}</h2>
+
+    <h3>Neutral</h3>
+    <h4>{{.User.SellerReputation.Transactions.Ratings.Neutral}}</h2>
+
+    <h3>Positive</h3>
+    <h4>{{.User.SellerReputation.Transactions.Ratings.Positive}}</h2>
+
+    <h3>Total</h3>
+    <h4>{{.User.SellerReputation.Transactions.Total}}</h2>
+
+    <h3>Secure Email</h3>
+    <h4>{{.User.SecureEmail}}</h2>
+</div>
 {{end}}

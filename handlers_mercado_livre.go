@@ -3,7 +3,6 @@ package main
 import (
 	// "bytes"
 
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,7 +11,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/mercadolibre/golang-sdk/sdk"
@@ -131,8 +129,8 @@ func mercadoLivreAPIUserCodeHandler(w http.ResponseWriter, req *http.Request, _ 
 func mercadoLivreUsersInfoHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	data := struct {
 		Session *SessionData
-		Lines   []string
-	}{session, []string{}}
+		User    MercadoLivreUserInfo
+	}{session, MercadoLivreUserInfo{}}
 
 	// No user code.
 	if mercadoLivreUserCode == "" {
@@ -151,31 +149,72 @@ func mercadoLivreUsersInfoHandler(w http.ResponseWriter, req *http.Request, _ ht
 		return
 	}
 
-	userInfo, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		HandleError(w, err)
 		return
 	}
 
-	var out bytes.Buffer
-	// &nbsp
-	json.Indent(&out, userInfo, "", "\t")
-	// out.WriteTo(os.Stdout)
-
-	data.Lines = strings.Split(out.String(), "\n")
-
-	// fmt.Printf("response:%s\n", out.String())
-	// w.Write([]byte(out.String()))
-
-	for _, line := range data.Lines {
-		// fmt.Printf("response:%s\n", out.String())
-		fmt.Println(line)
+	err = json.Unmarshal(body, &data.User)
+	if err != nil {
+		HandleError(w, err)
+		return
 	}
 
-	// data.Text = out.String()
 	err = tmplMercadoLivreUserInfo.ExecuteTemplate(w, "mercadoLivreUserInfo.gohtml", data)
 	HandleError(w, err)
 }
+
+// // Show user info.
+// func mercadoLivreUsersInfoHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+// data := struct {
+// Session *SessionData
+// Lines   []string
+// }{session, []string{}}
+
+// // No user code.
+// if mercadoLivreUserCode == "" {
+// http.Redirect(w, req, "../auth/login", http.StatusSeeOther)
+// }
+
+// client, err := sdk.Meli(mercadoLivreAPPID, mercadoLivreUserCode, mercadoLivreSecretKey, mercadoLivreRedirectURL)
+// if err != nil {
+// HandleError(w, err)
+// return
+// }
+
+// resp, err := client.Get("/users/me")
+// if err != nil {
+// HandleError(w, err)
+// return
+// }
+
+// userInfo, err := ioutil.ReadAll(resp.Body)
+// if err != nil {
+// HandleError(w, err)
+// return
+// }
+
+// var out bytes.Buffer
+// // &nbsp
+// // json.Indent(&out, userInfo, "", "&nbsp")
+// json.Indent(&out, userInfo, "", "\t")
+// // out.WriteTo(os.Stdout)
+
+// data.Lines = strings.Split(out.String(), "\n")
+
+// fmt.Printf("response:%s\n", out.String())
+// w.Write([]byte(out.String()))
+
+// // for _, line := range data.Lines {
+// // // fmt.Printf("response:%s\n", out.String())
+// // fmt.Println(line)
+// // }
+
+// // data.Text = out.String()
+// // err = tmplMercadoLivreUserInfo.ExecuteTemplate(w, "mercadoLivreUserInfo.gohtml", data)
+// // HandleError(w, err)
+// }
 
 // Load user code from zunka server in production.
 func mercadoLivreLoadUserCode(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
