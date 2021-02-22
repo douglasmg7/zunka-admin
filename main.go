@@ -26,6 +26,8 @@ const NAME = "zunkasrv"
 /************************************************************************************************
 * Templates
 ************************************************************************************************/
+var runMode string
+
 // Geral.
 var tmplMaster, tmplIndex, tmplDeniedAccess *template.Template
 
@@ -52,7 +54,7 @@ var tmplAldoProducts, tmplAldoProduct, tmplAldoCategories *template.Template
 var tmplAllnationsProducts, tmplAllnationsProduct, tmplAllnationsFilters, tmplAllnationsCategories, tmplAllnationsMakers *template.Template
 
 // Mercado Livre.
-var tmplMercadoLivreAuthUser, tmplMercadoLivreText *template.Template
+var tmplMercadoLivreMessage, tmplMercadoLivreAuthUser, tmplMercadoLivreUserCode, tmplMercadoLivreUserInfo *template.Template
 
 // Auth.
 var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *template.Template
@@ -202,8 +204,10 @@ func init() {
 	tmplAllnationsCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsCategories.tmpl"))
 	tmplAllnationsMakers = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/allnations/allnationsMakers.gohtml"))
 	// Mercado Livre.
+	tmplMercadoLivreMessage = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreMessage.gohtml"))
 	tmplMercadoLivreAuthUser = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreAuthUser.gohtml"))
-	tmplMercadoLivreText = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreText.gohtml"))
+	tmplMercadoLivreUserCode = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreUserCode.gohtml"))
+	tmplMercadoLivreUserInfo = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreUserInfo.gohtml"))
 
 	// Auth.
 	tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))
@@ -218,7 +222,7 @@ func init() {
 
 func main() {
 	// Log start.
-	runMode := "development"
+	runMode = "development"
 	if production {
 		runMode = "production"
 	}
@@ -312,7 +316,7 @@ func main() {
 	router.GET("/ns/ml/user/code", checkPermission(mercadoLivreUserCodeHandler, "read"))
 	router.GET("/ns/ml/api/user-code", checkApiAuthorization(mercadoLivreAPIUserCodeHandler))
 	// Products
-	router.GET("/ns/ml/users/me", checkPermission(mercadoLivreUsersMeHandler, "read"))
+	router.GET("/ns/ml/users/me", checkPermission(mercadoLivreUsersInfoHandler, "read"))
 
 	// Autheticate user.
 	// router.GET("/ns/ml/auth/login", checkPermission(mercadoLivreAuthUserHandler, "read"))
@@ -386,6 +390,7 @@ func checkPermission(h handleS, permission string) httprouter.Handle {
 		if err != nil {
 			log.Fatal(err)
 		}
+		// Debug.Printf("Session 1: %+v", session)
 		// Not signed.
 		if session == nil {
 			http.Redirect(w, req, "/ns/auth/signin", http.StatusSeeOther)

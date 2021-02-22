@@ -27,8 +27,12 @@
           <div class="items">
               <a class="item back" href="#">< Menu</a>
               <a class="item" href="/ns/ml/auth/login">Autenticar</a>
-              <a class="item" href="/ns/ml/user/code">Show user code</a>
-              <a class="item" href="/ns/ml/user/load-code">Load user code</a>
+              {{if .Session }}
+                  {{if eq .Session.RunMode "development"}} 
+                        <a class="item" href="/ns/ml/user/code">Show user code</a>
+                        <a class="item" href="/ns/ml/user/load-code">Load user code</a>
+                  {{end}}
+              {{end}}
               <a class="item" href="/ns/ml/users/me">Info</a>
               <a class="item" href="/ns/ml/products">Produtos</a>
           </div>

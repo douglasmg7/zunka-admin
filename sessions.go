@@ -18,6 +18,7 @@ import (
 
 // SessionData cache data from each user.
 type SessionData struct {
+	RunMode    string
 	UserID     int
 	UserName   string
 	Permission uint64
@@ -162,6 +163,7 @@ func (s *Sessions) GetSession(req *http.Request) (*SessionData, error) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		session.RunMode = runMode
 		// log.Println("Time to get session:", time.Since(timeToGetSession))
 		return session, err
 		// return sessionDataFromUserId(userID)

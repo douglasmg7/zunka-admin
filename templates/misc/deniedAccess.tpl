@@ -1,8 +1,14 @@
 {{template "base" .}}
 
-{{ define "embedded-css"}} {{end}}
+{{ define "embedded-css"}} 
+<style type="text/css">
+    h2 {
+        text-align: center;
+    }
+</style>
+{{end}}
 
-{{define "title"}}Acesso negado.{{end}}
+{{define "title"}}Acesso negado{{end}}
 
 {{define "content"}}
 <div class="content" action="/ns/user/change/email" method="post">

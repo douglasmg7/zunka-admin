@@ -1,0 +1,23 @@
+{{template "base" .}}
+
+{{define "embedded-css"}}
+<style type="text/css">
+    .content {
+        max-width: var(--width-medium);
+    }
+    h3 {
+        margin-top: 1em;
+    }
+    p {
+        margin-bottom: 0;
+    }
+</style>
+{{end}}
+
+{{define "title"}}Mercado Livre{{end}}
+
+{{define "content"}}
+    {{range .Lines}}
+        <h3>{{.}}</h3>
+    {{end}}
+{{end}}
