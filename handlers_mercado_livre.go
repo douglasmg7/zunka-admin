@@ -256,7 +256,8 @@ func mercadoLivreRawSitesSearchSellerIDHandler(w http.ResponseWriter, req *http.
 		return
 	}
 
-	resp, err := client.Get(fmt.Sprintf("/sites/%s/search?seller_id=%s", ML_SITE_ID, mercadoLivreUserID))
+	// resp, err := client.Get(fmt.Sprintf("/sites/%s/search?seller_id=%s", ML_SITE_ID, mercadoLivreUserID))
+	resp, err := client.Get(fmt.Sprintf("/sites/%s/search?seller_id=%s&%s", ML_SITE_ID, mercadoLivreUserID, "attributes=results,paging"))
 	if err != nil {
 		HandleError(w, err)
 		return
@@ -277,13 +278,19 @@ func mercadoLivreRawSitesSearchSellerIDHandler(w http.ResponseWriter, req *http.
 
 // Public products
 func mercadoLivreSitesSearchSellerIDHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+	data := struct {
+		Session  *SessionData
+		Products MLProductsTitles
+	}{session, MLProductsTitles{}}
+
 	client, err := sdk.Meli(mercadoLivreAPPID, "", mercadoLivreSecretKey, mercadoLivreRedirectURL)
 	if err != nil {
 		HandleError(w, err)
 		return
 	}
 
-	resp, err := client.Get(fmt.Sprintf("/sites/%s/search?seller_id=%s", ML_SITE_ID, mercadoLivreUserID))
+	// resp, err := client.Get(fmt.Sprintf("/sites/%s/search?seller_id=%s", ML_SITE_ID, mercadoLivreUserID))
+	resp, err := client.Get(fmt.Sprintf("/sites/%s/search?seller_id=%s&%s", ML_SITE_ID, mercadoLivreUserID, "attributes=results,paging"))
 	if err != nil {
 		HandleError(w, err)
 		return
@@ -294,10 +301,13 @@ func mercadoLivreSitesSearchSellerIDHandler(w http.ResponseWriter, req *http.Req
 		HandleError(w, err)
 		return
 	}
+	// MercadoLivreSiteSerachSellerIDResumed
+	err = json.Unmarshal(body, &data.Products)
+	if err != nil {
+		HandleError(w, err)
+		return
+	}
 
-	var out bytes.Buffer
-	json.Indent(&out, body, "", "\t")
-
-	fmt.Printf("body:\n%s\n", out.String())
-	w.Write(out.Bytes())
+	// fmt.Printf("body:\n%s\n", out.String())
+	// w.Write(out.Bytes())
 }
