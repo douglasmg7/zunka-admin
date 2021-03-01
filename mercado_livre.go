@@ -169,39 +169,40 @@ type MercadoLivreUserInfo struct {
 }
 
 // Site search seller id
+// /sites/search/$seller_id
 type MercadoLivreSiteSerachSellerID struct {
-	SiteID string `json:"site_id"`
-	Seller struct {
-		ID               int    `json:"id"`
-		Nickname         string `json:"nickname"`
-		Permalink        string `json:"permalink"`
-		RegistrationDate string `json:"registration_date"`
-		SellerReputation struct {
-			LevelID           string      `json:"level_id"`
-			PowerSellerStatus interface{} `json:"power_seller_status"`
-			Transactions      struct {
-				Total    int    `json:"total"`
-				Canceled int    `json:"canceled"`
-				Period   string `json:"period"`
-				Ratings  struct {
-					Negative float64 `json:"negative"`
-					Positive float64 `json:"positive"`
-					Neutral  float64 `json:"neutral"`
-				} `json:"ratings"`
-				Completed int `json:"completed"`
-			} `json:"transactions"`
-			Metrics struct {
-				Sales struct {
-					Period    string `json:"period"`
-					Completed int    `json:"completed"`
-				} `json:"sales"`
-			} `json:"metrics"`
-		} `json:"seller_reputation"`
-		RealEstateAgency bool        `json:"real_estate_agency"`
-		CarDealer        bool        `json:"car_dealer"`
-		Tags             []string    `json:"tags"`
-		Eshop            interface{} `json:"eshop"`
-	} `json:"seller"`
+	// SiteID string `json:"site_id"`
+	// Seller struct {
+	// ID               int    `json:"id"`
+	// Nickname         string `json:"nickname"`
+	// Permalink        string `json:"permalink"`
+	// RegistrationDate string `json:"registration_date"`
+	// SellerReputation struct {
+	// LevelID           string      `json:"level_id"`
+	// PowerSellerStatus interface{} `json:"power_seller_status"`
+	// Transactions      struct {
+	// Total    int    `json:"total"`
+	// Canceled int    `json:"canceled"`
+	// Period   string `json:"period"`
+	// Ratings  struct {
+	// Negative float64 `json:"negative"`
+	// Positive float64 `json:"positive"`
+	// Neutral  float64 `json:"neutral"`
+	// } `json:"ratings"`
+	// Completed int `json:"completed"`
+	// } `json:"transactions"`
+	// Metrics struct {
+	// Sales struct {
+	// Period    string `json:"period"`
+	// Completed int    `json:"completed"`
+	// } `json:"sales"`
+	// } `json:"metrics"`
+	// } `json:"seller_reputation"`
+	// RealEstateAgency bool        `json:"real_estate_agency"`
+	// CarDealer        bool        `json:"car_dealer"`
+	// Tags             []string    `json:"tags"`
+	// Eshop            interface{} `json:"eshop"`
+	// } `json:"seller"`
 	Paging struct {
 		Total          int `json:"total"`
 		PrimaryResults int `json:"primary_results"`

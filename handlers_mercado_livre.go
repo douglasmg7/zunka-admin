@@ -248,6 +248,33 @@ func mercadoLivreUsersProductsHandler(w http.ResponseWriter, req *http.Request, 
 	w.Write(out.Bytes())
 }
 
+// Public raw products
+func mercadoLivreRawSitesSearchSellerIDHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+	client, err := sdk.Meli(mercadoLivreAPPID, "", mercadoLivreSecretKey, mercadoLivreRedirectURL)
+	if err != nil {
+		HandleError(w, err)
+		return
+	}
+
+	resp, err := client.Get(fmt.Sprintf("/sites/%s/search?seller_id=%s", ML_SITE_ID, mercadoLivreUserID))
+	if err != nil {
+		HandleError(w, err)
+		return
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		HandleError(w, err)
+		return
+	}
+
+	var out bytes.Buffer
+	json.Indent(&out, body, "", "\t")
+
+	fmt.Printf("body:\n%s\n", out.String())
+	w.Write(out.Bytes())
+}
+
 // Public products
 func mercadoLivreSitesSearchSellerIDHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	client, err := sdk.Meli(mercadoLivreAPPID, "", mercadoLivreSecretKey, mercadoLivreRedirectURL)
