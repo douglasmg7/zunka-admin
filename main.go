@@ -54,7 +54,7 @@ var tmplAldoProducts, tmplAldoProduct, tmplAldoCategories *template.Template
 var tmplAllnationsProducts, tmplAllnationsProduct, tmplAllnationsFilters, tmplAllnationsCategories, tmplAllnationsMakers *template.Template
 
 // Mercado Livre.
-var tmplMercadoLivreMessage, tmplMercadoLivreAuthUser, tmplMercadoLivreUserCode, tmplMercadoLivreUserInfo *template.Template
+var tmplMercadoLivreMessage, tmplMercadoLivreAuthUser, tmplMercadoLivreUserCode, tmplMercadoLivreUserInfo, tmplMercadoLivreActiveProducts *template.Template
 
 // Auth.
 var tmplAuthSignup, tmplAuthSignin, tmplPasswordRecovery, tmplPasswordReset *template.Template
@@ -208,6 +208,7 @@ func init() {
 	tmplMercadoLivreAuthUser = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreAuthUser.gohtml"))
 	tmplMercadoLivreUserCode = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreUserCode.gohtml"))
 	tmplMercadoLivreUserInfo = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreUserInfo.gohtml"))
+	tmplMercadoLivreActiveProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreActiveProducts.gohtml"))
 
 	// Auth.
 	tmplAuthSignup = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/auth/signup.tpl"))

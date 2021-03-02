@@ -1,7 +1,5 @@
 package main
 
-import "time"
-
 // User info
 type MercadoLivreUserInfo struct {
 	ID               int    `json:"id"`

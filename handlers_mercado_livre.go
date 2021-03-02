@@ -276,8 +276,8 @@ func mercadoLivreRawSitesSearchSellerIDHandler(w http.ResponseWriter, req *http.
 	w.Write(out.Bytes())
 }
 
-// Public products
-func mercadoLivreSitesSearchSellerIDHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+// Active products
+func mercadoLivreActiveProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	data := struct {
 		Session  *SessionData
 		Products MLProductsTitles
@@ -308,6 +308,6 @@ func mercadoLivreSitesSearchSellerIDHandler(w http.ResponseWriter, req *http.Req
 		return
 	}
 
-	// fmt.Printf("body:\n%s\n", out.String())
-	// w.Write(out.Bytes())
+	err = tmplMercadoLivreActiveProducts.ExecuteTemplate(w, "mercadoLivreActiveProducts.gohtml", data)
+	HandleError(w, err)
 }

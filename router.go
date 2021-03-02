@@ -84,9 +84,8 @@ func initRouter() *httprouter.Router {
 	router.GET("/ns/ml/users/info", checkPermission(mercadoLivreUsersInfoHandler, "read"))
 	// User products
 	router.GET("/ns/ml/users/products", checkPermission(mercadoLivreUsersProductsHandler, "read"))
-
-	// Sites search seller_id
-	router.GET("/ns/ml/sites/search/seller_id", checkPermission(mercadoLivreSitesSearchSellerIDHandler, "read"))
+	// Active products
+	router.GET("/ns/ml/active-products", checkPermission(mercadoLivreActiveProductsHandler, "read"))
 
 	// Autheticate user.
 	// router.GET("/ns/ml/auth/login", checkPermission(mercadoLivreAuthUserHandler, "read"))

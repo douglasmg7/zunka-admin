@@ -1,0 +1,25 @@
+{{template "base" .}}
+
+{{define "embedded-css"}}
+<style type="text/css">
+    .content {
+        max-width: var(--width-large);
+    }
+    h3 {
+        margin-top: 1em;
+    }
+    p {
+        margin-bottom: 0;
+    }
+</style>
+{{end}}
+
+{{define "title"}}Mercado Livre{{end}}
+
+{{define "content"}}
+<div class="content">
+    {{range .Products.Results}}
+        <h4>{{.Title}}</br>{{.ID}} [ {{.AvailableQuantity}} und ] [ R$ {{.Price}} ]</h4>
+    {{end}}
+</div>
+{{end}}
