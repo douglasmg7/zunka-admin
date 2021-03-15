@@ -19,7 +19,9 @@
 {{define "content"}}
 <div class="content">
     {{range .Products.Results}}
-        <h4>{{.Title}}</br>{{.ID}} [ {{.AvailableQuantity}} und ] [ R$ {{.Price}} ]</h4>
+        <a href="/ns/ml/product/{{.ID}}">
+            <h4>{{.Title}}</br>{{.ID}} [ {{.AvailableQuantity}} und ] [ R$ {{.Price}} ]</h4>
+        </a>
     {{end}}
 </div>
 {{end}}

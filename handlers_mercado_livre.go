@@ -216,6 +216,9 @@ func mercadoLivreUsersInfoHandler(w http.ResponseWriter, req *http.Request, _ ht
 	HandleError(w, err)
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Products
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Private products.
 func mercadoLivreUsersProductsHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	// No user code.
@@ -244,7 +247,7 @@ func mercadoLivreUsersProductsHandler(w http.ResponseWriter, req *http.Request, 
 	var out bytes.Buffer
 	json.Indent(&out, body, "", "\t")
 
-	fmt.Printf("body:\n%s\n", out.String())
+	// fmt.Printf("body:\n%s\n", out.String())
 	w.Write(out.Bytes())
 }
 
@@ -272,7 +275,7 @@ func mercadoLivreRawSitesSearchSellerIDHandler(w http.ResponseWriter, req *http.
 	var out bytes.Buffer
 	json.Indent(&out, body, "", "\t")
 
-	fmt.Printf("body:\n%s\n", out.String())
+	// fmt.Printf("body:\n%s\n", out.String())
 	w.Write(out.Bytes())
 }
 
@@ -310,4 +313,32 @@ func mercadoLivreActiveProductsHandler(w http.ResponseWriter, req *http.Request,
 
 	err = tmplMercadoLivreActiveProducts.ExecuteTemplate(w, "mercadoLivreActiveProducts.gohtml", data)
 	HandleError(w, err)
+}
+
+// Public raw product
+func mercadoLivreRawProductHandler(w http.ResponseWriter, req *http.Request, ps httprouter.Params, session *SessionData) {
+	client, err := sdk.Meli(mercadoLivreAPPID, "", mercadoLivreSecretKey, mercadoLivreRedirectURL)
+	if err != nil {
+		HandleError(w, err)
+		return
+	}
+
+	// resp, err := client.Get(fmt.Sprintf("/sites/%s/search?seller_id=%s", ML_SITE_ID, mercadoLivreUserID))
+	resp, err := client.Get(fmt.Sprintf("/items/%s", ps.ByName("id")))
+	if err != nil {
+		HandleError(w, err)
+		return
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		HandleError(w, err)
+		return
+	}
+
+	var out bytes.Buffer
+	json.Indent(&out, body, "", "\t")
+
+	// fmt.Printf("body:\n%s\n", out.String())
+	w.Write(out.Bytes())
 }
