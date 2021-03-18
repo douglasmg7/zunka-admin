@@ -1,3 +1,6 @@
+## 1.5.2 - 18 de Março 2020
+Url de chamada de autenticação do Mercado Livre altera
+
 ## 1.5.0 (22 Fev 2020)
 Autenticação no Mercado Livre.
 

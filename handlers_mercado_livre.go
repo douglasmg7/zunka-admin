@@ -45,10 +45,10 @@ func initMercadoLivreHandler() {
 		panic("MERCADO_LIVRE_SECRET_KEY env not defined.")
 	}
 
-	// MERCADO_LIVRE_REDIRECT_URL
-	mercadoLivreRedirectURL = os.Getenv("MERCADO_LIVRE_REDIRECT_URL")
+	// MERCADO_LIVRE_REDIRECT_URL_ZUNKASERVER
+	mercadoLivreRedirectURL = os.Getenv("MERCADO_LIVRE_REDIRECT_URL_ZUNKASERVER")
 	if mercadoLivreRedirectURL == "" {
-		panic("MERCADO_LIVRE_REDIRECT_URL env not defined.")
+		panic("MERCADO_LIVRE_REDIRECT_URL_ZUNKASERVER env not defined.")
 	}
 
 	// MERCADO_LIVRE_USER_ID

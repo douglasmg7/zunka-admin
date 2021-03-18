@@ -9,7 +9,7 @@ CMD="curl -X POST \
 -d 'client_id=$MERCADO_LIVRE_APP_ID' \
 -d 'client_secret=$MERCADO_LIVRE_SECRET_KEY' \
 -d 'code=$MERCADO_LIVRE_USER_CODE' \
--d 'redirect_uri=$MERCADO_LIVRE_REDIRECT_URL'"
+-d 'redirect_uri=$MERCADO_LIVRE_REDIRECT_URL_ZUNKASERVER'"
 
 echo $CMD
 
