@@ -38,7 +38,8 @@ var redisClient *redis.Client
 var dbZunka *sql.DB
 var dbAldo *sqlx.DB
 var dbAllnations *sqlx.DB
-var dbZunkaFile, dbAldoFile, dbAllnationsFile string
+var dbHandytech *sqlx.DB
+var dbZunkaFile, dbAldoFile, dbAllnationsFile, dbHandytechFile string
 
 var zunkaPath string
 var GS string
@@ -58,6 +59,11 @@ var sessions = Sessions{
 var allnationsFilters *AllnationsFilters
 var allnationsSelectedCategories *AllnationsSelectedCategories
 var allnationsSelectedMakers *AllnationsSelectedMakers
+
+// Handytech.
+var handytechFilters *HandytechFilters
+var handytechSelectedCategories *HandytechSelectedCategories
+var handytechSelectedMakers *HandytechSelectedMakers
 
 func init() {
 	// Check if production mode.
@@ -109,6 +115,12 @@ func init() {
 		panic("ALLNATIONS_DB not defined.")
 	}
 
+	// Handytech db.
+	dbHandytechFile = os.Getenv("HANDYTECH_DB")
+	if dbHandytechFile == "" {
+		panic("HANDYTECH_DB not defined.")
+	}
+
 	// Dev mode.
 	if !production {
 		dbAllnationsFile += "-dev"
@@ -154,6 +166,11 @@ func main() {
 	allnationsSelectedCategories = LoadAllnationsSelectedCategories(path.Join(dataPath, "selected_categories.data"))
 	allnationsSelectedMakers = LoadAllnationsSelectedMakers(path.Join(dataPath, "selected_makers.data"))
 
+	// Load handytech data.
+	handytechFilters = LoadHandytechFilters(path.Join(dataPath, "handytech_filters.data"))
+	handytechSelectedCategories = LoadHandytechSelectedCategories(path.Join(dataPath, "handytech_selected_categories.data"))
+	handytechSelectedMakers = LoadHandytechSelectedMakers(path.Join(dataPath, "handytech_selected_makers.data"))
+
 	// Start dbs.
 	initRedis()
 	defer closeRedis()
@@ -163,6 +180,8 @@ func main() {
 	defer closeAldoDB()
 	initAllnationsDB()
 	defer closeAllnationsDB()
+	initHandytechDB()
+	defer closeHandytechDB()
 
 	// Mercado Livre
 	initMercadoLivreHandler()

@@ -67,3 +67,13 @@ func initAllnationsDB() {
 func closeAllnationsDB() {
 	dbAllnations.Close()
 }
+
+// Init handytech db.
+func initHandytechDB() {
+	dbHandytech = sqlx.MustConnect("sqlite3", dbHandytechFile)
+}
+
+// Close allnations db.
+func closeHandytechDB() {
+	dbHandytech.Close()
+}

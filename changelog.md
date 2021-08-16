@@ -1,3 +1,6 @@
+## 1.5.3 - 16 de Agosoto 2021
+Incusão de páginas da Handytech.
+
 ## 1.5.2 - 18 de Março 2020
 Url de chamada de autenticação do Mercado Livre altera
 

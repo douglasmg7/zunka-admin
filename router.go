@@ -64,6 +64,32 @@ func initRouter() *httprouter.Router {
 	router.POST("/ns/allnations/makers", checkPermission(allnationsMakersHandlerPost, "write"))
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// HANDYTECH
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Products list page.
+	router.GET("/ns/handytech/products", checkPermission(handytechProductsHandler, "read"))
+	// Product page.
+	router.GET("/ns/handytech/product/:code", checkPermission(handytechProductHandler, "read"))
+	// Create product on zunka server.
+	router.POST("/ns/handytech/product/:code", checkPermission(handytechProductHandlerPost, "write"))
+	// Check product change.
+	router.POST("/ns/handytech/product/:code/checked", checkPermission(handytechProductCheckedHandlerPost, "write"))
+	// Product removed from site, so remove his reference from zunkasrv.
+	router.DELETE("/ns/handytech/product/zunka_product_id/:code", checkApiAuthorization(handytechProductZunkaProductIdHandlerDelete))
+	// Filter page.
+	router.GET("/ns/handytech/filters", checkPermission(handytechFiltersHandler, "read"))
+	// Save filter.
+	router.POST("/ns/handytech/filters", checkPermission(handytechFiltersHandlerPost, "write"))
+	// Categories page.
+	router.GET("/ns/handytech/categories", checkPermission(handytechCategoriesHandler, "read"))
+	// Save categories.
+	router.POST("/ns/handytech/categories", checkPermission(handytechCategoriesHandlerPost, "write"))
+	// Makers page.
+	router.GET("/ns/handytech/makers", checkPermission(handytechMakersHandler, "read"))
+	// Save categories.
+	router.POST("/ns/handytech/makers", checkPermission(handytechMakersHandlerPost, "write"))
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// MERCADO LIVRE
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Login

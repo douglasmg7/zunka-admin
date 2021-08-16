@@ -1,0 +1,44 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+    h3 {
+        margin-bottom: .5em;
+    }   
+    label {
+        display: inline-block;
+        font-size: 1.4em;
+        margin-top: .5em;
+        margin-bottom: 0em;
+        text-transform: lowercase;
+    }
+    input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        position: relative;
+        top: 3px;
+        margin-right: .6rem;
+    }
+</style>
+{{end}}
+
+{{define "title"}}Categorias Allnations{{end}}
+
+{{define "content"}}
+<div class="content">
+    <form method='post'>
+        <h3>Categorias Allnations</h3>
+        {{range .Categories}}
+            <input type='checkbox' name='{{.Name}}' id='{{.Name}}' {{if .Selected}}checked{{end}} />
+            <label for='{{.Name}}'> {{.Name}} - {{.ProductsQty}} </label>
+            <br>
+        {{end}}
+
+        <!-- Submit -->
+        <input class="btn btn-success" type="submit" value="Salvar">
+
+        <!-- Exit -->
+        <input class="btn" onclick='window.location.href="/ns/allnations/products"' value="Sair">
+    </form>
+</div>
+{{end}}
