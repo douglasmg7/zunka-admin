@@ -69,11 +69,9 @@ func initRouter() *httprouter.Router {
 	// Products list page.
 	router.GET("/ns/handytech/products", checkPermission(handytechProductsHandler, "read"))
 	// Product page.
-	router.GET("/ns/handytech/product/:code", checkPermission(handytechProductHandler, "read"))
+	router.GET("/ns/handytech/product/:it_codigo", checkPermission(handytechProductHandler, "read"))
 	// Create product on zunka server.
-	router.POST("/ns/handytech/product/:code", checkPermission(handytechProductHandlerPost, "write"))
-	// Check product change.
-	router.POST("/ns/handytech/product/:code/checked", checkPermission(handytechProductCheckedHandlerPost, "write"))
+	router.POST("/ns/handytech/product/:it_codigo", checkPermission(handytechProductHandlerPost, "write"))
 	// Product removed from site, so remove his reference from zunkasrv.
 	router.DELETE("/ns/handytech/product/zunka_product_id/:code", checkApiAuthorization(handytechProductZunkaProductIdHandlerDelete))
 	// Filter page.

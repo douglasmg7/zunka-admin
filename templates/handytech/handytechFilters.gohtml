@@ -32,16 +32,6 @@
     <form method='post'>
         <h3>Filtros Allnations</h3>
 
-        <!-- Only active -->
-        <input type='checkbox' name='onlyActive' id='onlyActive' {{if .Filters.OnlyActive}}checked{{end}} />
-        <label for='onlyActive'> Apenas produtos ativos </label>
-        <br>
-
-        <!-- Only availability -->
-        <input type='checkbox' name='onlyAvailability' id='onlyAvailability' {{if .Filters.OnlyAvailability}}checked{{end}} />
-        <label for='onlyAvailability'> Apenas produtos disponíveis </label>
-        <br>
-
         <!-- Min price -->
         <div>
             {{if .Validation.MinPrice}} 

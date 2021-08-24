@@ -7,13 +7,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"log"
-	"math"
+
+	// "math"
 	"net/http"
 	"strconv"
-	"strings"
+
+	// "strings"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -45,16 +46,6 @@ func handytechFiltersHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 	// body, err := ioutil.ReadAll(req.Body)
 	// HandleError(w, err)
 	// log.Printf("receive body: %v", string(body))
-
-	if req.PostFormValue("onlyActive") != "" {
-		filters.OnlyActive = true
-		log.Printf("onlyActive: true")
-	}
-
-	if req.PostFormValue("onlyAvailability") != "" {
-		filters.OnlyAvailability = true
-		log.Printf("onlyAvailability: true")
-	}
 
 	// Validate min price.
 	filters.MinPrice = req.PostFormValue("minPrice")
@@ -88,8 +79,6 @@ func handytechFiltersHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 		HandleError(w, err)
 	} else {
 		// Save filters and go to products page.
-		handytechFilters.OnlyActive = filters.OnlyActive
-		handytechFilters.OnlyAvailability = filters.OnlyAvailability
 		handytechFilters.MinPrice = filters.MinPrice
 		handytechFilters.MaxPrice = filters.MaxPrice
 		err = handytechFilters.Save()
@@ -118,7 +107,7 @@ func handytechProductsHandler(w http.ResponseWriter, req *http.Request, _ httpro
 	// log.Println(fmt.Sprintf(
 	// "SELECT * FROM product WHERE category IN (%s) AND %s ORDER BY description", handytechSelectedCategories.SqlCategories, handytechFilters.SqlFilter))
 	err = dbHandytech.Select(&data.Products, fmt.Sprintf(
-		"SELECT * FROM product WHERE category IN (%s) AND maker IN (%s) AND %s ORDER BY description",
+		"SELECT * FROM product WHERE categoria IN (%s) AND fabricante IN (%s) AND %s ORDER BY desc_item",
 		handytechSelectedCategories.SqlCategories, handytechSelectedMakers.SqlMakers, handytechFilters.SqlFilter))
 	HandleError(w, err)
 
@@ -132,62 +121,32 @@ func handytechProductHandler(w http.ResponseWriter, req *http.Request, ps httpro
 		Session                 *SessionData
 		HeadMessage             string
 		Product                 *HandytechProduct
-		TechnicalDescription    template.HTML
-		ProductOld              *HandytechProduct
-		TechnicalDescriptionOld template.HTML
-		RMAProcedureOld         template.HTML
 		Status                  string
 		ShowButtonCreateProduct bool
 		SimiliarZunkaProducts   []ZunkaSiteProductRx
 		SameEANZunkaProducts    []ZunkaSiteProductRx
-	}{session, "", &HandytechProduct{}, "", &HandytechProduct{}, "", "", "", false, []ZunkaSiteProductRx{}, []ZunkaSiteProductRx{}}
+	}{session, "", &HandytechProduct{}, "", false, []ZunkaSiteProductRx{}, []ZunkaSiteProductRx{}}
 
 	// Get product.
-	err = dbHandytech.Get(data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
+	err = dbHandytech.Get(data.Product, "SELECT * FROM product WHERE it_codigo=?", ps.ByName("it_codigo"))
 	HandleError(w, err)
-
-	// Not escaped.
-	data.TechnicalDescription = template.HTML(data.Product.TechnicalDescription)
-
-	// Get product history.
-	productsTemp := []HandytechProduct{}
-	err = dbHandytech.Select(&productsTemp, "SELECT * FROM product_history WHERE code=? AND changed_at < ? ORDER BY changed_at DESC LIMIT 1", ps.ByName("code"), data.Product.CheckedAt)
-	HandleError(w, err)
-	// If some history before checked_at.
-	if len(productsTemp) > 0 {
-		data.ProductOld = &productsTemp[0]
-		fmt.Printf("Prodcut history: %s, Price: %v, ChangedAt: %v\n", productsTemp[0].Code, productsTemp[0].PriceSale, productsTemp[0].ChangedAt)
-	} else {
-		// Find the fist history.
-		err = dbHandytech.Select(&productsTemp, "SELECT * FROM product_history WHERE code=? ORDER BY changed_at LIMIT 1", ps.ByName("code"))
-		HandleError(w, err)
-		if len(productsTemp) > 0 {
-			data.ProductOld = &productsTemp[0]
-			fmt.Println("first history")
-			fmt.Printf("Prodcut history: %s, Price: %v, ChangedAt: %v\n", productsTemp[0].Code, productsTemp[0].PriceSale, productsTemp[0].ChangedAt)
-		} else {
-			// No history, poduct not changed.
-			data.ProductOld = data.Product
-			fmt.Println("No history")
-		}
-	}
-
-	data.TechnicalDescriptionOld = template.HTML(data.ProductOld.TechnicalDescription)
 
 	// Status.
-	data.Status = data.Product.Status(time.Now().Add(-VALID_DATE))
+	data.Status = data.Product.Status()
 	// Show option to create product on zunkasite.
-	if data.Product.ZunkaProductId == "" && (data.Status == "new" || data.Status == "changed" || data.Status == "") {
+	if !data.Product.ZunkaProductId.Valid || data.Product.ZunkaProductId.String == "" {
 		data.ShowButtonCreateProduct = true
 
 		// Similar titles.
 		chanProductsSimilarTitles := make(chan []ZunkaSiteProductRx)
-		go getProductsSimilarTitles(chanProductsSimilarTitles, data.Product.Description)
+		go getProductsSimilarTitles(chanProductsSimilarTitles, data.Product.DescItem.String)
 
 		// Same EAN.
-		if len(data.Product.Ean) > 0 {
+		// todo - search product data for ean.
+		ean := ""
+		if len(ean) > 0 {
 			chanProductsSameEAN := make(chan []ZunkaSiteProductRx)
-			go getProductsSameEAN(chanProductsSameEAN, data.Product.Ean)
+			go getProductsSameEAN(chanProductsSameEAN, ean)
 			data.SimiliarZunkaProducts, data.SameEANZunkaProducts = <-chanProductsSimilarTitles, <-chanProductsSameEAN
 		} else {
 			data.SimiliarZunkaProducts = <-chanProductsSimilarTitles
@@ -208,7 +167,7 @@ func handytechProductHandlerPost(w http.ResponseWriter, req *http.Request, ps ht
 	// Get product.
 	product := HandytechProduct{}
 	// Get product.
-	err = dbHandytech.Get(&product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
+	err = dbHandytech.Get(&product, "SELECT * FROM product WHERE id_codigo=?", ps.ByName("it_codigo"))
 	HandleError(w, err)
 
 	// Set store product.
@@ -217,46 +176,46 @@ func handytechProductHandlerPost(w http.ResponseWriter, req *http.Request, ps ht
 
 	storeProduct.ProductIdTemplate = req.FormValue("similar-product")
 	storeProduct.DealerName = "Handytech"
-	storeProduct.DealerProductId = product.Code
+	// storeProduct.DealerProductId = product.Code
 
-	// Title.
-	// storeProduct.DealerProductTitle = strings.Title(strings.ToLower(product.Description))
-	storeProduct.DealerProductTitle = product.Description
-	// Category.
-	storeProduct.DealerProductCategory = strings.Title(strings.ToLower(product.Category))
-	// Maker.
-	storeProduct.DealerProductMaker = strings.Title(strings.ToLower(product.Maker))
-	// Description.
-	storeProduct.DealerProductDesc = strings.TrimSpace(product.TechnicalDescription)
-	// log.Println("product.TechnicalDescription:", product.TechnicalDescription)
-	// log.Println("storeProduct.DealerProductDesc:", storeProduct.DealerProductDesc)
-	// Image.
-	storeProduct.DealerProductImagesLink = product.UrlImage
+	// // Title.
+	// // storeProduct.DealerProductTitle = strings.Title(strings.ToLower(product.Description))
+	// storeProduct.DealerProductTitle = product.Description
+	// // Category.
+	// storeProduct.DealerProductCategory = strings.Title(strings.ToLower(product.Category))
+	// // Maker.
+	// storeProduct.DealerProductMaker = strings.Title(strings.ToLower(product.Maker))
+	// // Description.
+	// storeProduct.DealerProductDesc = strings.TrimSpace(product.TechnicalDescription)
+	// // log.Println("product.TechnicalDescription:", product.TechnicalDescription)
+	// // log.Println("storeProduct.DealerProductDesc:", storeProduct.DealerProductDesc)
+	// // Image.
+	// storeProduct.DealerProductImagesLink = product.UrlImage
 
-	// Months in days.
-	storeProduct.DealerProductWarrantyDays = product.WarrantyMonth * 30
-	// Length in cm.
-	storeProduct.DealerProductDeep = int(math.Ceil(float64(product.LengthMm) / 10))
-	// Width in cm.
-	storeProduct.DealerProductWidth = int(math.Ceil(float64(product.WidthMm) / 10))
-	// Height in cm.
-	storeProduct.DealerProductHeight = int(math.Ceil(float64(product.HeightMm) / 10))
-	// Weight in grams.
-	storeProduct.DealerProductWeight = product.WeightG
-	// Price.
-	storeProduct.DealerProductPrice = int(product.PriceSale)
-	// Suggestion price.
-	storeProduct.DealerProductFinalPriceSuggestion = int(product.PriceSale + product.PriceSale/3)
-	// Last update.
-	storeProduct.DealerProductLastUpdate = product.ChangedAt
-	// Active.
-	storeProduct.DealerProductActive = product.Availability && product.Active
-	// Origin.
-	storeProduct.DealerProductLocation = product.StockOrigin
-	// Stock.
-	storeProduct.StoreProductQtd = product.StockQty
-	// Ean.
-	storeProduct.Ean = product.Ean
+	// // Months in days.
+	// storeProduct.DealerProductWarrantyDays = product.WarrantyMonth * 30
+	// // Length in cm.
+	// storeProduct.DealerProductDeep = int(math.Ceil(float64(product.LengthMm) / 10))
+	// // Width in cm.
+	// storeProduct.DealerProductWidth = int(math.Ceil(float64(product.WidthMm) / 10))
+	// // Height in cm.
+	// storeProduct.DealerProductHeight = int(math.Ceil(float64(product.HeightMm) / 10))
+	// // Weight in grams.
+	// storeProduct.DealerProductWeight = product.WeightG
+	// // Price.
+	// storeProduct.DealerProductPrice = int(product.PriceSale)
+	// // Suggestion price.
+	// storeProduct.DealerProductFinalPriceSuggestion = int(product.PriceSale + product.PriceSale/3)
+	// // Last update.
+	// storeProduct.DealerProductLastUpdate = product.ChangedAt
+	// // Active.
+	// storeProduct.DealerProductActive = product.Availability && product.Active
+	// // Origin.
+	// storeProduct.DealerProductLocation = product.StockOrigin
+	// // Stock.
+	// storeProduct.StoreProductQtd = product.StockQty
+	// // Ean.
+	// storeProduct.Ean = product.Ean
 
 	// Convert to json.
 	reqBody, err := json.Marshal(storeProduct)
@@ -287,15 +246,15 @@ func handytechProductHandlerPost(w http.ResponseWriter, req *http.Request, ps ht
 		return
 	}
 	// Mongodb id from created product.
-	product.ZunkaProductId = string(resBody)
+	product.ZunkaProductId.String = string(resBody)
 	// Remove suround double quotes.
-	product.ZunkaProductId = product.ZunkaProductId[1 : len(product.ZunkaProductId)-1]
+	product.ZunkaProductId.String = product.ZunkaProductId.String[1 : len(product.ZunkaProductId.String)-1]
 
 	// Update product with _id from mongodb store and set checked_at.
 	stmt, err := dbHandytech.Prepare(`UPDATE product SET zunka_product_id = $1, checked_at=$2 WHERE code = $3;`)
 	HandleError(w, err)
 	defer stmt.Close()
-	_, err = stmt.Exec(product.ZunkaProductId, time.Now(), product.Code)
+	_, err = stmt.Exec(product.ZunkaProductId, time.Now(), product.ItCodigo)
 	HandleError(w, err)
 
 	// Render product page.
@@ -344,8 +303,9 @@ func handytechCategoriesHandler(w http.ResponseWriter, req *http.Request, _ http
 		Categories  []HandytechCategory
 	}{session, "", []HandytechCategory{}}
 
-	sql := fmt.Sprintf("SELECT category as name, count(category) as products_qty, false as selected FROM product "+
-		"WHERE  %s GROUP BY category ORDER BY name", handytechFilters.SqlFilter)
+	sql := fmt.Sprintf("SELECT categoria name, count(categoria) as products_qty, false as selected FROM product "+
+		"WHERE  %s GROUP BY categoria ORDER BY name", handytechFilters.SqlFilter)
+	// log.Printf("sql: %v", sql)
 	err = dbHandytech.Select(&data.Categories, sql)
 	HandleError(w, err)
 
@@ -360,6 +320,7 @@ func handytechCategoriesHandler(w http.ResponseWriter, req *http.Request, _ http
 		}
 	}
 
+	// log.Printf("data: %v", len(data.Categories))
 	// Render page.
 	err = tmplHandytechCategories.ExecuteTemplate(w, "handytechCategories.gohtml", data)
 	HandleError(w, err)
@@ -390,8 +351,8 @@ func handytechMakersHandler(w http.ResponseWriter, req *http.Request, _ httprout
 		Makers      []HandytechMaker
 	}{session, "", []HandytechMaker{}}
 
-	sql := fmt.Sprintf("SELECT maker as name, count(maker) as products_qty, false as selected FROM product "+
-		"WHERE  %s GROUP BY maker ORDER BY name", handytechFilters.SqlFilter)
+	sql := fmt.Sprintf("SELECT fabricante as name, count(fabricante) as products_qty, false as selected FROM product "+
+		"WHERE  %s GROUP BY fabricante ORDER BY name", handytechFilters.SqlFilter)
 	err = dbHandytech.Select(&data.Makers, sql)
 	HandleError(w, err)
 

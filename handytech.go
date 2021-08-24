@@ -1,173 +1,75 @@
 package main
 
 import (
-	// "database/sql"
+	"database/sql"
 	"fmt"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 	"log"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/douglasmg7/currency"
+	// "github.com/douglasmg7/currency"
 )
-
-// var db *sql.DB
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PRODUCT
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Aldo product.
 type HandytechProduct struct {
-	ZunkaProductId       string            `db:"zunka_product_id"`
-	Code                 string            `db:"code"` // From dealer.
-	Description          string            `db:"description"`
-	Timestamp            string            `db:"timestamp"`
-	Department           string            `db:"department"`
-	Category             string            `db:"category"`
-	SubCategory          string            `db:"sub_category"`
-	Maker                string            `db:"maker"`
-	TechnicalDescription string            `db:"technical_description"`
-	UrlImage             string            `db:"url_image"`
-	PartNumber           string            `db:"part_number"`
-	Ean                  string            `db:"ean"`
-	Ncm                  string            `db:"ncm"`
-	PriceSale            currency.Currency `db:"price_sale"`
-	PriceWithoutSt       currency.Currency `db:"price_without_st"`
-	IcmsStTaxation       bool              `db:"icms_st_taxation"`
-	WarrantyMonth        int               `db:"warranty_month"`
-	LengthMm             int               `db:"length_mm"`
-	WidthMm              int               `db:"width_mm"`
-	HeightMm             int               `db:"height_mm"`
-	WeightG              int               `db:"weight_g"`
-	Active               bool              `db:"active"`
-	Availability         bool              `db:"availability"` // Months.
-	Origin               string            `db:"origin"`
-	StockOrigin          string            `db:"stock_origin"`
-	StockQty             int               `db:"stock_qty"`
-	CreatedAt            time.Time         `db:"created_at"`
-	ChangedAt            time.Time         `db:"changed_at"`
-	CheckedAt            time.Time         `db:"checked_at"`
-	RemovedAt            time.Time         `db:"removed_at"`
+	ZunkaProductId         sql.NullString `db:"zunka_product_id"`
+	ItCodigo               sql.NullString `db:"it_codigo"` // From dealer.
+	DescItem               sql.NullString `db:"desc_item"`
+	DescItemEc             sql.NullString `db:"desc_item_ec"`
+	NarrativaEc            sql.NullString `db:"narrativa_ec"`
+	VlItem                 sql.NullInt64  `db:"vl_item"`
+	VlItemSdesc            sql.NullInt64  `db:"vl_item_sdesc"`
+	VlIpi                  sql.NullInt64  `db:"vl_ipi"`
+	PercPrecoSugeridoSolar sql.NullInt64  `db:"perc_preco_sugerido_solar"`
+	PrecoSugerido          sql.NullInt64  `db:"preco_sugerido"`
+	PrecoMaximo            sql.NullInt64  `db:"preco_maximo"`
+	Categoria              sql.NullString `db:"categoria"`
+	SubCategoria           sql.NullString `db:"sub_categoria"`
+	Peso                   sql.NullInt64  `db:"peso"`
+	CodigoRefer            sql.NullString `db:"codigo_refer"`
+	Fabricante             sql.NullString `db:"fabricante"`
+	Saldos                 sql.NullString `db:"saldos"`
+	ArquivoImagem          sql.NullString `db:"arquivo_imagem"`
+	CreatedAt              time.Time      `db:"created_at"`
+	// ChangedAt              time.Time      `db:"changed_at"`
 }
 
 // Define product status.
-func (p *HandytechProduct) Status(validDate time.Time) string {
-	if !p.RemovedAt.IsZero() {
-		return "removed"
+func (p *HandytechProduct) Status() string {
+	if p.ZunkaProductId.String == "" {
+		return "no-registered"
 	}
-	if !p.Availability {
-		return "unavailable"
-	}
-	// Status have a valid time for not created products at zunkasite.
-	if p.ZunkaProductId == "" && p.ChangedAt.Before(validDate) {
-		return ""
-	}
-	// For created products at zunkasite, only clean status by user.
-	if !p.CheckedAt.IsZero() && p.CheckedAt.After(p.ChangedAt) {
-		return ""
-	}
-	// New.
-	if p.ChangedAt.Equal(p.CreatedAt) {
-		return "new"
+	return "registered"
+}
+
+// Convert to real.
+func (p *HandytechProduct) ConvertToReal(val sql.NullInt64) string {
+	if val.Valid {
+		printer := message.NewPrinter(language.Portuguese)
+		return printer.Sprintf("R$ %.2f", float64(val.Int64)/100)
 	} else {
-		return "changed"
+		return "NULL"
 	}
 }
 
-// Diff check if products are different.
-func (p *HandytechProduct) Diff(pn *HandytechProduct) bool {
-	if p.ZunkaProductId != pn.ZunkaProductId {
-		return true
-	}
-	if p.Code != pn.Code {
-		return true
-	}
-	if p.Description != pn.Description {
-		return true
-	}
-	if p.Timestamp != pn.Timestamp {
-		return true
-	}
-	if p.Department != pn.Department {
-		return true
-	}
-	if p.Category != pn.Category {
-		return true
-	}
-	if p.SubCategory != pn.SubCategory {
-		return true
-	}
-	if p.Maker != pn.Maker {
-		return true
-	}
-	if p.TechnicalDescription != pn.TechnicalDescription {
-		return true
-	}
-	if p.UrlImage != pn.UrlImage {
-		return true
-	}
-	if p.PartNumber != pn.PartNumber {
-		return true
-	}
-	if p.Ean != pn.Ean {
-		return true
-	}
-	if p.Ncm != pn.Ncm {
-		return true
-	}
-	if p.PriceSale != pn.PriceSale {
-		return true
-	}
-	if p.PriceWithoutSt != pn.PriceWithoutSt {
-		return true
-	}
-	if p.IcmsStTaxation != pn.IcmsStTaxation {
-		return true
-	}
-	if p.WarrantyMonth != pn.WarrantyMonth {
-		return true
-	}
-	if p.LengthMm != pn.LengthMm {
-		return true
-	}
-	if p.WidthMm != pn.WidthMm {
-		return true
-	}
-	if p.HeightMm != pn.HeightMm {
-		return true
-	}
-	if p.WeightG != pn.WeightG {
-		return true
-	}
-	if p.Active != pn.Active {
-		return true
-	}
-	if p.Availability != pn.Availability {
-		return true
-	}
-	if p.Origin != pn.Origin {
-		return true
-	}
-	if p.StockOrigin != pn.StockOrigin {
-		return true
-	}
-	if p.StockQty != pn.StockQty {
-		return true
-	}
-	if p.CreatedAt != pn.CreatedAt {
-		return true
-	}
-	if p.ChangedAt != pn.ChangedAt {
-		return true
-	}
-	if p.CheckedAt != pn.CheckedAt {
-		return true
-	}
-	if p.RemovedAt != pn.RemovedAt {
-		return true
-	}
-	return false
-}
+// // Convert to real.
+// func (p *HandytechProduct) ConvertToReal(val sql.NullInt64) string {
+// if val.Valid {
+// f := float64(val.Int64) / 100
+// // usFormat := fmt.Sprintf("%.2f", f)
+// sl := strings.Split(fmt.Sprintf("%.2f", f), ",")
+// sl[:
+
+// return fmt.Sprintf("R$ %.2f", f)
+// } else {
+// return "NULL"
+// }
+// }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // CATEGORY
@@ -191,12 +93,10 @@ type HandytechMaker struct {
 // FILTERS
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 type HandytechFilters struct {
-	OnlyActive       bool
-	OnlyAvailability bool
-	MinPrice         string
-	MaxPrice         string
-	PathData         string
-	SqlFilter        string
+	MinPrice  string
+	MaxPrice  string
+	PathData  string
+	SqlFilter string
 }
 
 // Load handytech filters.
@@ -224,26 +124,18 @@ func (f *HandytechFilters) Save() error {
 func (f *HandytechFilters) UpdateSqlFilter() {
 	// Filters.
 	filtersArray := []string{}
-	// Only active.
-	if f.OnlyActive {
-		filtersArray = append(filtersArray, " active = true ")
-	}
-	// Only availability.
-	if f.OnlyAvailability {
-		filtersArray = append(filtersArray, " availability = true ")
-	}
 	// Min price.
 	minPrice, err := strconv.ParseUint(f.MinPrice, 10, 64)
 	if err != nil {
 		log.Panicf("[error] Updatindg sql filter: %s", err)
 	}
-	filtersArray = append(filtersArray, fmt.Sprintf(" price_sale >= %v ", minPrice))
+	filtersArray = append(filtersArray, fmt.Sprintf(" vl_item >= %v ", minPrice))
 	// Max price.
 	maxPrice, err := strconv.ParseUint(f.MaxPrice, 10, 64)
 	if err != nil {
 		log.Panicf("[error] Updatindg sql filter: %s", err)
 	}
-	filtersArray = append(filtersArray, fmt.Sprintf(" price_sale <= %v ", maxPrice))
+	filtersArray = append(filtersArray, fmt.Sprintf(" vl_item <= %v ", maxPrice))
 
 	f.SqlFilter = strings.Join(filtersArray, " AND ")
 }

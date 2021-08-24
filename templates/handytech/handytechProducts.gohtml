@@ -16,25 +16,13 @@
 		cursor: pointer;
         margin: .8em 0;
 	}
-    p.hasZunkaProductId, div.legend span.hasZunkaProductId {
+    p.registered, div.legend span.registered {
         padding: .3em;
         background-color: var(--green-lighter);
     }
-    p.product.new, div.legend span.new {
+    p.no-registered, div.legend span.no-registered {
         padding: 0 .3em;
         border: 5px solid var(--green-lighter);
-    }
-    p.product.changed, div.legend span.changed {
-        padding: 0 .3em;
-        border: 5px solid var(--yellow);
-    }
-    p.product.unavailable, div.legend span.unavailable {
-        padding: 0 .3em;
-        border: 5px solid var(--orange);
-    }
-    p.product.removed, div.legend span.removed {
-        padding: 0 .3em;
-        border: 5px solid var(--red);
     }
 </style>
 {{end}}
@@ -43,17 +31,14 @@
 
 {{define "content"}}
 <div class="content">
-    <h3>Produtos Allnations</h3>
+    <h3>Produtos Handytech</h3>
     <!-- Legend -->
     <div class='legend'>
-        <span class='hasZunkaProductId'>CADASTRADO</span>
-        <span class='new'>NOVO</span>
-        <span class='changed'>ALTERADO</span>
-        <span class='unavailable'>INDISPONÍVEL</span>
-        <span class='removed'>REMOVIDO</span>
+        <span class='no-registered'>NÃ0 CADASTRADO</span>
+        <span class='registered'>CADASTRADO</span>
     </div>
     {{range .Products}}
-        <p class='product {{if .ZunkaProductId}}hasZunkaProductId{{end}} {{.Status $.ValidDate}}' onclick="location.href='/ns/allnations/product/{{.Code}}'"> {{.Description}} </p>
+        <p class='product {{.Status}}' onclick="location.href='/ns/handytech/product/{{.ItCodigo.String}}'"> {{.DescItem.String}} </p>
     {{end}}
 </div>
 {{end}}
