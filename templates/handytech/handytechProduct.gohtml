@@ -67,14 +67,13 @@
     <h2> Produto Handytech </h2>
 
 	<h3>it_codigo</h3>
-	<p>{{.Product.ItCodigo.String}}</p>
+	<p>{{.Product.ProcessString .Product.ItCodigo}}</p>
     
 	<h3>desc_item</h3>
-	<p>{{.Product.DescItem.String}}</p>
+	<p>{{.Product.ProcessString .Product.DescItem}}</p>
 
 	<h3>desc_item_ec</h3>
-	<p>{{.Product.DescItemEc.String}}</p>
-
+	<p>{{.Product.ProcessString .Product.DescItemEc}}</p>
 
 	{{if .ShowButtonCreateProduct}}
         <form action="" method="post">
@@ -103,7 +102,7 @@
             {{end}}
             <input type="radio" id="new" name="similar-product" value="" checked=true>
             <label for="new">Novo produto</label>
-            <input class="btn create-product" type="submit" value='Criar produto'>
+            <input class="btn create-product" type="submit" value='Criar produto' disabled>
         </form>
     {{end}}
     {{if ne .Product.ZunkaProductId.String ""}}
@@ -112,46 +111,52 @@
 	{{end}}
 
 	<h3>narrativa_ec</h3>
-	<p>{{.Product.NarrativaEc.String}}</p>
+	<p>{{.Product.ProcessString .Product.NarrativaEc}}</p>
 
 	<h3>vl_item</h3>
-	<p>{{.Product.ConvertToReal .Product.VlItem}}</p>
+	<p>{{.Product.ProcessBrCurrency .Product.VlItem}}</p>
 
 	<h3>vl_item_sdesc</h3>
-	<p>{{.Product.ConvertToReal .Product.VlItemSdesc}}</p>
+	<p>{{.Product.ProcessBrCurrency .Product.VlItemSdesc}}</p>
 
 	<h3>vl_ipi</h3>
-	<p>{{.Product.ConvertToReal .Product.VlIpi}}</p>
+	<p>{{.Product.ProcessBrCurrency .Product.VlIpi}}</p>
 
 	<h3>perc_preco_sugerido_solar</h3>
-	<p>{{.Product.ConvertToReal .Product.PercPrecoSugeridoSolar}}</p>
+	<p>{{.Product.ProcessBrCurrency .Product.PercPrecoSugeridoSolar}}</p>
 
 	<h3>preco_sugerido</h3>
-	<p>{{.Product.ConvertToReal .Product.PrecoSugerido}}</p>
+	<p>{{.Product.ProcessBrCurrency .Product.PrecoSugerido}}</p>
 
 	<h3>preco_maximo</h3>
-	<p>{{.Product.ConvertToReal .Product.PrecoMaximo}}</p>
+	<p>{{.Product.ProcessBrCurrency .Product.PrecoMaximo}}</p>
 
 	<h3>categoria</h3>
-	<p>{{.Product.Categoria.String}}</p>
+	<p>{{.Product.ProcessString .Product.Categoria}}</p>
 
 	<h3>sub_categoria</h3>
-	<p>{{.Product.SubCategoria.String}}</p>
+	<p>{{.Product.ProcessString .Product.SubCategoria}}</p>
 
 	<h3>peso</h3>
-	<p>{{.Product.Peso.Int64}}</p>
+	<p>{{.Product.ProcessWight .Product.Peso}}</p>
 
 	<h3>codigo_refer</h3>
-	<p>{{.Product.CodigoRefer.String}}</p>
+	<p>{{.Product.ProcessString .Product.CodigoRefer}}</p>
 
 	<h3>fabricante</h3>
-	<p>{{.Product.Fabricante.String}}</p>
+	<p>{{.Product.ProcessString .Product.Fabricante}}</p>
 
 	<h3>saldos</h3>
-	<p>{{.Product.Saldos.String}}</p>
+	<p>{{.Product.ProcessBrCurrency .Product.Saldos}}</p>
 
 	<h3>arquivo_image</h3>
-	<p>{{.Product.ArquivoImagem.String}}</p>
+    {{if .Product.HasUrlImage }}
+        {{range .Product.ImagesUrl}}
+            <img src='{{.}}'>
+        {{end}}
+    {{else}}
+        <p> NULL </p>
+    {{end}}
 
 	<h3>created_at</h3>
 	<p>{{.Product.CreatedAt}}</p>

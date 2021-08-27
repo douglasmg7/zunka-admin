@@ -133,6 +133,9 @@ func handytechProductHandler(w http.ResponseWriter, req *http.Request, ps httpro
 
 	// Status.
 	data.Status = data.Product.Status()
+	// Process images.
+	data.Product.ProcessArquivoImagem()
+
 	// Show option to create product on zunkasite.
 	if !data.Product.ZunkaProductId.Valid || data.Product.ZunkaProductId.String == "" {
 		data.ShowButtonCreateProduct = true

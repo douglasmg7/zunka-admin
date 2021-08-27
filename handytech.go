@@ -33,10 +33,23 @@ type HandytechProduct struct {
 	Peso                   sql.NullInt64  `db:"peso"`
 	CodigoRefer            sql.NullString `db:"codigo_refer"`
 	Fabricante             sql.NullString `db:"fabricante"`
-	Saldos                 sql.NullString `db:"saldos"`
+	Saldos                 sql.NullInt64  `db:"saldos"`
 	ArquivoImagem          sql.NullString `db:"arquivo_imagem"`
-	CreatedAt              time.Time      `db:"created_at"`
+	ImagesUrl              []string
+	CreatedAt              time.Time `db:"created_at"`
 	// ChangedAt              time.Time      `db:"changed_at"`
+}
+
+// Process Br Currency.
+func (p *HandytechProduct) ProcessArquivoImagem() {
+	if p.ArquivoImagem.Valid {
+		p.ImagesUrl = strings.Split(p.ArquivoImagem.String, "\uffff")
+		log.Println("Start imges")
+		for _, s := range p.ImagesUrl {
+			log.Println(s)
+		}
+		log.Println("End imges")
+	}
 }
 
 // Define product status.
@@ -47,8 +60,8 @@ func (p *HandytechProduct) Status() string {
 	return "registered"
 }
 
-// Convert to real.
-func (p *HandytechProduct) ConvertToReal(val sql.NullInt64) string {
+// Process Br Currency.
+func (p *HandytechProduct) ProcessBrCurrency(val sql.NullInt64) string {
 	if val.Valid {
 		printer := message.NewPrinter(language.Portuguese)
 		return printer.Sprintf("R$ %.2f", float64(val.Int64)/100)
@@ -57,19 +70,37 @@ func (p *HandytechProduct) ConvertToReal(val sql.NullInt64) string {
 	}
 }
 
-// // Convert to real.
-// func (p *HandytechProduct) ConvertToReal(val sql.NullInt64) string {
-// if val.Valid {
-// f := float64(val.Int64) / 100
-// // usFormat := fmt.Sprintf("%.2f", f)
-// sl := strings.Split(fmt.Sprintf("%.2f", f), ",")
-// sl[:
+// Process Br Currency.
+func (p *HandytechProduct) ProcessWight(val sql.NullInt64) string {
+	if val.Valid {
+		printer := message.NewPrinter(language.Portuguese)
+		return printer.Sprintf("%.3f kg", float64(val.Int64)/1000)
+	} else {
+		return "NULL"
+	}
+}
 
-// return fmt.Sprintf("R$ %.2f", f)
-// } else {
-// return "NULL"
-// }
-// }
+// Process string, show NULL.
+func (p *HandytechProduct) ProcessString(val sql.NullString) string {
+	if val.Valid {
+		return val.String
+	} else {
+		return "NULL"
+	}
+}
+
+// Check if some valid url image.
+func (p *HandytechProduct) HasUrlImage() bool {
+	if p.ArquivoImagem.Valid {
+		if len(p.ArquivoImagem.String) > 0 {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return false
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // CATEGORY
