@@ -111,6 +111,8 @@ func handytechProductsHandler(w http.ResponseWriter, req *http.Request, _ httpro
 		handytechSelectedCategories.SqlCategories, handytechSelectedMakers.SqlMakers, handytechFilters.SqlFilter))
 	HandleError(w, err)
 
+	log.Println("Products count:", len(data.Products))
+
 	err = tmplHandytechProducts.ExecuteTemplate(w, "handytechProducts.gohtml", data)
 	HandleError(w, err)
 }

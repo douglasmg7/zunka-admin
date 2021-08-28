@@ -44,11 +44,9 @@ type HandytechProduct struct {
 func (p *HandytechProduct) ProcessArquivoImagem() {
 	if p.ArquivoImagem.Valid {
 		p.ImagesUrl = strings.Split(p.ArquivoImagem.String, "\uffff")
-		log.Println("Start imges")
 		for _, s := range p.ImagesUrl {
 			log.Println(s)
 		}
-		log.Println("End imges")
 	}
 }
 
