@@ -22,12 +22,12 @@
 </style>
 {{end}}
 
-{{define "title"}}Fabricantes Allnations{{end}}
+{{define "title"}}Fabricantes Handytech{{end}}
 
 {{define "content"}}
 <div class="content">
     <form method='post'>
-        <h3>Fabricantes Allnations</h3>
+        <h3>Fabricantes Handytech</h3>
         {{range .Makers}}
             <input type='checkbox' name='{{.Name}}' id='{{.Name}}' {{if .Selected}}checked{{end}} />
             <label for='{{.Name}}'> {{.Name}} - {{.ProductsQty}} </label>

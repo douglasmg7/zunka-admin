@@ -27,7 +27,7 @@
 </style>
 {{end}}
 
-{{define "title"}} Produtos Allnations {{end}}
+{{define "title"}} Produtos Handytech {{end}}
 
 {{define "content"}}
 <div class="content">
@@ -37,7 +37,7 @@
         <span class='no-registered'>NÃ0 CADASTRADO</span>
         <span class='registered'>CADASTRADO</span>
     </div>
-    {{range .Products}}
+    {{range $i, $e := .Products}}
         <p class='product {{.Status}}' onclick="location.href='/ns/handytech/product/{{.ItCodigo.String}}'"> {{.DescItem.String}} </p>
     {{end}}
 </div>

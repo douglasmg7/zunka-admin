@@ -106,9 +106,18 @@ func handytechProductsHandler(w http.ResponseWriter, req *http.Request, _ httpro
 	// Get products.
 	// log.Println(fmt.Sprintf(
 	// "SELECT * FROM product WHERE category IN (%s) AND %s ORDER BY description", handytechSelectedCategories.SqlCategories, handytechFilters.SqlFilter))
+
+	// With sql filter.
+	// err = dbHandytech.Select(&data.Products, fmt.Sprintf(
+	// "SELECT * FROM product WHERE categoria IN (%s) AND fabricante IN (%s) AND %s ORDER BY desc_item",
+	// handytechSelectedCategories.SqlCategories, handytechSelectedMakers.SqlMakers, handytechFilters.SqlFilter))
+
 	err = dbHandytech.Select(&data.Products, fmt.Sprintf(
-		"SELECT * FROM product WHERE categoria IN (%s) AND fabricante IN (%s) AND %s ORDER BY desc_item",
-		handytechSelectedCategories.SqlCategories, handytechSelectedMakers.SqlMakers, handytechFilters.SqlFilter))
+		"SELECT * FROM product WHERE categoria IN (%s) AND fabricante IN (%s) ORDER BY desc_item",
+		handytechSelectedCategories.SqlCategories, handytechSelectedMakers.SqlMakers))
+
+	// err = dbHandytech.Select(&data.Products, fmt.Sprintf("SELECT * FROM product ORDER BY desc_item"))
+
 	HandleError(w, err)
 
 	log.Println("Products count:", len(data.Products))
@@ -308,8 +317,10 @@ func handytechCategoriesHandler(w http.ResponseWriter, req *http.Request, _ http
 		Categories  []HandytechCategory
 	}{session, "", []HandytechCategory{}}
 
-	sql := fmt.Sprintf("SELECT categoria name, count(categoria) as products_qty, false as selected FROM product "+
-		"WHERE  %s GROUP BY categoria ORDER BY name", handytechFilters.SqlFilter)
+	// sql := fmt.Sprintf("SELECT categoria as name, count(categoria) as products_qty, false as selected FROM product "+
+	// "WHERE  %s GROUP BY categoria ORDER BY name", handytechFilters.SqlFilter)
+	sql := fmt.Sprintf("SELECT categoria as name, count(categoria) as products_qty, false as selected FROM product " +
+		"GROUP BY categoria ORDER BY name")
 	// log.Printf("sql: %v", sql)
 	err = dbHandytech.Select(&data.Categories, sql)
 	HandleError(w, err)
@@ -356,8 +367,11 @@ func handytechMakersHandler(w http.ResponseWriter, req *http.Request, _ httprout
 		Makers      []HandytechMaker
 	}{session, "", []HandytechMaker{}}
 
-	sql := fmt.Sprintf("SELECT fabricante as name, count(fabricante) as products_qty, false as selected FROM product "+
-		"WHERE  %s GROUP BY fabricante ORDER BY name", handytechFilters.SqlFilter)
+	// sql := fmt.Sprintf("SELECT fabricante as name, count(fabricante) as products_qty, false as selected FROM product "+
+	// "WHERE  %s GROUP BY fabricante ORDER BY name", handytechFilters.SqlFilter)
+	sql := fmt.Sprintf("SELECT fabricante as name, count(fabricante) as products_qty, false as selected FROM product " +
+		"GROUP BY fabricante ORDER BY name")
+	// log.Printf("sql: %v", sql)
 	err = dbHandytech.Select(&data.Makers, sql)
 	HandleError(w, err)
 
