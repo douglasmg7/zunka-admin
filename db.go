@@ -73,7 +73,17 @@ func initHandytechDB() {
 	dbHandytech = sqlx.MustConnect("sqlite3", dbHandytechFile)
 }
 
-// Close allnations db.
+// Close handytech db.
 func closeHandytechDB() {
 	dbHandytech.Close()
+}
+
+// Init motospeed db.
+func initMotospeedDB() {
+	dbMotospeed = sqlx.MustConnect("sqlite3", dbMotospeedFile)
+}
+
+// Close motospeed db.
+func closeMotospeedDB() {
+	dbMotospeed.Close()
 }

@@ -1,0 +1,87 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+    h3 {
+        margin-bottom: .5em;
+    }   
+    label {
+        display: inline-block;
+        font-size: 1.4em;
+        margin-top: .5em;
+        margin-bottom: 0em;
+    }
+    input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        position: relative;
+        top: 3px;
+        margin-right: .6rem;
+    }
+    input[type='text'] {
+        max-width: 10em;
+        display: block;
+    }
+</style>
+{{end}}
+
+{{define "title"}}Filtros Motospeed{{end}}
+
+{{define "content"}}
+<div class="content">
+    <form method='post'>
+        <h3>Filtros Motospeed</h3>
+
+        <!-- Min price -->
+        <div>
+            {{if .Validation.MinPrice}} 
+                <label for="minPrice" class="invalid"> Preço mínimo ({{.Validation.MinPrice}}) </label>
+            {{else}}
+                <label for="minPrice"> Preço mínimo </label>
+            {{end}}
+            <input type="text" id="minPrice" name="minPrice" value={{.Filters.MinPrice}}>
+        </div>
+
+        <!-- Max price -->
+        <div>
+            {{if .Validation.MaxPrice}} 
+                <label for="maxPrice" class="invalid"> Preço máximo ({{.Validation.MaxPrice}}) </label>
+            {{else}}
+                <label for="maxPrice"> Preço máximo </label>
+            {{end}}
+            <input type="text" id="maxPrice" name="maxPrice" value={{.Filters.MaxPrice}}>
+        </div>
+
+        <!-- Submit -->
+        <input class="btn btn-success" type="submit" value="Salvar">
+
+        <!-- Exit -->
+        <input class="btn" onclick='window.location.href="/ns/motospeed/products"' value="Sair">
+    </form>
+</div>
+{{end}}
+
+{{define "embedded-js"}} 
+    <script>
+        // Save.
+        function save() {
+            console.info("-Change");
+            fetch('filters', {
+                method: 'POST',
+                body: 'savee'
+            })
+            // .then(response => response.json())
+            .then(response => {
+                console.log(response.status);
+                response.text()
+                    .then(text => {
+                        console.log('body:', text);
+                    });
+                // console.log('response:', response.text);
+            })
+            .catch(error => {
+                console.log('Catch error:', error.response.text);
+            });
+        }
+    </script>
+{{end}}

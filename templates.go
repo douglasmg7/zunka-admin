@@ -43,6 +43,12 @@ var (
 	tmplHandytechCategories,
 	tmplHandytechMakers,
 
+	// Motospeed
+	tmplMotospeedProducts,
+	tmplMotospeedProduct,
+	tmplMotospeedFilters,
+	tmplMotospeedCategories,
+
 	// Mercado Livre.
 	tmplMercadoLivreMessage,
 	tmplMercadoLivreAuthUser,
@@ -95,6 +101,11 @@ func loadTemplates() {
 	tmplHandytechFilters = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/handytech/handytechFilters.gohtml"))
 	tmplHandytechCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/handytech/handytechCategories.gohtml"))
 	tmplHandytechMakers = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/handytech/handytechMakers.gohtml"))
+	// Motospeed.
+	tmplMotospeedProducts = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/motospeed/motospeed_products.gohtml"))
+	tmplMotospeedProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/motospeed/motospeed_product.gohtml"))
+	tmplMotospeedFilters = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/motospeed/motospeed_filters.gohtml"))
+	tmplMotospeedCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/motospeed/motospeed_categories.gohtml"))
 	// Mercado Livre.
 	tmplMercadoLivreMessage = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreMessage.gohtml"))
 	tmplMercadoLivreAuthUser = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreAuthUser.gohtml"))

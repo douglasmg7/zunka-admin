@@ -39,7 +39,8 @@ var dbZunka *sql.DB
 var dbAldo *sqlx.DB
 var dbAllnations *sqlx.DB
 var dbHandytech *sqlx.DB
-var dbZunkaFile, dbAldoFile, dbAllnationsFile, dbHandytechFile string
+var dbMotospeed *sqlx.DB
+var dbZunkaFile, dbAldoFile, dbAllnationsFile, dbHandytechFile, dbMotospeedFile string
 
 var zunkaPath string
 var GS string
@@ -64,6 +65,10 @@ var allnationsSelectedMakers *AllnationsSelectedMakers
 var handytechFilters *HandytechFilters
 var handytechSelectedCategories *HandytechSelectedCategories
 var handytechSelectedMakers *HandytechSelectedMakers
+
+// Motospeed.
+var motospeedFilters *MotospeedFilters
+var motospeedSelectedCategories *MotospeedSelectedCategories
 
 func init() {
 	// Check if production mode.
@@ -121,6 +126,12 @@ func init() {
 		panic("HANDYTECH_DB not defined.")
 	}
 
+	// Motospeed db.
+	dbMotospeedFile = os.Getenv("MOTOSPEED_DB")
+	if dbMotospeedFile == "" {
+		panic("MOTOSPEED_DB not defined.")
+	}
+
 	// Dev mode.
 	if !production {
 		dbAllnationsFile += "-dev"
@@ -171,6 +182,10 @@ func main() {
 	handytechSelectedCategories = LoadHandytechSelectedCategories(path.Join(dataPath, "handytech_selected_categories.data"))
 	handytechSelectedMakers = LoadHandytechSelectedMakers(path.Join(dataPath, "handytech_selected_makers.data"))
 
+	// Load motospeed data.
+	motospeedFilters = LoadMotospeedFilters(path.Join(dataPath, "motospeed_filters.data"))
+	motospeedSelectedCategories = LoadMotospeedSelectedCategories(path.Join(dataPath, "motospeed_selected_categories.data"))
+
 	// Start dbs.
 	initRedis()
 	defer closeRedis()
@@ -182,6 +197,8 @@ func main() {
 	defer closeAllnationsDB()
 	initHandytechDB()
 	defer closeHandytechDB()
+	initMotospeedDB()
+	defer closeMotospeedDB()
 
 	// Mercado Livre
 	initMercadoLivreHandler()

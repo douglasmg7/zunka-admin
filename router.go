@@ -88,6 +88,26 @@ func initRouter() *httprouter.Router {
 	router.POST("/ns/handytech/makers", checkPermission(handytechMakersHandlerPost, "write"))
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MOTOSPEED
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Products list page.
+	router.GET("/ns/motospeed/products", checkPermission(motospeedProductsHandler, "read"))
+	// Product page.
+	router.GET("/ns/motospeed/product/:code", checkPermission(motospeedProductHandler, "read"))
+	// Create product on zunka server.
+	router.POST("/ns/motospeed/product/:code", checkPermission(motospeedProductHandlerPost, "write"))
+	// Product removed from site, so remove his reference from zunkasrv.
+	router.DELETE("/ns/motospeed/product/zunka_product_id/:code", checkApiAuthorization(motospeedProductZunkaProductIdHandlerDelete))
+	// Filter page.
+	router.GET("/ns/motospeed/filters", checkPermission(motospeedFiltersHandler, "read"))
+	// Save filter.
+	router.POST("/ns/motospeed/filters", checkPermission(motospeedFiltersHandlerPost, "write"))
+	// Categories page.
+	router.GET("/ns/motospeed/categories", checkPermission(motospeedCategoriesHandler, "read"))
+	// Save categories.
+	router.POST("/ns/motospeed/categories", checkPermission(motospeedCategoriesHandlerPost, "write"))
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// MERCADO LIVRE
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Login

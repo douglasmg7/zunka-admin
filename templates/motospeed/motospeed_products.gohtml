@@ -1,0 +1,46 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+    h3 {
+        margin-bottom: .1em;
+    }
+    div.legend {
+        margin-bottom: 2em;
+    }
+    div.legend span {
+        margin: 1px;
+        display: inline-block;
+    }
+    p.product {
+		cursor: pointer;
+        margin: .8em 0;
+	}
+    p.registered, div.legend span.registered {
+        padding: .3em;
+        background-color: var(--green-lighter);
+    }
+    p.no-registered, div.legend span.no-registered {
+        padding: 0 .3em;
+        border: 5px solid var(--green-lighter);
+    }
+</style>
+{{end}}
+
+{{define "title"}} Produtos Motospeed {{end}}
+
+{{define "content"}}
+<div class="content">
+    <h3>Produtos Motospeed</h3>
+    <!-- Legend -->
+    <div class='legend'>
+        <span class='no-registered'>NÃ0 CADASTRADO</span>
+        <span class='registered'>CADASTRADO</span>
+    </div>
+    {{range $i, $e := .Products}}
+        <p class='product {{.Status}}' onclick="location.href='/ns/motospeed/product/{{.Code.String}}'"> {{.Desc.String}} </p>
+    {{end}}
+</div>
+{{end}}
+
+{{define "embedded-js"}} {{end}}

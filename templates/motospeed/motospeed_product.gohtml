@@ -1,0 +1,125 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+	tr {
+		cursor: pointer;
+	}
+    input.btn {
+        margin-top: 0;
+    }
+    input.create-product {
+        margin-top: 1rem;
+    }
+    .success {
+        color: var(--green);
+    }
+    .warn {
+        color: var(--yellow);
+    }
+    .danger {
+        color: var(--red);
+    }
+    h3 {
+        font-weight: 500;
+    }
+    h3.status.new {
+        color: var(--green);
+    }
+    .techinical-description p,
+    .rma-procedure p
+    {
+        font-size: 1.2em;
+        background-color: var(--white);
+        padding: .5em;
+    }
+    .techinical-description strong,
+    .rma-procedure strong
+    {
+        font-weight: 500;
+    }
+    a {
+        font-size: 2.2rem;
+    }
+    input.exit {
+        margin-top: 2em;
+    }
+    p.new {
+        background-color: var(--green-lll);
+        margin-bottom: 1rem;
+    }
+    p.old {
+        background-color: var(--red-lll);
+    }
+    div.content label {
+        display: inline;
+    }
+    a.similar-product {
+        font-size: 1.2em;
+    }
+</style>
+{{end}}
+
+{{define "title"}} Produto Motospeed {{end}}
+
+{{define "content"}}
+<div class="content">
+    <h2> Produto Motospeed </h2>
+
+	<h3>Código</h3>
+	<p>{{.Product.ProcessString .Product.Code}}</p>
+    
+	<h3>Título</h3>
+	<p>{{.Product.ProcessString .Product.Title}}</p>
+
+	<h3>Descrição</h3>
+	<p>{{.Product.ProcessString .Product.Desc}}</p>
+
+	{{if .ShowButtonCreateProduct}}
+        <form action="" method="post">
+	        <h3>Criar produto no site</h3>
+            {{if len .SameEANZunkaProducts}}
+                <h4>Produtos com o mesmo EAN</h3>
+                {{range .SameEANZunkaProducts}}
+                    <input type="radio" id={{.MongodbId}} name="similar-product" value={{.MongodbId}}>
+                    <label for={{.MongodbId}}>{{.StoreProductTitle}}</label>
+                    <a class="similar-product" href='/admin/product/{{.MongodbId}}'>
+                        {{.MongodbId}}
+                    </a>
+                    </br>
+                {{end}}
+            {{end}}
+            {{if len .SimiliarZunkaProducts}}
+                <h4>Produtos com títulos similares</h3>
+                {{range .SimiliarZunkaProducts}}
+                    <input type="radio" id={{.MongodbId}} name="similar-product" value={{.MongodbId}}>
+                    <label for={{.MongodbId}}>{{.StoreProductTitle}}</label>
+                    <a class="similar-product" href='/admin/product/{{.MongodbId}}'>
+                        {{.MongodbId}}
+                    </a>
+                    </br>
+                {{end}}
+            {{end}}
+            <input type="radio" id="new" name="similar-product" value="" checked=true>
+            <label for="new">Novo produto</label>
+            <input class="btn create-product" type="submit" value='Criar produto' disabled>
+        </form>
+    {{end}}
+    {{if ne .Product.ZunkaProductId.String ""}}
+	    <h3>Produto id (loja)</h3>
+	    <a href='/admin/product/{{.Product.ZunkaProductId}}'>{{.Product.ZunkaProductId}}</a>
+	{{end}}
+
+	<h3>Preço</h3>
+	<p>{{.Product.ProcessBrCurrency .Product.Price}}</p>
+
+	<h3>Estoque</h3>
+	<p>{{.Product.ProcessInt64 .Product.Stock}}</p>
+
+	<h3>Criado</h3>
+	<p>{{.Product.CreatedAt}}</p>
+
+    <!-- Products page. -->
+    <input class="btn exit" type="button" onclick="location.href='/ns/motospeed/products'" value='Sair'>
+</div>
+{{end}}
