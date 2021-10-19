@@ -1,0 +1,99 @@
+{{template "base" .}}
+
+{{define "embedded-css"}} 
+<style type="text/css">
+    h3 {
+        margin-bottom: .5em;
+    }   
+    label {
+        display: inline-block;
+        font-size: 1.4em;
+        margin-top: .5em;
+        margin-bottom: 0em;
+    }
+    input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        position: relative;
+        top: 3px;
+        margin-right: .6rem;
+    }
+    input[type='text'] {
+        max-width: 10em;
+        display: block;
+    }
+    .upload-csv {
+        box-sizing: border-box;
+        font-size: 1em;
+        cursor: pointer;
+        display: block;
+        border-radius: 4px;
+        padding-top: .4em;
+        // padding: 1em;
+        margin-top: 2em;
+        height: 2em;
+        line-height: 1em;
+        text-align: center;
+        vertical-align: bottom;
+        white-space: nowrap
+    }
+    .upload-csv:hover {
+        border-radius: 4px;
+    }
+    input[type="file"] {
+        display: none;
+    }
+</style>
+{{end}}
+
+{{define "title"}}Carregar CSV Motospeed{{end}}
+
+{{define "content"}}
+<div class="content">
+    <form method='post'>
+        <h3>Carregar CSV Motospeed</h3>
+        <!-- Load csv -->
+        <label class="upload-csv button btn-success" for="uploadCSV">Selecionar arquivo csv</label>
+        <input type="file" id="uploadCSV" accept=".csv" onchange="loadCSV()">
+    </form>
+</div>
+{{end}}
+
+{{define "embedded-js"}} 
+    <script>
+        function loadCSV(){
+            console.log('called');            
+            let files = document.getElementById('uploadCSV').files;
+            // no files
+            if (files.length === 0) {
+                alert('Nenhum arquivo selecionado.');
+                // too many files
+            } 
+            // it's ok
+            else {
+                let data = new FormData();
+                data.append('csv-file', files[0]);
+                fetch('load-csv', {
+                    method: 'PUT',
+                    body: 'data',
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then(response => {
+                    alert('Arquivo carregado.');
+                    // console.log(response.status);
+                    // response.text()
+                        // .then(text => {
+                            // console.log('body:', text);
+                        // });
+                    // console.log('response:', response.text);
+                })
+                .catch(error => {
+                    alert('Não foi possível carregar o arquivo.');
+                    console.log('Catch error:', error.response.text);
+                });
+            }
+        }
+    </script>
+{{end}}
