@@ -109,7 +109,7 @@ func initRouter() *httprouter.Router {
 	// Load csv.
 	router.GET("/ns/motospeed/load-csv", checkPermission(motospeedLoadCSVHandler, "write"))
 	// Load csv.
-	router.PUT("/ns/motospeed/load-csv", checkPermission(motospeedLoadCSVHandlerPut, "write"))
+	router.POST("/ns/motospeed/load-csv", checkPermission(motospeedLoadCSVHandlerPost, "write"))
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// MERCADO LIVRE

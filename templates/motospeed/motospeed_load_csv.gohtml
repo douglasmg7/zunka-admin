@@ -50,11 +50,11 @@
 
 {{define "content"}}
 <div class="content">
-    <form method='post'>
+    <form method='post' enctype="multipart/form-data" action="load-csv">
         <h3>Carregar CSV Motospeed</h3>
         <!-- Load csv -->
-        <label class="upload-csv button btn-success" for="uploadCSV">Selecionar arquivo csv</label>
-        <input type="file" id="uploadCSV" accept=".csv" onchange="loadCSV()">
+        <label class="upload-csv button btn-success" for="upload-csv">Selecionar arquivo csv</label>
+        <input type="file" id="upload-csv" accept=".csv" onchange="loadCSV()">
     </form>
 </div>
 {{end}}
@@ -63,7 +63,7 @@
     <script>
         function loadCSV(){
             console.log('called');            
-            let files = document.getElementById('uploadCSV').files;
+            let files = document.getElementById('upload-csv').files;
             // no files
             if (files.length === 0) {
                 alert('Nenhum arquivo selecionado.');
@@ -74,11 +74,8 @@
                 let data = new FormData();
                 data.append('csv-file', files[0]);
                 fetch('load-csv', {
-                    method: 'PUT',
-                    body: 'data',
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                    method: 'post',
+                    body: data,
                 })
                 .then(response => {
                     alert('Arquivo carregado.');

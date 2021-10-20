@@ -44,6 +44,7 @@ var dbZunkaFile, dbAldoFile, dbAllnationsFile, dbHandytechFile, dbMotospeedFile 
 
 var zunkaPath string
 var GS string
+var MOTOSPEED_CSV string
 
 var err error
 
@@ -89,6 +90,12 @@ func init() {
 	GS = os.Getenv("GS")
 	if GS == "" {
 		panic("GS env not defined.")
+	}
+
+	// Go lang source.
+	MOTOSPEED_CSV = os.Getenv("MOTOSPEED_CSV")
+	if MOTOSPEED_CSV == "" {
+		panic("MOTOSPEED_CSV env not defined.")
 	}
 
 	// Log path.
