@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 
 	// "math"
 	"net/http"
@@ -402,4 +403,10 @@ func motospeedLoadCSVHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 
 	// return that we have successfully uploaded our file!
 	fmt.Fprintf(w, "Arquivo CSV carregado com sucesso.")
+
+	cmd := exec.Command(MOTOSPEED_SCRIPT, "")
+	// cmnd := exec.Command("main.exe", "arg")
+	//cmnd.Run() // and wait
+	cmd.Start()
+	log.Println("Script to process Motospeed products called")
 }
