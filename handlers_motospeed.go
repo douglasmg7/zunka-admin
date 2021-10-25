@@ -119,7 +119,7 @@ func motospeedProductsHandler(w http.ResponseWriter, req *http.Request, _ httpro
 	// "SELECT * FROM product WHERE categoria IN (%s) ORDER BY desc",
 	// motospeedSelectedCategories.SqlCategories))
 
-	err = dbMotospeed.Select(&data.Products, fmt.Sprintf("SELECT * FROM product ORDER BY desc"))
+	err = dbMotospeed.Select(&data.Products, fmt.Sprintf("SELECT * FROM product ORDER BY title"))
 
 	HandleError(w, err)
 
@@ -142,7 +142,7 @@ func motospeedProductHandler(w http.ResponseWriter, req *http.Request, ps httpro
 	}{session, "", &MotospeedProduct{}, "", false, []ZunkaSiteProductRx{}, []ZunkaSiteProductRx{}}
 
 	// Get product.
-	err = dbMotospeed.Get(data.Product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
+	err = dbMotospeed.Get(data.Product, "SELECT * FROM product WHERE sku=?", ps.ByName("sku"))
 	HandleError(w, err)
 
 	// Status.
@@ -154,11 +154,13 @@ func motospeedProductHandler(w http.ResponseWriter, req *http.Request, ps httpro
 
 		// Similar titles.
 		chanProductsSimilarTitles := make(chan []ZunkaSiteProductRx)
-		go getProductsSimilarTitles(chanProductsSimilarTitles, data.Product.Desc.String)
+		go getProductsSimilarTitles(chanProductsSimilarTitles, data.Product.Description.String)
 
 		// Same EAN.
-		// todo - search product data for ean.
 		ean := ""
+		if data.Product.Ean.Valid {
+			ean = data.Product.Ean.String
+		}
 		if len(ean) > 0 {
 			chanProductsSameEAN := make(chan []ZunkaSiteProductRx)
 			go getProductsSameEAN(chanProductsSameEAN, ean)
@@ -269,7 +271,7 @@ func motospeedProductHandlerPost(w http.ResponseWriter, req *http.Request, ps ht
 	stmt, err := dbMotospeed.Prepare(`UPDATE product SET zunka_product_id = $1, checked_at=$2 WHERE code = $3;`)
 	HandleError(w, err)
 	defer stmt.Close()
-	_, err = stmt.Exec(product.ZunkaProductId, time.Now(), product.Code)
+	_, err = stmt.Exec(product.ZunkaProductId, time.Now(), product.Sku)
 	HandleError(w, err)
 
 	// Render product page.

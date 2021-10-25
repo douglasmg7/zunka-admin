@@ -8,7 +8,6 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"time"
 	// "github.com/douglasmg7/currency"
 )
 
@@ -17,14 +16,29 @@ import (
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Motospeed product.
 type MotospeedProduct struct {
-	Code           sql.NullString `db:"code"` // From dealer.
+	Sku            sql.NullString `db:"sku"` // From dealer.
 	Title          sql.NullString `db:"title"`
-	Desc           sql.NullString `db:"desc"`
-	Price          sql.NullInt64  `db:"price"`
+	Description    sql.NullString `db:"description"`
+	Ean            sql.NullString `db:"ean"`
+	Model          sql.NullString `db:"model"`
+	Connection     sql.NullString `db:"connection"`
+	Compatibility  sql.NullString `db:"compatibility"`
+	Curve          sql.NullString `db:"curve"`
+	NCM            sql.NullString `db:"ncm"`
+	MasterBox      sql.NullInt64  `db:"master_box"`
+	WeightKG       sql.NullInt64  `db:"weight_kg"`
+	LengthCM       sql.NullInt64  `db:"length_cm"`
+	WidthCM        sql.NullInt64  `db:"width_cm"`
+	DepthCM        sql.NullInt64  `db:"depth_cm"`
+	IPI            sql.NullInt64  `db:"ipi"`
+	Price100       sql.NullInt64  `db:"price_100"`
+	PriceDist100   sql.NullInt64  `db:"price_dist_100"`
+	PriceSell100   sql.NullInt64  `db:"price_sell_100"`
 	Stock          sql.NullInt64  `db:"stock"`
 	ZunkaProductId sql.NullString `db:"zunka_product_id"`
-	CreatedAt      time.Time      `db:"created_at"`
-	// ChangedAt              time.Time      `db:"changed_at"`
+	CreatedAt      sql.NullTime   `db:"created_at"`
+	ChangedAt      sql.NullTime   `db:"changed_at"`
+	RemovedAt      sql.NullTime   `db:"removed_at"`
 }
 
 // Define product status.
@@ -58,6 +72,15 @@ func (p *MotospeedProduct) ProcessString(val sql.NullString) string {
 func (p *MotospeedProduct) ProcessInt64(val sql.NullInt64) string {
 	if val.Valid {
 		return fmt.Sprintf("%d", val.Int64)
+	} else {
+		return "NULL"
+	}
+}
+
+// Process time.
+func (p *MotospeedProduct) ProcessTime(val sql.NullTime) string {
+	if val.Valid {
+		return fmt.Sprintf("%d", val.Time)
 	} else {
 		return "NULL"
 	}

@@ -38,7 +38,7 @@
         <span class='registered'>CADASTRADO</span>
     </div>
     {{range $i, $e := .Products}}
-        <p class='product {{.Status}}' onclick="location.href='/ns/motospeed/product/{{.Code.String}}'"> {{.Desc.String}} </p>
+        <p class='product {{.Status}}' onclick="location.href='/ns/motospeed/product/{{.Sku.String}}'"> {{.Title.String}} </p>
     {{end}}
 </div>
 {{end}}
