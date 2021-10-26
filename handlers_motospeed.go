@@ -184,7 +184,7 @@ func motospeedProductHandlerPost(w http.ResponseWriter, req *http.Request, ps ht
 	// Get product.
 	product := MotospeedProduct{}
 	// Get product.
-	err = dbMotospeed.Get(&product, "SELECT * FROM product WHERE code=?", ps.ByName("code"))
+	err = dbMotospeed.Get(&product, "SELECT * FROM product WHERE sku=?", ps.ByName("sku"))
 	HandleError(w, err)
 
 	// Set store product.

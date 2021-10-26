@@ -1,3 +1,6 @@
+## 1.6.0 - 26 de Outubro 2021
+Incusão de páginas da Motospeed.
+
 ## 1.5.3 - 16 de Agosoto 2021
 Incusão de páginas da Handytech.
 

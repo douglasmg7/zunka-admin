@@ -93,9 +93,9 @@ func initRouter() *httprouter.Router {
 	// Products list page.
 	router.GET("/ns/motospeed/products", checkPermission(motospeedProductsHandler, "read"))
 	// Product page.
-	router.GET("/ns/motospeed/product/:code", checkPermission(motospeedProductHandler, "read"))
+	router.GET("/ns/motospeed/product/:sku", checkPermission(motospeedProductHandler, "read"))
 	// Create product on zunka server.
-	router.POST("/ns/motospeed/product/:code", checkPermission(motospeedProductHandlerPost, "write"))
+	router.POST("/ns/motospeed/product/:sku", checkPermission(motospeedProductHandlerPost, "write"))
 	// Product removed from site, so remove his reference from zunkasrv.
 	router.DELETE("/ns/motospeed/product/zunka_product_id/:code", checkApiAuthorization(motospeedProductZunkaProductIdHandlerDelete))
 	// Filter page.

@@ -66,14 +66,26 @@
 <div class="content">
     <h2> Produto Motospeed </h2>
 
-	<h3>Código</h3>
-	<p>{{.Product.ProcessString .Product.Code}}</p>
+	<h3>Sku</h3>
+	<p>{{.Product.ProcessString .Product.Sku}}</p>
+
+	<h3>EAN</h3>
+	<p>{{.Product.ProcessString .Product.Ean}}</p>
     
 	<h3>Título</h3>
 	<p>{{.Product.ProcessString .Product.Title}}</p>
 
+	<h3>Modelo</h3>
+	<p>{{.Product.ProcessString .Product.Model}}</p>
+
+	<h3>Compatibilidade</h3>
+	<p>{{.Product.ProcessString .Product.Compatibility}}</p>
+
+	<h3>Conexão</h3>
+	<p>{{.Product.ProcessString .Product.Connection}}</p>
+
 	<h3>Descrição</h3>
-	<p>{{.Product.ProcessString .Product.Desc}}</p>
+	<p>{{.Product.ProcessString .Product.Description}}</p>
 
 	{{if .ShowButtonCreateProduct}}
         <form action="" method="post">
@@ -110,14 +122,47 @@
 	    <a href='/admin/product/{{.Product.ZunkaProductId}}'>{{.Product.ZunkaProductId}}</a>
 	{{end}}
 
-	<h3>Preço</h3>
-	<p>{{.Product.ProcessBrCurrency .Product.Price}}</p>
+	<h3>Peso</h3>
+	<p>{{.Product.ProcessWeightGramsInt64ToKG .Product.WeightGrams}}</p>
+
+	<h3>Comprimento</h3>
+	<p>{{.Product.ProcessMMInt64ToCM .Product.LengthMM}}</p>
+
+	<h3>Largura</h3>
+	<p>{{.Product.ProcessMMInt64ToCM .Product.WidthMM}}</p>
+
+	<h3>Profundidade</h3>
+	<p>{{.Product.ProcessMMInt64ToCM .Product.DepthMM}}</p>
+
+	<h3>Curva</h3>
+	<p>{{.Product.ProcessString .Product.Curve}}</p>
+
+	<h3>NCM</h3>
+	<p>{{.Product.ProcessString .Product.NCM}}</p>
+
+	<h3>IPI</h3>
+	<p>{{.Product.ProcessInt64Percent .Product.IPI}}</p>
+
+	<h3>Preço unitário</h3>
+	<p>{{.Product.ProcessBrCurrency .Product.Price100}}</p>
+
+	<h3>Cx Master</h3>
+	<p>{{.Product.ProcessInt64 .Product.MasterBox}}</p>
+
+	<h3>Preço cx master</h3>
+	<p>{{.Product.ProcessBrCurrency .Product.PriceDist100}}</p>
+
+	<h3>Preço venda</h3>
+	<p>{{.Product.ProcessBrCurrency .Product.PriceSell100}}</p>
 
 	<h3>Estoque</h3>
 	<p>{{.Product.ProcessInt64 .Product.Stock}}</p>
 
 	<h3>Criado</h3>
-	<p>{{.Product.CreatedAt}}</p>
+	<p>{{.Product.ProcessTime .Product.CreatedAt}}</p>
+
+	<h3>Modificado</h3>
+	<p>{{.Product.ProcessTime .Product.ChangedAt}}</p>
 
     <!-- Products page. -->
     <input class="btn exit" type="button" onclick="location.href='/ns/motospeed/products'" value='Sair'>

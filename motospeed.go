@@ -26,11 +26,11 @@ type MotospeedProduct struct {
 	Curve          sql.NullString `db:"curve"`
 	NCM            sql.NullString `db:"ncm"`
 	MasterBox      sql.NullInt64  `db:"master_box"`
-	WeightKG       sql.NullInt64  `db:"weight_kg"`
-	LengthCM       sql.NullInt64  `db:"length_cm"`
-	WidthCM        sql.NullInt64  `db:"width_cm"`
-	DepthCM        sql.NullInt64  `db:"depth_cm"`
-	IPI            sql.NullInt64  `db:"ipi"`
+	WeightGrams    sql.NullInt64  `db:"weight_g"`
+	LengthMM       sql.NullInt64  `db:"length_mm"`
+	WidthMM        sql.NullInt64  `db:"width_mm"`
+	DepthMM        sql.NullInt64  `db:"depth_mm"`
+	IPI            sql.NullInt64  `db:"ipi_100"`
 	Price100       sql.NullInt64  `db:"price_100"`
 	PriceDist100   sql.NullInt64  `db:"price_dist_100"`
 	PriceSell100   sql.NullInt64  `db:"price_sell_100"`
@@ -77,10 +77,37 @@ func (p *MotospeedProduct) ProcessInt64(val sql.NullInt64) string {
 	}
 }
 
+// Process int64.
+func (p *MotospeedProduct) ProcessInt64Percent(val sql.NullInt64) string {
+	if val.Valid {
+		return fmt.Sprintf("%d%%", val.Int64)
+	} else {
+		return "NULL"
+	}
+}
+
+// Process kg int64.
+func (p *MotospeedProduct) ProcessWeightGramsInt64ToKG(val sql.NullInt64) string {
+	if val.Valid {
+		return fmt.Sprintf("%.3f kg", float64(val.Int64)/1000)
+	} else {
+		return "NULL"
+	}
+}
+
+// Process cm int64.
+func (p *MotospeedProduct) ProcessMMInt64ToCM(val sql.NullInt64) string {
+	if val.Valid {
+		return fmt.Sprintf("%.f cm", float64(val.Int64)/10)
+	} else {
+		return "NULL"
+	}
+}
+
 // Process time.
 func (p *MotospeedProduct) ProcessTime(val sql.NullTime) string {
 	if val.Valid {
-		return fmt.Sprintf("%d", val.Time)
+		return fmt.Sprintf("%s", val.Time.In(brLocation))
 	} else {
 		return "NULL"
 	}

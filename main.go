@@ -3,18 +3,21 @@ package main
 import (
 	"context"
 	"database/sql"
+	"github.com/go-redis/redis/v8"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path"
-
-	"github.com/go-redis/redis/v8"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
+	"time"
 )
 
 var ctx = context.Background()
+
+// Brazil time location.
+var brLocation *time.Location
 
 const NAME = "zunkasrv"
 
@@ -76,6 +79,12 @@ func init() {
 	// Check if production mode.
 	if os.Getenv("RUN_MODE") == "production" {
 		production = true
+	}
+
+	// Brazil location.
+	brLocation, err = time.LoadLocation("America/Sao_Paulo")
+	if err != nil {
+		panic(err)
 	}
 
 	// Port.
