@@ -48,7 +48,7 @@ var (
 	tmplMotospeedProduct,
 	tmplMotospeedFilters,
 	tmplMotospeedCategories,
-	tmplMotospeedLoadCSV,
+	tmplMotospeedLoadExcel,
 
 	// Mercado Livre.
 	tmplMercadoLivreMessage,
@@ -107,7 +107,7 @@ func loadTemplates() {
 	tmplMotospeedProduct = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/motospeed/motospeed_product.gohtml"))
 	tmplMotospeedFilters = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/motospeed/motospeed_filters.gohtml"))
 	tmplMotospeedCategories = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/motospeed/motospeed_categories.gohtml"))
-	tmplMotospeedLoadCSV = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/motospeed/motospeed_load_csv.gohtml"))
+	tmplMotospeedLoadExcel = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/motospeed/motospeed_load_excel.gohtml"))
 	// Mercado Livre.
 	tmplMercadoLivreMessage = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreMessage.gohtml"))
 	tmplMercadoLivreAuthUser = template.Must(template.Must(tmplMaster.Clone()).ParseFiles("templates/mercado_livre/mercadoLivreAuthUser.gohtml"))

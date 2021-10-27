@@ -22,7 +22,7 @@
         max-width: 10em;
         display: block;
     }
-    .upload-csv {
+    .upload-file {
         box-sizing: border-box;
         font-size: 1em;
         cursor: pointer;
@@ -37,7 +37,7 @@
         vertical-align: bottom;
         white-space: nowrap
     }
-    .upload-csv:hover {
+    .upload-file:hover {
         border-radius: 4px;
     }
     input[type="file"] {
@@ -46,24 +46,24 @@
 </style>
 {{end}}
 
-{{define "title"}}Carregar CSV Motospeed{{end}}
+{{define "title"}}Carregar Excel Motospeed{{end}}
 
 {{define "content"}}
 <div class="content">
-    <form method='post' enctype="multipart/form-data" action="load-csv">
-        <h3>Carregar CSV Motospeed</h3>
-        <!-- Load csv -->
-        <label class="upload-csv button btn-success" for="upload-csv">Selecionar arquivo csv</label>
-        <input type="file" id="upload-csv" accept=".csv" onchange="loadCSV()">
+    <form method='post' enctype="multipart/form-data" action="load-file">
+        <h3>Carregar Excel Motospeed</h3>
+        <!-- Load Excel -->
+        <label class="upload-file button btn-success" for="upload-file">Selecionar arquivo excel</label>
+        <input type="file" id="upload-file" accept=".xlsm" onchange="loadFile()">
     </form>
 </div>
 {{end}}
 
 {{define "embedded-js"}} 
     <script>
-        function loadCSV(){
+        function loadFile(){
             console.log('called');            
-            let files = document.getElementById('upload-csv').files;
+            let files = document.getElementById('upload-file').files;
             // no files
             if (files.length === 0) {
                 alert('Nenhum arquivo selecionado.');
@@ -72,8 +72,8 @@
             // it's ok
             else {
                 let data = new FormData();
-                data.append('csv-file', files[0]);
-                fetch('load-csv', {
+                data.append('file', files[0]);
+                fetch('load-excel', {
                     method: 'post',
                     body: data,
                 })

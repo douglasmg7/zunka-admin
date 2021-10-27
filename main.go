@@ -47,7 +47,7 @@ var dbZunkaFile, dbAldoFile, dbAllnationsFile, dbHandytechFile, dbMotospeedFile 
 
 var zunkaPath string
 var GS string
-var MOTOSPEED_CSV string
+var MOTOSPEED_EXCEL string
 var MOTOSPEED_SCRIPT string
 
 var err error
@@ -102,10 +102,10 @@ func init() {
 		panic("GS env not defined.")
 	}
 
-	// Motospeed csv.
-	MOTOSPEED_CSV = os.Getenv("MOTOSPEED_CSV")
-	if MOTOSPEED_CSV == "" {
-		panic("MOTOSPEED_CSV env not defined.")
+	// Motospeed excel.
+	MOTOSPEED_EXCEL = os.Getenv("MOTOSPEED_EXCEL")
+	if MOTOSPEED_EXCEL == "" {
+		panic("MOTOSPEED_EXCEL env not defined.")
 	}
 
 	// Motospeed script.

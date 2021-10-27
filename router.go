@@ -106,10 +106,10 @@ func initRouter() *httprouter.Router {
 	router.GET("/ns/motospeed/categories", checkPermission(motospeedCategoriesHandler, "read"))
 	// Save categories.
 	router.POST("/ns/motospeed/categories", checkPermission(motospeedCategoriesHandlerPost, "write"))
-	// Load csv.
-	router.GET("/ns/motospeed/load-csv", checkPermission(motospeedLoadCSVHandler, "write"))
-	// Load csv.
-	router.POST("/ns/motospeed/load-csv", checkPermission(motospeedLoadCSVHandlerPost, "write"))
+	// Load Excel.
+	router.GET("/ns/motospeed/load-excel", checkPermission(motospeedLoadExcelHandler, "write"))
+	// Load Excel.
+	router.POST("/ns/motospeed/load-excel", checkPermission(motospeedLoadExcelHandlerPost, "write"))
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// MERCADO LIVRE

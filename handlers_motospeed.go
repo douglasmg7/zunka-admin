@@ -360,22 +360,22 @@ func motospeedCategoriesHandlerPost(w http.ResponseWriter, req *http.Request, _ 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// CSV
+// Excel
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Load csv page.
-func motospeedLoadCSVHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+// Load Excel page.
+func motospeedLoadExcelHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	data := struct {
 		Session     *SessionData
 		HeadMessage string
 	}{session, ""}
 
 	// Render page.
-	err = tmplMotospeedLoadCSV.ExecuteTemplate(w, "motospeed_load_csv.gohtml", data)
+	err = tmplMotospeedLoadExcel.ExecuteTemplate(w, "motospeed_load_excel.gohtml", data)
 	HandleError(w, err)
 }
 
-// Load csv.
-func motospeedLoadCSVHandlerPost(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
+// Load Excel.
+func motospeedLoadExcelHandlerPost(w http.ResponseWriter, req *http.Request, _ httprouter.Params, session *SessionData) {
 	// log.Println("File Upload Endpoint Hit")
 	// log.Println(req.Header)
 
@@ -386,25 +386,25 @@ func motospeedLoadCSVHandlerPost(w http.ResponseWriter, req *http.Request, _ htt
 	// FormFile returns the first file for the given key `myFile`
 	// it also returns the FileHeader so we can get the Filename,
 	// the Header and the size of the file
-	file, header, err := req.FormFile("csv-file")
+	file, header, err := req.FormFile("file")
 	if err != nil {
 		HandleError(w, err)
 		return
 	}
 	defer file.Close()
-	log.Printf("Motorspeed csv uploaded, file: %+v, size: %+v", header.Filename, header.Size)
+	log.Printf("Motorspeed excel uploaded, file: %+v, size: %+v", header.Filename, header.Size)
 	// fmt.Printf("Uploaded File: %+v\n", header.Filename)
 	// fmt.Printf("File Size: %+v\n", header.Size)
 	// fmt.Printf("MIME Header: %+v\n", header.Header)
 
-	tmpfile, _ := os.Create(MOTOSPEED_CSV)
-	// tmpfile, _ := os.Create(path.Join(motospeedDataPath, "/motospeed_products.csv"))
+	tmpfile, _ := os.Create(MOTOSPEED_EXCEL)
+	// tmpfile, _ := os.Create(path.Join(motospeedDataPath, "/motospeed_products.excel"))
 	io.Copy(tmpfile, file)
 	tmpfile.Close()
 	file.Close()
 
 	// return that we have successfully uploaded our file!
-	fmt.Fprintf(w, "Arquivo CSV carregado com sucesso.")
+	fmt.Fprintf(w, "Arquivo Excel carregado com sucesso.")
 
 	cmd := exec.Command(MOTOSPEED_SCRIPT, "")
 	// cmnd := exec.Command("main.exe", "arg")
